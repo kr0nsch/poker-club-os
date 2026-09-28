@@ -1,0 +1,28 @@
+# Portable toolchain (Node, pnpm, Git, caches) — see .venv/env.ps1
+.venv/
+
+node_modules/
+dist/
+.next/
+.turbo/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local runtime data (embedded dev database, uploads, backups)
+.data/
+data/
+
+# Secrets — never commit real values
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

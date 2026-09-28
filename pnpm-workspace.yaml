@@ -1,0 +1,23 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tests/*"
+
+minimumReleaseAgeExclude:
+  - '@turbo/darwin-64@2.11.5'
+  - '@turbo/darwin-arm64@2.11.5'
+  - '@turbo/linux-64@2.11.5'
+  - '@turbo/linux-arm64@2.11.5'
+  - '@turbo/windows-64@2.11.5'
+  - '@turbo/windows-arm64@2.11.5'
+  - turbo@2.11.5
+
+onlyBuiltDependencies:
+  - "@swc/core"
+  - "esbuild"
+  - "sharp"
+  - "unrs-resolver"
+  - "@node-rs/argon2"
+  - "embedded-postgres"
+  - "@embedded-postgres/windows-x64"
+  - "@embedded-postgres/linux-x64"

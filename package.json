@@ -1,0 +1,32 @@
+{
+  "name": "poker-club-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first live poker club operating system (Venue Edge Server architecture)",
+  "type": "module",
+  "packageManager": "pnpm@12.4.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "build:packages": "turbo run build --filter=./packages/*",
+    "dev": "node scripts/dev.mjs",
+    "dev:db": "node scripts/dev-db.mjs",
+    "db:migrate": "pnpm --filter @pcos/db run migrate",
+    "db:generate": "pnpm --filter @pcos/db run generate",
+    "db:seed": "pnpm --filter @pcos/db run seed",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "pnpm --filter @pcos/e2e run test",
+    "format": "prettier --write .",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prettier": "^3.6.0",
+    "turbo": "^2.11.5",
+    "typescript": "6.0.3"
+  }
+}
