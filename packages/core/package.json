@@ -1,0 +1,44 @@
+{
+  "name": "@pcos/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "seed:demo": "node dist/scripts/seed-demo.js",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.1",
+    "@pcos/db": "workspace:*",
+    "@pcos/domain": "workspace:*",
+    "@pcos/telegram": "workspace:*",
+    "@pcos/types": "workspace:*",
+    "drizzle-orm": "^0.45.3",
+    "ioredis": "^6.0.0",
+    "papaparse": "^5.7.0",
+    "pg": "^8.23.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@pcos/config": "workspace:*",
+    "@pcos/testkit": "workspace:*",
+    "@types/node": "^24.0.0",
+    "@types/papaparse": "^5.3.16",
+    "@types/pg": "^8.15.0",
+    "eslint": "^10.11.0",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.2"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@pcos/testkit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@pcos/db": "workspace:*",
+    "embedded-postgres": "18.4.0-beta.17",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@pcos/config": "workspace:*",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "eslint": "^10.11.0",
+    "typescript": "6.0.3"
+  }
+}

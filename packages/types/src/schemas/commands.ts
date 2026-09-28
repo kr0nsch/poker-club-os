@@ -7,6 +7,7 @@ import type { Permission } from "../permissions.js";
 
 const Empty = z.strictObject({}).default({});
 const Reason = z.string().trim().min(3).max(500);
+const LevelIndex = z.number().int().min(0).max(500);
 
 const SeatRef = z.object({ tableId: z.uuid(), seatNumber: z.number().int().min(1).max(11) });
 const SeatTarget = z.union([z.literal("AUTO"), z.literal("NONE"), SeatRef]);
@@ -25,7 +26,7 @@ export const COMMAND_PAYLOADS = {
   PUBLISH: Empty,
   UNPUBLISH: Empty,
   OPEN_REGISTRATION: Empty,
-  START_SEATING: Empty,
+  START_SEATING: z.object({ draw: z.boolean().default(true) }).default({ draw: true }),
   START_TOURNAMENT: Empty,
   FINISH_TOURNAMENT: z
     .object({
@@ -42,11 +43,13 @@ export const COMMAND_PAYLOADS = {
   // --- clock ---------------------------------------------------------------
   PAUSE_CLOCK: Empty,
   RESUME_CLOCK: Empty,
-  NEXT_LEVEL: Empty,
-  PREVIOUS_LEVEL: Empty,
-  SET_LEVEL: z.object({ levelIndex: z.number().int().min(0).max(500) }),
-  ADJUST_CLOCK: z.object({ deltaSeconds: z.number().int().min(-6 * 3600).max(6 * 3600) }),
-  SET_REMAINING: z.object({ remainingSeconds: z.number().int().min(0).max(6 * 3600) }),
+  // `fromLevelIndex`: the level the operator was looking at. If the clock has
+  // auto-advanced meanwhile the command is rejected instead of skipping a level.
+  NEXT_LEVEL: z.object({ fromLevelIndex: LevelIndex.optional() }).default({}),
+  PREVIOUS_LEVEL: z.object({ fromLevelIndex: LevelIndex.optional() }).default({}),
+  SET_LEVEL: z.object({ levelIndex: LevelIndex }),
+  ADJUST_CLOCK: z.object({ deltaSeconds: z.number().int().min(-6 * 3600).max(6 * 3600), fromLevelIndex: LevelIndex.optional() }),
+  SET_REMAINING: z.object({ remainingSeconds: z.number().int().min(0).max(6 * 3600), fromLevelIndex: LevelIndex.optional() }),
   // --- registration --------------------------------------------------------
   REGISTER_PLAYER: z.object({
     playerId: z.uuid(),
@@ -75,7 +78,10 @@ export const COMMAND_PAYLOADS = {
   CLOSE_TABLE: z.object({ tableId: z.uuid() }),
   SET_SEAT_LOCK: z.object({ tableId: z.uuid(), seatNumber: z.number().int().min(1).max(11), locked: z.boolean(), reason: z.string().max(200).optional() }),
   SET_DEALER_BUTTON: z.object({ tableId: z.uuid(), seatNumber: z.number().int().min(1).max(11).nullable() }),
-  APPLY_INITIAL_SEATING: z.object({ moves: z.array(PlannedMove).max(5000) }),
+  /** Either apply a previewed plan (`moves`) or let the server draw now (`generate`), creating tables as needed. */
+  APPLY_INITIAL_SEATING: z
+    .object({ moves: z.array(PlannedMove).max(5000).optional(), generate: z.boolean().default(false) })
+    .refine((v) => v.generate || (v.moves && v.moves.length > 0), "provide moves or set generate"),
   ASSIGN_SEAT: z.object({ entryId: z.uuid(), seat: SeatTarget.default("AUTO") }),
   MOVE_PLAYER: z.object({
     entryId: z.uuid(),

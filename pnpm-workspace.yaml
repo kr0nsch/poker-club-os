@@ -3,6 +3,17 @@ packages:
   - "packages/*"
   - "tests/*"
 
+# Packages whose install scripts may run (pnpm >= 11 blocks all others).
+allowBuilds:
+  "@embedded-postgres/windows-x64": true
+  "@embedded-postgres/linux-x64": true
+  "@embedded-postgres/darwin-arm64": true
+  "@node-rs/argon2": true
+  "@swc/core": true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
 minimumReleaseAgeExclude:
   - '@turbo/darwin-64@2.11.5'
   - '@turbo/darwin-arm64@2.11.5'
@@ -11,13 +22,3 @@ minimumReleaseAgeExclude:
   - '@turbo/windows-64@2.11.5'
   - '@turbo/windows-arm64@2.11.5'
   - turbo@2.11.5
-
-onlyBuiltDependencies:
-  - "@swc/core"
-  - "esbuild"
-  - "sharp"
-  - "unrs-resolver"
-  - "@node-rs/argon2"
-  - "embedded-postgres"
-  - "@embedded-postgres/windows-x64"
-  - "@embedded-postgres/linux-x64"
