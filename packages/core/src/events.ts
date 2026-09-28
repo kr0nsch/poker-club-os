@@ -17,8 +17,14 @@ export const REALTIME_CHANNEL = "pcos_realtime";
 /** pg_notify payload limit is 8000 bytes; larger events are sent by reference. */
 const MAX_INLINE_NOTIFY_BYTES = 7_500;
 
+/**
+ * Realtime events are broadcast on the LAN; other domain events (e.g.
+ * "player.updated") only feed the durable outbox for sync and fan-out.
+ */
+export type DomainEventName = RealtimeEventName | "player.created" | "player.updated" | "player.anonymized" | "tournament.created" | "tournament.configured" | "structure.updated" | "announcement.telegram";
+
 export interface PendingEvent {
-  name: RealtimeEventName;
+  name: DomainEventName;
   topics: string[];
   audience: Audience;
   data: unknown;
@@ -67,7 +73,7 @@ export async function publishEvents(tx: Executor, scope: EventScope, events: rea
     const e = events[i]!;
     if (e.realtime === false) continue;
     const message: RealtimeEvent = {
-      name: e.name,
+      name: e.name as RealtimeEventName,
       topics: e.topics,
       audience: e.audience,
       data: e.data,

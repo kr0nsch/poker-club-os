@@ -24,6 +24,8 @@ export const REALTIME_EVENTS = [
   "device.updated",
   "leaderboard.updated",
   "session.revoked",
+  "organization.updated",
+  "notification.created",
 ] as const;
 export type RealtimeEventName = (typeof REALTIME_EVENTS)[number];
 

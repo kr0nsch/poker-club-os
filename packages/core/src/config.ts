@@ -59,6 +59,8 @@ const EnvSchema = z.object({
   BACKUP_SCHEDULE_HOURS: z.coerce.number().min(0).default(6),
   BACKUP_RETENTION: z.coerce.number().int().min(1).default(28),
   PG_DUMP_PATH: z.string().default("pg_dump"),
+  /** optional off-site copy after each backup, e.g. "restic backup {file}" or "rclone copy {file} remote:pcos" */
+  OFFSITE_BACKUP_COMMAND: z.string().optional().transform((v) => v || undefined),
 
   S3_ENDPOINT: z.string().optional().transform((v) => v || undefined),
   S3_BUCKET: z.string().optional().transform((v) => v || undefined),
@@ -69,6 +71,7 @@ const EnvSchema = z.object({
   SMTP_PORT: z.coerce.number().int().optional(),
   SMTP_USER: z.string().optional().transform((v) => v || undefined),
   SMTP_PASSWORD: z.string().optional().transform((v) => v || undefined),
+  SMTP_FROM: z.string().default("Poker Club <no-reply@localhost>"),
 
   SENTRY_DSN: z.string().optional().transform((v) => v || undefined),
   SOFTWARE_VERSION: z.string().default("0.1.0"),

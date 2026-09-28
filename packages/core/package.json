@@ -9,7 +9,9 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
@@ -27,6 +29,7 @@
     "@pcos/types": "workspace:*",
     "drizzle-orm": "^0.45.3",
     "ioredis": "^6.0.0",
+    "nodemailer": "^7.0.13",
     "papaparse": "^5.7.0",
     "pg": "^8.23.0",
     "zod": "^4.6.5"
@@ -35,6 +38,7 @@
     "@pcos/config": "workspace:*",
     "@pcos/testkit": "workspace:*",
     "@types/node": "^24.0.0",
+    "@types/nodemailer": "^8.0.2",
     "@types/papaparse": "^5.3.16",
     "@types/pg": "^8.15.0",
     "eslint": "^10.11.0",
