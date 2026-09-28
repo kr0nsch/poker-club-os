@@ -42,3 +42,4 @@ export * from "./runners/wan-monitor.js";
 export * from "./runners/telegram-poller.js";
 export * from "./runners/scheduler.js";
 export * from "./runners/realtime-listener.js";
+export * from "./runners/worker.js";

@@ -294,6 +294,17 @@ export class AuthService {
     return { session: row.s, user: row.u, ...(await this.principalsFor(row.u, row.s.organizationId)) };
   }
 
+  /** Re-read a session after it changed (e.g. organization switch). */
+  async resolveBySessionId(sessionId: string): Promise<ResolvedSession | null> {
+    const [row] = await this.deps.db
+      .select({ s: sessions, u: users })
+      .from(sessions)
+      .innerJoin(users, eq(users.id, sessions.userId))
+      .where(and(eq(sessions.id, sessionId), isNull(sessions.revokedAt), gt(sessions.expiresAt, this.deps.now())));
+    if (!row) return null;
+    return { session: row.s, user: row.u, ...(await this.principalsFor(row.u, row.s.organizationId)) };
+  }
+
   async principalsFor(user: UserRow, organizationId: string | null) {
     let staff: ResolvedSession["staff"] = null;
     let player: ResolvedSession["player"] = null;

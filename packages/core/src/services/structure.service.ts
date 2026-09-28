@@ -59,8 +59,9 @@ export class StructureService {
     const rows = await this.deps.db
       .select({
         s: tournamentStructures,
-        levels: sql<number>`(select count(*)::int from structure_levels l where l.structure_id = ${tournamentStructures.id})`,
-        totalSeconds: sql<number>`(select coalesce(sum(duration_seconds),0)::int from structure_levels l where l.structure_id = ${tournamentStructures.id})`,
+        // Explicitly qualified: inside the subquery an unqualified "id" would bind to structure_levels.id.
+        levels: sql<number>`(select count(*)::int from structure_levels l where l.structure_id = "tournament_structures"."id")`,
+        totalSeconds: sql<number>`(select coalesce(sum(l.duration_seconds),0)::int from structure_levels l where l.structure_id = "tournament_structures"."id")`,
       })
       .from(tournamentStructures)
       .where(and(eq(tournamentStructures.organizationId, orgId), isNull(tournamentStructures.ownerTournamentId)))

@@ -20,6 +20,7 @@ import {
   PlayerCreateInput,
   PlayerNoteInput,
   PlayerSearchQuery,
+  PlayerSelfUpdateInput,
   PlayerTagInput,
   PlayerUpdateInput,
 } from "@pcos/types";
@@ -353,6 +354,33 @@ export class PlayerService {
         [{ name: "player.anonymized", topics: [], audience: "staff", data: { id }, aggregateType: "player", aggregateId: id, entityVersion: p.version + 1, realtime: false }],
         now,
       );
+    });
+    return { ok: true };
+  }
+
+  /** A player editing their own profile (limited fields, consents recorded, audited). */
+  async updateOwnProfile(actor: Actor, raw: unknown) {
+    const p = actor.principal;
+    if (p.kind !== "player") throw new AppError("FORBIDDEN", "player account required");
+    const input = PlayerSelfUpdateInput.parse(raw);
+    const now = this.deps.now();
+    await this.deps.db.transaction(async (tx) => {
+      const [row] = await tx.select().from(players).where(eq(players.id, p.playerId)).for("update");
+      if (!row) throw notFound("player");
+      const merged = { ...row, ...Object.fromEntries(Object.entries(input).filter(([, v]) => v !== undefined)) } as PlayerRow;
+      await tx
+        .update(players)
+        .set({ ...input, searchText: buildSearchText(merged), version: row.version + 1, updatedAt: now })
+        .where(eq(players.id, row.id));
+      for (const [type, value, previous] of [
+        ["MARKETING", input.marketingConsent, row.marketingConsent],
+        ["PUBLIC_PROFILE", input.publicProfileEnabled, row.publicProfileEnabled],
+      ] as const) {
+        if (value !== undefined && value !== previous) {
+          await tx.insert(playerConsents).values({ organizationId: p.organizationId, playerId: row.id, type, granted: value, source: "PLAYER_WEB", createdAt: now });
+        }
+      }
+      await writeAudit(tx, actor, this.deps.edgeNodeId, { organizationId: p.organizationId, entityType: "player", entityId: row.id, action: "PROFILE_UPDATED_BY_PLAYER", after: input }, now);
     });
     return { ok: true };
   }

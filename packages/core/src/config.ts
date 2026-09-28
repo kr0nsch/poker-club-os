@@ -23,6 +23,10 @@ const EnvSchema = z.object({
   /** comma separated list of allowed browser origins for CSRF/Origin checks */
   ALLOWED_ORIGINS: z.string().optional().transform((v) => (v ? v.split(",").map((s) => s.trim()).filter(Boolean) : [])),
 
+  PORT: z.coerce.number().int().min(1).max(65535).default(4000),
+  /** proxy-addr trust list for X-Forwarded-For (only the reverse proxy must be trusted) */
+  TRUST_PROXY: z.string().default("loopback"),
+  AUTO_MIGRATE: bool(true),
   EDGE_NODE_ID: z.string().min(1).default("edge-dev"),
   VENUE_ID: z.string().optional().transform((v) => v || undefined),
 

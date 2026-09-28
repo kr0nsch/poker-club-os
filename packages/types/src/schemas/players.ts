@@ -48,6 +48,16 @@ export const PlayerSearchQuery = z.object({
 });
 export type PlayerSearchQuery = z.infer<typeof PlayerSearchQuery>;
 
+/** Fields a player may change on their own profile. */
+export const PlayerSelfUpdateInput = z.object({
+  nickname: z.string().trim().max(40).nullish(),
+  phone: Phone.nullish(),
+  language: z.string().min(2).max(8).nullish(),
+  marketingConsent: z.boolean().optional(),
+  publicProfileEnabled: z.boolean().optional(),
+});
+export type PlayerSelfUpdateInput = z.infer<typeof PlayerSelfUpdateInput>;
+
 export const PlayerNoteInput = z.object({
   body: NonEmptyTrimmed(4000),
   visibility: z.enum(["STAFF", "MANAGEMENT"]).default("STAFF"),

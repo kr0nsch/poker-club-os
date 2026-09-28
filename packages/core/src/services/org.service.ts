@@ -38,6 +38,13 @@ export class OrgService {
     return { ...org, settings };
   }
 
+  /** Public lookup by slug (player-facing flows). */
+  async bySlug(slug: string) {
+    const [o] = await this.deps.db.select().from(organizations).where(eq(organizations.slug, slug));
+    if (!o) throw notFound("organization");
+    return o;
+  }
+
   async settings(organizationId: string) {
     const [s] = await this.deps.db.select().from(organizationSettings).where(eq(organizationSettings.organizationId, organizationId));
     return {
