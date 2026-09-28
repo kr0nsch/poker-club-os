@@ -17,6 +17,7 @@ data/
 .env
 .env.*
 !.env.example
+!apps/web/.env.development
 *.pem
 *.key
 

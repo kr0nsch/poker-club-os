@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* Scan the shared UI package for class names. */
+@source "../../../../packages/ui/src";
+
+/*
+ * Dark, low-glare theme for dim card rooms. System fonts only: the venue
+ * must work with no Internet access (no web font CDNs).
+ */
+:root {
+  --background: #07100d;
+  --foreground: #e8f1ec;
+  --card: #0d1a15;
+  --card-foreground: #e8f1ec;
+  --popover: #0f1f19;
+  --popover-foreground: #e8f1ec;
+  --primary: #22c55e;
+  --primary-foreground: #04130a;
+  --secondary: #16261f;
+  --secondary-foreground: #d6e6dd;
+  --muted: #13221c;
+  --muted-foreground: #8ba396;
+  --accent: #1a2e25;
+  --accent-foreground: #e8f1ec;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #04130a;
+  --warning: #f59e0b;
+  --warning-foreground: #1a1203;
+  --gold: #e7b75f;
+  --border: #20352c;
+  --input: #253d33;
+  --ring: #22c55e;
+  --radius: 0.625rem;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-gold: var(--gold);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+  --radius-lg: var(--radius);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html,
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Tablet ergonomics: no accidental text selection on big touch buttons. */
+  button {
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .felt {
+    background:
+      radial-gradient(ellipse at center, rgba(34, 197, 94, 0.14), transparent 65%),
+      linear-gradient(180deg, #0b1d15, #061009);
+  }
+  .clock-digits {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.02em;
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 1.6s ease-in-out infinite;
+  }
+}
