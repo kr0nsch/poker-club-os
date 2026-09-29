@@ -235,7 +235,8 @@ Tournament command events are always published on `tournament:{id}` plus the top
 - Reconnect: delay 0.5 s doubling up to 8 s with ±25 % jitter; immediate reconnect when the browser
   reports `online` or the tab becomes visible.
 - Subscriptions are reference-counted per topic (`subscribe()` returns the unsubscribe function);
-  `requestId` is set to the topic name. `subscribed`/`error` replies are not processed.
+  `requestId` is a short per-connection counter (`s1`, `s2`, …; topic names are longer than the
+  40-char limit). `subscribed` replies are ignored; `error` replies are logged with `console.warn`.
 - **Server clock offset**: initial offset from `welcome.serverTime`; each `pong` produces a sample
   `offset = serverTime + rtt/2 − receivedAt` (`estimateOffset`); the last 8 samples are kept and the
   one with the lowest round-trip time is used. `now()` returns `Date.now() + offset`.

@@ -37,6 +37,7 @@ export class RealtimeClient {
   private pingTimer: ReturnType<typeof setInterval> | null = null;
   private samples: { offsetMs: number; rttMs: number }[] = [];
   private failures = 0;
+  private seq = 0;
   private started = false;
   private state: RealtimeSnapshot = { socket: "closed", connectivity: "SERVER_UNREACHABLE", edge: null, offsetMs: 0, epoch: 0, principal: null };
 
@@ -80,7 +81,7 @@ export class RealtimeClient {
   subscribe(topic: string) {
     const n = this.topics.get(topic) ?? 0;
     this.topics.set(topic, n + 1);
-    if (n === 0) this.sendRaw({ type: "subscribe", topic, requestId: topic });
+    if (n === 0) this.sendSubscribe(topic);
     return () => {
       const c = (this.topics.get(topic) ?? 1) - 1;
       if (c <= 0) {
@@ -129,6 +130,11 @@ export class RealtimeClient {
     if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(msg));
   }
 
+  /** Topic names (e.g. "tournament:<uuid>") exceed the 40-char requestId limit: use a short counter. */
+  private sendSubscribe(topic: string) {
+    this.sendRaw({ type: "subscribe", topic, requestId: `s${++this.seq}` });
+  }
+
   private connect() {
     if (!this.started) return;
     this.setState({ socket: "connecting" });
@@ -145,7 +151,7 @@ export class RealtimeClient {
       this.failures = 0;
       this.samples = [];
       this.sendRaw({ type: "hello", deviceId: deviceId() ?? undefined, deviceType: deviceType() ?? undefined, appVersion: APP_VERSION });
-      for (const topic of this.topics.keys()) this.sendRaw({ type: "subscribe", topic, requestId: topic });
+      for (const topic of this.topics.keys()) this.sendSubscribe(topic);
       this.setState({ socket: "open", epoch: this.state.epoch + 1 });
       this.ping();
       if (this.pingTimer) clearInterval(this.pingTimer);
@@ -201,6 +207,11 @@ export class RealtimeClient {
           else this.setState({ edge: data as EdgeStatusPayload });
         }
         this.listeners.forEach((l) => l(msg.event));
+        return;
+      }
+      case "error": {
+        // A rejected subscription means this screen silently stops updating: make it visible.
+        console.warn(`[realtime] ${msg.code}: ${msg.message}${msg.topic ? ` (${msg.topic})` : ""}`);
         return;
       }
       default:
