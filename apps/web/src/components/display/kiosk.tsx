@@ -105,7 +105,7 @@ function ModeButton({ active, icon, label, onClick }: { active: boolean; icon: R
       type="button"
       onClick={onClick}
       className={cn(
-        "flex min-h-[clamp(4.5rem,10vh,6rem)] items-center justify-center gap-3 rounded-2xl border-2 px-4 text-xl font-semibold transition-colors [&_svg]:size-7",
+        "flex min-h-[clamp(4.5rem,10vh,6rem)] items-center justify-center gap-3 rounded-2xl border-2 px-4 text-xl font-semibold transition-colors lg:landscape:justify-start lg:landscape:px-6 [&_svg]:size-7 [&_svg]:shrink-0",
         active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground active:bg-accent",
       )}
     >
@@ -323,136 +323,143 @@ export function Kiosk({ token }: { token: string }) {
           </div>
         </main>
       ) : (
-        <main className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">{t("Self check-in")}</h1>
-            <p className="mt-1 text-xl text-muted-foreground">{t("Choose how you want to check in.")}</p>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            <ModeButton active={mode === "qr"} icon={<QrCode />} label={t("QR code")} onClick={() => switchMode("qr")} />
-            <ModeButton active={mode === "member"} icon={<KeyRound />} label={t("Member number + PIN")} onClick={() => switchMode("member")} />
-            <ModeButton active={mode === "code"} icon={<Hash />} label={t("One-time code")} onClick={() => switchMode("code")} />
-          </div>
-
-          {phase.kind === "busy" && (
-            <div className="grid flex-1 place-items-center">
-              <Spinner className="text-2xl [&_svg]:size-10" label={t("Checking you in…")} />
+        // Portrait kiosks: title, a row of three modes, then the active mode. Landscape screens: the title
+        // and the modes as a vertical list on the left, the active mode filling the right.
+        <main className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6 lg:landscape:grid lg:landscape:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] lg:landscape:gap-10 lg:landscape:p-10">
+          <div className="flex flex-col gap-5 lg:landscape:gap-8">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight">{t("Self check-in")}</h1>
+              <p className="mt-1 text-xl text-muted-foreground">{t("Choose how you want to check in.")}</p>
             </div>
-          )}
+            <div className="grid grid-cols-3 gap-3 lg:landscape:grid-cols-1">
+              <ModeButton active={mode === "qr"} icon={<QrCode />} label={t("QR code")} onClick={() => switchMode("qr")} />
+              <ModeButton active={mode === "member"} icon={<KeyRound />} label={t("Member number + PIN")} onClick={() => switchMode("member")} />
+              <ModeButton active={mode === "code"} icon={<Hash />} label={t("One-time code")} onClick={() => switchMode("code")} />
+            </div>
+            <p className="mt-auto hidden text-lg leading-snug text-muted-foreground lg:landscape:block">{t("Please ask the registration desk for help.")}</p>
+          </div>
 
-          {phase.kind === "input" && mode === "qr" && (
-            <div className="grid flex-1 content-center justify-items-center gap-6 text-center">
-              {camera ? (
-                <CameraScanner onCode={submitScan} onCancel={() => setCamera(false)} />
-              ) : (
-                <>
-                  <div className="relative grid size-48 place-items-center rounded-3xl border-4 border-dashed border-primary/60 bg-primary/5">
-                    <QrCode className="size-28 text-primary" />
-                    <span className="scan-line absolute inset-x-6 top-1/2 h-0.5 rounded-full bg-gold/80" />
-                  </div>
-                  <div className="max-w-2xl text-3xl font-semibold leading-snug">{t("Hold your registration QR code in front of the scanner")}</div>
-                </>
-              )}
-              <form
-                className="flex w-full max-w-xl gap-3"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  submitScan(scan);
-                }}
-              >
-                <input
-                  ref={scanRef}
-                  value={scan}
-                  onChange={(e) => setScan(e.target.value)}
-                  onBlur={() => {
-                    // re-focus so the next scan is not lost (unless the visitor is typing on the on-screen keyboard)
-                    if (!typing) setTimeout(() => scanRef.current?.focus({ preventScroll: true }), 150);
+          <div className="@container flex min-h-0 flex-1 flex-col">
+            {phase.kind === "busy" && (
+              <div className="grid flex-1 place-items-center">
+                <Spinner className="text-2xl [&_svg]:size-10" label={t("Checking you in…")} />
+              </div>
+            )}
+
+            {phase.kind === "input" && mode === "qr" && (
+              <div className="grid flex-1 content-center justify-items-center gap-6 text-center">
+                {camera ? (
+                  <CameraScanner onCode={submitScan} onCancel={() => setCamera(false)} />
+                ) : (
+                  <>
+                    <div className="relative grid size-48 place-items-center rounded-3xl border-4 border-dashed border-primary/60 bg-primary/5">
+                      <QrCode className="size-28 text-primary" />
+                      <span className="scan-line absolute inset-x-6 top-1/2 h-0.5 rounded-full bg-gold/80" />
+                    </div>
+                    <div className="max-w-2xl text-3xl font-semibold leading-snug">{t("Hold your registration QR code in front of the scanner")}</div>
+                  </>
+                )}
+                <form
+                  className="flex w-full max-w-xl gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    submitScan(scan);
                   }}
-                  inputMode={typing ? "text" : "none"}
-                  autoComplete="off"
-                  autoCapitalize="characters"
-                  spellCheck={false}
-                  placeholder={t("Registration code")}
-                  aria-label={t("Registration code")}
-                  className="h-16 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-5 font-mono text-2xl uppercase tracking-[0.2em] outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-gold/70"
-                />
-                <Button type="submit" size="xl" className="h-16" disabled={normalizeScan(scan).length < 6}>
-                  {t("Check in")}
-                </Button>
-              </form>
-              <div className="flex flex-wrap justify-center gap-3">
-                {!typing && (
-                  <Button variant="outline" size="lg" className="h-14 text-lg" onClick={() => setTyping(true)}>
-                    <Keyboard /> {t("Type the code")}
-                  </Button>
-                )}
-                {cameraOk && !camera && (
-                  <Button variant="outline" size="lg" className="h-14 text-lg" onClick={() => setCamera(true)}>
-                    <Camera /> {t("Scan with the camera")}
-                  </Button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {phase.kind === "input" && mode === "member" && (
-            <div className="grid flex-1 content-center gap-6 lg:grid-cols-2 lg:items-center">
-              <div className="grid gap-4">
-                <BigField
-                  label={t("Member number")}
-                  value={member}
-                  active={field === "member"}
-                  onFocus={() => setField("member")}
-                  inputRef={memberRef}
-                  onChange={(x) => setMember(x.replace(/\s/g, "").slice(0, 32))}
-                  onEnter={() => setField("pin")}
-                  placeholder="0000"
-                />
-                <BigField label={t("PIN")} value={pin} active={field === "pin"} onFocus={() => setField("pin")} inputRef={pinRef} mask onChange={(x) => setPin(x.slice(0, 8))} onEnter={submitMember} />
-                <Button size="xl" className="h-20 text-2xl" disabled={!member.trim() || !/^\d{4,8}$/.test(pin)} onClick={submitMember}>
-                  {t("Check in")}
-                </Button>
-              </div>
-              <Keypad
-                onDigit={typeMember}
-                onBackspace={() => (field === "member" ? setMember((m) => m.slice(0, -1)) : setPin((p) => p.slice(0, -1)))}
-                onClear={() => (field === "member" ? setMember("") : setPin(""))}
-              />
-            </div>
-          )}
-
-          {phase.kind === "input" && mode === "code" && (
-            <div className="grid flex-1 content-center gap-6 lg:grid-cols-2 lg:items-center">
-              <div className="grid gap-4 text-center">
-                <p className="text-2xl text-muted-foreground">{t("Enter the 6-digit code from the Profile page of the player app.")}</p>
-                <div className="relative mx-auto">
-                  <div className="flex gap-2" aria-hidden>
-                    {Array.from({ length: 6 }, (_, i) => (
-                      <span
-                        key={i}
-                        className={cn(
-                          "grid h-24 w-16 place-items-center rounded-2xl border-2 text-5xl font-bold tabular-nums",
-                          i === otc.length ? "border-primary bg-primary/10" : "border-border bg-card",
-                        )}
-                      >
-                        {otc[i] ?? ""}
-                      </span>
-                    ))}
-                  </div>
+                >
                   <input
-                    ref={otcRef}
-                    value={otc}
-                    onChange={(e) => typeOtc(e.target.value)}
-                    inputMode="none"
-                    autoComplete="one-time-code"
-                    aria-label={t("One-time code")}
-                    className="absolute inset-0 opacity-0"
+                    ref={scanRef}
+                    value={scan}
+                    onChange={(e) => setScan(e.target.value)}
+                    onBlur={() => {
+                      // re-focus so the next scan is not lost (unless the visitor is typing on the on-screen keyboard)
+                      if (!typing) setTimeout(() => scanRef.current?.focus({ preventScroll: true }), 150);
+                    }}
+                    inputMode={typing ? "text" : "none"}
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                    placeholder={t("Registration code")}
+                    aria-label={t("Registration code")}
+                    className="h-16 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-5 font-mono text-2xl uppercase tracking-[0.2em] outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-gold/70"
                   />
+                  <Button type="submit" size="xl" className="h-16" disabled={normalizeScan(scan).length < 6}>
+                    {t("Check in")}
+                  </Button>
+                </form>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {!typing && (
+                    <Button variant="outline" size="lg" className="h-14 text-lg" onClick={() => setTyping(true)}>
+                      <Keyboard /> {t("Type the code")}
+                    </Button>
+                  )}
+                  {cameraOk && !camera && (
+                    <Button variant="outline" size="lg" className="h-14 text-lg" onClick={() => setCamera(true)}>
+                      <Camera /> {t("Scan with the camera")}
+                    </Button>
+                  )}
                 </div>
               </div>
-              <Keypad onDigit={(d) => typeOtc(otc + d)} onBackspace={() => setOtc((c) => c.slice(0, -1))} onClear={() => setOtc("")} />
-            </div>
-          )}
+            )}
+
+            {phase.kind === "input" && mode === "member" && (
+              <div className="grid flex-1 content-center gap-6 @2xl:grid-cols-2 @2xl:items-center">
+                <div className="grid gap-4">
+                  <BigField
+                    label={t("Member number")}
+                    value={member}
+                    active={field === "member"}
+                    onFocus={() => setField("member")}
+                    inputRef={memberRef}
+                    onChange={(x) => setMember(x.replace(/\s/g, "").slice(0, 32))}
+                    onEnter={() => setField("pin")}
+                    placeholder="0000"
+                  />
+                  <BigField label={t("PIN")} value={pin} active={field === "pin"} onFocus={() => setField("pin")} inputRef={pinRef} mask onChange={(x) => setPin(x.slice(0, 8))} onEnter={submitMember} />
+                  <Button size="xl" className="h-20 text-2xl" disabled={!member.trim() || !/^\d{4,8}$/.test(pin)} onClick={submitMember}>
+                    {t("Check in")}
+                  </Button>
+                </div>
+                <Keypad
+                  onDigit={typeMember}
+                  onBackspace={() => (field === "member" ? setMember((m) => m.slice(0, -1)) : setPin((p) => p.slice(0, -1)))}
+                  onClear={() => (field === "member" ? setMember("") : setPin(""))}
+                />
+              </div>
+            )}
+
+            {phase.kind === "input" && mode === "code" && (
+              <div className="grid flex-1 content-center gap-6 @2xl:grid-cols-2 @2xl:items-center">
+                <div className="grid gap-4 text-center">
+                  <p className="text-2xl text-muted-foreground">{t("Enter the 6-digit code from the Profile page of the player app.")}</p>
+                  <div className="relative mx-auto">
+                    <div className="flex gap-2" aria-hidden>
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <span
+                          key={i}
+                          className={cn(
+                            "grid h-24 w-16 place-items-center rounded-2xl border-2 text-5xl font-bold tabular-nums",
+                            i === otc.length ? "border-primary bg-primary/10" : "border-border bg-card",
+                          )}
+                        >
+                          {otc[i] ?? ""}
+                        </span>
+                      ))}
+                    </div>
+                    <input
+                      ref={otcRef}
+                      value={otc}
+                      onChange={(e) => typeOtc(e.target.value)}
+                      inputMode="none"
+                      autoComplete="one-time-code"
+                      aria-label={t("One-time code")}
+                      className="absolute inset-0 opacity-0"
+                    />
+                  </div>
+                </div>
+                <Keypad onDigit={(d) => typeOtc(otc + d)} onBackspace={() => setOtc((c) => c.slice(0, -1))} onClear={() => setOtc("")} />
+              </div>
+            )}
+          </div>
         </main>
       )}
     </div>
