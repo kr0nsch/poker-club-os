@@ -69,7 +69,7 @@ export function LiveTournamentCard({ tour, org, registration }: { tour: PublicTo
         </span>
         <StatusBadge status={tour.status} />
       </div>
-      <Link href={`/p/${org}/live/${tour.slug}`} className="mt-1.5 block text-xl font-semibold leading-tight transition-colors hover:text-gold">
+      <Link href={`/p/${org}/live/${tour.slug}`} className="mt-0.5 block py-1 text-xl font-semibold leading-tight transition-colors hover:text-gold">
         {tour.name}
       </Link>
       {snap && <LiveClockLine snap={snap} className="mt-2" />}

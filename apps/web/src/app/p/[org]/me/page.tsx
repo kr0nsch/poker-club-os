@@ -63,17 +63,22 @@ export default function MePage() {
 
   const p = profile.data;
   return (
-    <div className="grid gap-5">
+    <div className="mx-auto grid w-full max-w-3xl gap-5">
       <ProfileHeader profile={p} org={org} />
       <KioskCodeCard />
       <Tabs defaultValue={unread > 0 ? "inbox" : "profile"}>
-        <TabsList className="grid w-full grid-cols-3">
+        {/* Three equal tabs on a 360 px phone: labels truncate instead of pushing the page wider. */}
+        <TabsList className="grid w-full grid-cols-3 gap-2 [&>button]:min-w-0">
           <TabsTrigger value="inbox">
-            {t("Notifications")}
-            {unread > 0 && <span className="rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">{unread}</span>}
+            <span className="truncate">{t("Notifications")}</span>
+            {unread > 0 && <span className="shrink-0 rounded-full bg-gold px-1.5 text-[10px] font-bold text-gold-foreground">{unread}</span>}
           </TabsTrigger>
-          <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
-          <TabsTrigger value="history">{t("My results")}</TabsTrigger>
+          <TabsTrigger value="profile">
+            <span className="truncate">{t("Profile")}</span>
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            <span className="truncate">{t("My results")}</span>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="inbox">
           <Inbox org={org} />

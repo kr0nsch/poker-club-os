@@ -12,7 +12,11 @@ export function LanguageSwitchClient({ className }: { className?: string }) {
           key={l}
           type="button"
           onClick={() => setLocale(l)}
-          className={cn("rounded px-2 py-1 font-medium uppercase", locale === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+          aria-pressed={locale === l}
+          className={cn(
+            "inline-flex h-8 min-w-8 items-center justify-center rounded px-2 font-medium uppercase transition-colors pointer-coarse:h-9 pointer-coarse:min-w-10",
+            locale === l ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+          )}
         >
           {l}
         </button>

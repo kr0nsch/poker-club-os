@@ -131,6 +131,15 @@
       font-size: 200%;
     }
   }
+  /*
+   * A plain `grid` with no base columns is the app's vertical stack. Its implicit `auto` column
+   * grows to the widest unbreakable child (a table, a nowrap row), which widened whole pages on
+   * phones; one shrinkable column keeps every stack inside its parent. Responsive `md:grid-cols-*`
+   * utilities still win (they live in a later layer), and so do inline grid templates.
+   */
+  .grid:not([class^="grid-cols-"], [class*=" grid-cols-"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
   /* Tablet ergonomics: no accidental text selection on big touch buttons. */
   button {
     touch-action: manipulation;

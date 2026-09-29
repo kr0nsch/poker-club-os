@@ -47,8 +47,9 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-30 border-b border-border bg-background pt-[env(safe-area-inset-top)]">
-        <div className="mx-auto flex h-14 w-full max-w-3xl items-center gap-2 px-4">
-          <Link href={base} className="flex min-w-0 items-center gap-2 font-semibold tracking-tight">
+        {/* Phone-first column; from lg the frame widens so pages can lay out two columns. */}
+        <div className="mx-auto flex h-14 w-full max-w-3xl items-center gap-2 px-4 lg:max-w-6xl">
+          <Link href={base} className="flex h-10 min-w-0 items-center gap-2 font-semibold tracking-tight">
             <span className="grid size-7 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
               <SpadeMark className="size-3.5" />
             </span>
@@ -86,7 +87,7 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pb-28 pt-4 md:pb-12 md:pt-6">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pb-28 pt-4 md:pb-12 md:pt-6 lg:max-w-6xl lg:pt-8">
         {isNotFound(list.error) ? (
           <EmptyState icon={<Spade />} title={t("Club not found")} description={t("Check the address or scan the QR code at the venue again.")} className="mt-10" />
         ) : (

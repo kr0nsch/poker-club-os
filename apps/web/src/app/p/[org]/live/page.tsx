@@ -34,7 +34,11 @@ export default function LiveIndexPage() {
           }
         />
       ) : (
-        live.map((x) => <LiveTournamentCard key={x.id} tour={x} org={org} registration={regs.data?.find((r) => r.tournamentId === x.id && r.status !== "CANCELLED")} />)
+        <div className="grid gap-4 lg:grid-cols-2">
+          {live.map((x) => (
+            <LiveTournamentCard key={x.id} tour={x} org={org} registration={regs.data?.find((r) => r.tournamentId === x.id && r.status !== "CANCELLED")} />
+          ))}
+        </div>
       )}
     </div>
   );

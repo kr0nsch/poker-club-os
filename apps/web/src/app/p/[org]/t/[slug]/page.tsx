@@ -213,45 +213,48 @@ export default function TournamentPage() {
   }
 
   return (
-    <div className="grid gap-6">
-      <div>
-        <StatusBadge status={status} />
-        <h1 className="mt-2 text-2xl font-semibold leading-tight tracking-tight">{name}</h1>
-        <div className="mt-2 grid gap-1 text-sm text-muted-foreground">
-          <span className="flex items-center gap-2">
-            <CalendarDays className="size-4" /> {f.dateTime(startAt)}
-          </span>
-          {venueName && (
+    // Phones: one column. From lg: details and registration on the left, the blind structure on the right.
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-x-10">
+      <div className="grid gap-6">
+        <div>
+          <StatusBadge status={status} />
+          <h1 className="mt-2 text-2xl font-semibold leading-tight tracking-tight">{name}</h1>
+          <div className="mt-2 grid gap-1 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
-              <MapPin className="size-4" /> {venueName}
+              <CalendarDays className="size-4" /> {f.dateTime(startAt)}
             </span>
-          )}
+            {venueName && (
+              <span className="flex items-center gap-2">
+                <MapPin className="size-4" /> {venueName}
+              </span>
+            )}
+          </div>
+          {summary?.description && <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground/85">{summary.description}</p>}
         </div>
-        {summary?.description && <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-foreground/85">{summary.description}</p>}
+
+        {panel}
+
+        {(playing || status === "SEATING" || closed) && status !== "CANCELLED" && (
+          <Button asChild size="lg" variant={playing ? "default" : "secondary"}>
+            <Link href={`/p/${org}/live/${slug}`}>
+              <Radio /> {playing || status === "SEATING" ? t("Live page") : t("Results")}
+            </Link>
+          </Button>
+        )}
+
+        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <Fact label={t("Buy-in")}>{tt.buyIn(buyIn)}</Fact>
+          <Fact label={t("Starting stack")}>{f.number(startingStack)}</Fact>
+          <Fact label={t("Format")}>{tt.format(format)}</Fact>
+          <Fact label={t("Game")}>{tt.game(gameType)}</Fact>
+          <Fact label={t("Registered")}>
+            {maxPlayers ? `${f.number(registered)} / ${f.number(maxPlayers)}` : f.number(registered)}
+            {snap && snap.stats.waitlisted > 0 && <span className="ml-1 text-xs font-normal text-warning">(+{f.number(snap.stats.waitlisted)})</span>}
+          </Fact>
+          {levelSeconds != null && <Fact label={t("Levels")}>{tt.minutes(levelSeconds)}</Fact>}
+          {playing && <Fact label={t("Late registration")}>{canRegisterNow ? <span className="text-primary">{t("Still open")}</span> : <span className="text-muted-foreground">{t("Closed")}</span>}</Fact>}
+        </dl>
       </div>
-
-      {panel}
-
-      {(playing || status === "SEATING" || closed) && status !== "CANCELLED" && (
-        <Button asChild size="lg" variant={playing ? "default" : "secondary"}>
-          <Link href={`/p/${org}/live/${slug}`}>
-            <Radio /> {playing || status === "SEATING" ? t("Live page") : t("Results")}
-          </Link>
-        </Button>
-      )}
-
-      <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Fact label={t("Buy-in")}>{tt.buyIn(buyIn)}</Fact>
-        <Fact label={t("Starting stack")}>{f.number(startingStack)}</Fact>
-        <Fact label={t("Format")}>{tt.format(format)}</Fact>
-        <Fact label={t("Game")}>{tt.game(gameType)}</Fact>
-        <Fact label={t("Registered")}>
-          {maxPlayers ? `${f.number(registered)} / ${f.number(maxPlayers)}` : f.number(registered)}
-          {snap && snap.stats.waitlisted > 0 && <span className="ml-1 text-xs font-normal text-warning">(+{f.number(snap.stats.waitlisted)})</span>}
-        </Fact>
-        {levelSeconds != null && <Fact label={t("Levels")}>{tt.minutes(levelSeconds)}</Fact>}
-        {playing && <Fact label={t("Late registration")}>{canRegisterNow ? <span className="text-primary">{t("Still open")}</span> : <span className="text-muted-foreground">{t("Closed")}</span>}</Fact>}
-      </dl>
 
       {snap && snap.levels.length > 0 && (
         <section className="grid gap-3">

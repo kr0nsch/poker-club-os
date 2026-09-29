@@ -56,7 +56,7 @@ export function RegistrationTicket({ reg, org }: { reg: MyRegistration; org: str
   return (
     <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
       <div className="min-w-0 flex-1">
-        <Link href={`/p/${org}/t/${reg.slug}`} className="group flex items-center gap-1 font-semibold leading-tight hover:text-primary">
+        <Link href={`/p/${org}/t/${reg.slug}`} className="group -my-1.5 flex min-h-8 items-center gap-1 py-1.5 font-semibold leading-tight transition-colors hover:text-gold">
           <span className="truncate">{reg.name}</span>
           <ChevronRight className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" />
         </Link>

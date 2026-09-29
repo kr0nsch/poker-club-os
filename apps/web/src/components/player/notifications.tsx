@@ -130,9 +130,9 @@ export function Inbox({ org }: { org: string }) {
   return (
     <div className="grid gap-3">
       {unread > 0 && (
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm text-muted-foreground">{t("Unread: {n}", { n: unread })}</span>
-          <Button variant="ghost" size="sm" loading={markAll.isPending} onClick={() => markAll.mutate()}>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <span className="whitespace-nowrap text-sm text-muted-foreground">{t("Unread: {n}", { n: unread })}</span>
+          <Button variant="ghost" size="sm" className="-mr-2 ml-auto" loading={markAll.isPending} onClick={() => markAll.mutate()}>
             <CheckCheck /> {t("Mark all as read")}
           </Button>
         </div>

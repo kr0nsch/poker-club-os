@@ -75,75 +75,79 @@ export default function LivePage() {
   const defaultTab = v.finished || (snap.results.length > 0 && !playing) ? "results" : seating ? "seating" : "structure";
 
   return (
-    <div className="grid gap-5">
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge status={status} />
-          <span className="text-sm text-muted-foreground">
-            {snap.tournament.venueName} · {f.dateTime(snap.tournament.startAt)}
-          </span>
+    // Phones: one column. From lg: the clock, seat and figures on the left; seating, results and
+    // structure on the right, so the clock stays in view while the list is read.
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-x-8">
+      <div className="grid gap-5">
+        <div>
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge status={status} />
+            <span className="text-sm text-muted-foreground">
+              {snap.tournament.venueName} · {f.dateTime(snap.tournament.startAt)}
+            </span>
+          </div>
+          <h1 className="mt-1.5 text-2xl font-semibold leading-tight tracking-tight">{snap.tournament.name}</h1>
         </div>
-        <h1 className="mt-1.5 text-2xl font-semibold leading-tight tracking-tight">{snap.tournament.name}</h1>
+
+        <LiveClockPanel snap={snap} />
+
+        {snap.mySeat ? (
+          <div className="flex items-center gap-4 rounded-xl border border-gold/50 bg-gold/10 p-4">
+            <span className="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-black">
+              <Armchair className="size-6" />
+            </span>
+            <div>
+              <div className="text-sm font-semibold text-gold">{t("Your seat")}</div>
+              <div className="text-2xl font-bold tabular-nums">{t("Table {table}, seat {seat}", { table: snap.mySeat.tableNumber, seat: snap.mySeat.seatNumber })}</div>
+            </div>
+          </div>
+        ) : reg && NEEDS_CHECK_IN.includes(reg.status) && reg.checkInCode ? (
+          <div className="flex items-center gap-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold">{t("You are registered")}</div>
+              <p className="mt-0.5 text-sm text-muted-foreground">{t("Check in at the registration desk or kiosk to get your seat.")}</p>
+            </div>
+            <CheckInQr code={reg.checkInCode} title={snap.tournament.name} size={80} />
+          </div>
+        ) : reg ? (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 text-sm">
+            <span className="text-muted-foreground">{t("Your registration")}</span>
+            <StatusBadge status={reg.status} />
+          </div>
+        ) : null}
+
+        {(playing || v.finished) && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <Stat label={t("Entries")} value={f.number(snap.stats.entries)} hint={snap.stats.reentries > 0 ? `${t("Re-entries")}: ${f.number(snap.stats.reentries)}` : undefined} />
+            <Stat label={t("Remaining")} value={f.number(snap.stats.remaining)} />
+            <Stat label={t("Average stack")} value={f.number(snap.stats.averageStack)} />
+            {snap.stats.prizePool != null && <Stat label={t("Prize pool")} value={f.money(snap.stats.prizePool, snap.tournament.buyIn?.currency)} />}
+          </div>
+        )}
+
+        {!playing && !v.finished && !v.cancelled && (
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label={t("Registered")} value={f.number(snap.stats.registrations)} />
+            <Stat label={t("Starting stack")} value={f.number(snap.tournament.startingStack)} />
+          </div>
+        )}
+
+        {playing && (
+          <div className={cn("flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm", snap.tournament.registrationOpen ? "border-primary/40 text-primary" : "border-border text-muted-foreground")}>
+            <Info className="size-4 shrink-0" />
+            {snap.tournament.registrationOpen ? t("Late registration open") : t("Late registration closed")}
+          </div>
+        )}
+
+        {announcements.length > 0 && (
+          <section className="grid gap-2">
+            <h2 className="text-lg font-semibold">{t("Announcements")}</h2>
+            {announcements.slice(0, 5).map((a) => (
+              <AnnouncementCard key={a.id} a={a} />
+            ))}
+          </section>
+        )}
       </div>
-
-      <LiveClockPanel snap={snap} />
-
-      {snap.mySeat ? (
-        <div className="flex items-center gap-4 rounded-xl border border-gold/50 bg-gold/10 p-4">
-          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-black">
-            <Armchair className="size-6" />
-          </span>
-          <div>
-            <div className="text-sm font-semibold text-gold">{t("Your seat")}</div>
-            <div className="text-2xl font-bold tabular-nums">{t("Table {table}, seat {seat}", { table: snap.mySeat.tableNumber, seat: snap.mySeat.seatNumber })}</div>
-          </div>
-        </div>
-      ) : reg && NEEDS_CHECK_IN.includes(reg.status) && reg.checkInCode ? (
-        <div className="flex items-center gap-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
-          <div className="min-w-0 flex-1">
-            <div className="font-semibold">{t("You are registered")}</div>
-            <p className="mt-0.5 text-sm text-muted-foreground">{t("Check in at the registration desk or kiosk to get your seat.")}</p>
-          </div>
-          <CheckInQr code={reg.checkInCode} title={snap.tournament.name} size={80} />
-        </div>
-      ) : reg ? (
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 text-sm">
-          <span className="text-muted-foreground">{t("Your registration")}</span>
-          <StatusBadge status={reg.status} />
-        </div>
-      ) : null}
-
-      {(playing || v.finished) && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <Stat label={t("Entries")} value={f.number(snap.stats.entries)} hint={snap.stats.reentries > 0 ? `${t("Re-entries")}: ${f.number(snap.stats.reentries)}` : undefined} />
-          <Stat label={t("Remaining")} value={f.number(snap.stats.remaining)} />
-          <Stat label={t("Average stack")} value={f.number(snap.stats.averageStack)} />
-          {snap.stats.prizePool != null && <Stat label={t("Prize pool")} value={f.money(snap.stats.prizePool, snap.tournament.buyIn?.currency)} />}
-        </div>
-      )}
-
-      {!playing && !v.finished && !v.cancelled && (
-        <div className="grid grid-cols-2 gap-3">
-          <Stat label={t("Registered")} value={f.number(snap.stats.registrations)} />
-          <Stat label={t("Starting stack")} value={f.number(snap.tournament.startingStack)} />
-        </div>
-      )}
-
-      {playing && (
-        <div className={cn("flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm", snap.tournament.registrationOpen ? "border-primary/40 text-primary" : "border-border text-muted-foreground")}>
-          <Info className="size-4 shrink-0" />
-          {snap.tournament.registrationOpen ? t("Late registration open") : t("Late registration closed")}
-        </div>
-      )}
-
-      {announcements.length > 0 && (
-        <section className="grid gap-2">
-          <h2 className="text-lg font-semibold">{t("Announcements")}</h2>
-          {announcements.slice(0, 5).map((a) => (
-            <AnnouncementCard key={a.id} a={a} />
-          ))}
-        </section>
-      )}
 
       <Tabs defaultValue={defaultTab}>
         <TabsList className="grid w-full grid-cols-3">

@@ -118,7 +118,7 @@ export function LoginForm({ org }: { org: string }) {
       </Card>
       <p className="text-center text-sm text-muted-foreground">
         {t("New here?")}{" "}
-        <Link href={`/p/${org}/signup?next=${encodeURIComponent(next)}`} className="font-medium text-primary hover:underline">
+        <Link href={`/p/${org}/signup?next=${encodeURIComponent(next)}`} className="inline-flex min-h-10 items-center font-medium text-gold underline-offset-4 hover:underline">
           {t("Create a player account")}
         </Link>
       </p>
@@ -247,7 +247,7 @@ export function SignupForm({ org }: { org: string }) {
       </Card>
       <p className="text-center text-sm text-muted-foreground">
         {t("Already have an account?")}{" "}
-        <Link href={`/p/${org}/login?next=${encodeURIComponent(next)}`} className="font-medium text-primary hover:underline">
+        <Link href={`/p/${org}/login?next=${encodeURIComponent(next)}`} className="inline-flex min-h-10 items-center font-medium text-gold underline-offset-4 hover:underline">
           {t("Sign in")}
         </Link>
       </p>

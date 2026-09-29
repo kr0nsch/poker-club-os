@@ -37,7 +37,7 @@ export function StructureTable({ levels, currentIndex }: { levels: readonly Leve
                   <span className="flex items-center gap-2 font-medium">
                     <Coffee className="size-4" />
                     {l.label || t("Break")}
-                    {current && <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold uppercase text-black">{t("Now")}</span>}
+                    {current && <span className="rounded-[5px] bg-gold px-1.5 text-xs font-semibold leading-5 text-gold-foreground">{t("Now")}</span>}
                   </span>
                 </Td>
                 <Td className="text-right tabular-nums text-gold">{tt.minutes(l.durationSeconds)}</Td>
@@ -46,11 +46,11 @@ export function StructureTable({ levels, currentIndex }: { levels: readonly Leve
           }
           const ante = anteLabel(l, f.number);
           return (
-            <Tr key={l.id} className={cn(current && "bg-primary/15 hover:bg-primary/20")}>
+            <Tr key={l.id} className={cn(current && "bg-gold/10 hover:bg-gold/15")}>
               <Td className="font-medium tabular-nums">
                 <span className="flex items-center gap-2">
                   {n}
-                  {current && <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground">{t("Now")}</span>}
+                  {current && <span className="rounded-[5px] bg-gold px-1.5 text-xs font-semibold leading-5 text-gold-foreground">{t("Now")}</span>}
                 </span>
               </Td>
               <Td className="font-semibold tabular-nums">{tt.blinds(l)}</Td>

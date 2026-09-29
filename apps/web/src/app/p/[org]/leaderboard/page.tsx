@@ -17,7 +17,7 @@ export default function LeaderboardPage() {
   const boards = useLeaderboards(org);
 
   return (
-    <div className="grid gap-5">
+    <div className="mx-auto grid w-full max-w-4xl gap-5">
       <h1 className="text-2xl font-semibold tracking-tight">{t("League standings")}</h1>
       {boards.isLoading ? (
         <Skeleton className="h-80 w-full" />
