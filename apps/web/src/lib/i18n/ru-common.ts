@@ -110,6 +110,7 @@ export const ruCommon: Record<string, string> = {
   "Runs in the venue without the Internet: floor console, screens, kiosks and the player app.": "Работает прямо в зале, даже без интернета: пульт флора, экраны, киоски и приложение игроков.",
   "Staff sign-in": "Вход для персонала",
   Sections: "Разделы",
+  "Tournament details": "О турнире",
   "Use the account the club owner created for you.": "Используйте учётную запись, которую для вас создал владелец клуба.",
   "Good night, {name}": "Доброй ночи, {name}",
   "Good morning, {name}": "Доброе утро, {name}",

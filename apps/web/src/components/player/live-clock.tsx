@@ -163,22 +163,3 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
     </Card>
   );
 }
-
-/** One-line clock for tournament cards: level, countdown and blinds. */
-export function LiveClockLine({ snap, className }: { snap: PublicLiveSnapshot; className?: string }) {
-  const t = useT();
-  const tt = useTournamentText();
-  const v = useLiveClock(snap);
-  if (!v.d || v.notStarted || v.finished || v.cancelled) return null;
-  return (
-    <div className={cn("flex flex-wrap items-baseline gap-x-3 gap-y-1", className)}>
-      <span className={cn("text-sm font-semibold", v.isBreak ? "text-gold" : "text-muted-foreground")}>
-        {v.isBreak ? t("Break") : t("Level {n}", { n: v.d.playLevelNumber })}
-      </span>
-      <span className={cn("clock-digits text-3xl font-bold", v.paused && "opacity-50")}>{v.d.formatted}</span>
-      {!v.isBreak && <span className="font-semibold tabular-nums text-foreground/90">{tt.blinds(v.level)}</span>}
-      {v.paused && <Badge variant="warning">{t("Paused")}</Badge>}
-      {v.handForHand && <Badge variant="destructive">{t("Hand-for-hand")}</Badge>}
-    </div>
-  );
-}

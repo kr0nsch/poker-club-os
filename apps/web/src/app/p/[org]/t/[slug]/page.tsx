@@ -25,11 +25,12 @@ interface RegisterResult {
   checkInCode: string | null;
 }
 
+/** One row of the tournament's facts list: label on the left, value on the right. */
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <dt className="eyebrow">{label}</dt>
-      <dd className="mt-1 font-semibold tabular-nums">{children}</dd>
+    <div className="flex items-baseline justify-between gap-4 px-4 py-3">
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="text-right font-semibold tabular-nums">{children}</dd>
     </div>
   );
 }
@@ -242,7 +243,7 @@ export default function TournamentPage() {
           </Button>
         )}
 
-        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <dl className="edge-light divide-y divide-border/70 overflow-hidden rounded-xl border border-border bg-card">
           <Fact label={t("Buy-in")}>{tt.buyIn(buyIn)}</Fact>
           <Fact label={t("Starting stack")}>{f.number(startingStack)}</Fact>
           <Fact label={t("Format")}>{tt.format(format)}</Fact>

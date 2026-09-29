@@ -2,7 +2,7 @@
 
 import type { AnnouncementView } from "@pcos/types";
 import { Alert, Button, cn, EmptyState, Skeleton, Stat, Tabs, TabsContent, TabsList, TabsTrigger } from "@pcos/ui";
-import { Armchair, Info, Megaphone, Radio, TriangleAlert } from "lucide-react";
+import { Armchair, ChevronRight, Info, Megaphone, Radio, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { isLiveStatus, isNotFound, usePlayerSession } from "@/components/player/api";
@@ -87,6 +87,9 @@ export default function LivePage() {
             </span>
           </div>
           <h1 className="mt-1.5 text-2xl font-semibold leading-tight tracking-tight">{snap.tournament.name}</h1>
+          <Link href={`/p/${org}/t/${slug}`} className="-ml-0.5 mt-1 inline-flex min-h-8 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            {t("Tournament details")} <ChevronRight className="size-4" />
+          </Link>
         </div>
 
         <LiveClockPanel snap={snap} />
@@ -117,7 +120,7 @@ export default function LivePage() {
         ) : null}
 
         {(playing || v.finished) && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="edge-light flex flex-wrap gap-px overflow-hidden rounded-xl border border-border bg-border [&>*]:flex-[1_1_7rem] [&>*]:rounded-none [&>*]:border-0">
             <Stat label={t("Entries")} value={f.number(snap.stats.entries)} hint={snap.stats.reentries > 0 ? `${t("Re-entries")}: ${f.number(snap.stats.reentries)}` : undefined} />
             <Stat label={t("Remaining")} value={f.number(snap.stats.remaining)} />
             <Stat label={t("Average stack")} value={f.number(snap.stats.averageStack)} />
@@ -126,7 +129,7 @@ export default function LivePage() {
         )}
 
         {!playing && !v.finished && !v.cancelled && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="edge-light flex flex-wrap gap-px overflow-hidden rounded-xl border border-border bg-border [&>*]:flex-[1_1_7rem] [&>*]:rounded-none [&>*]:border-0">
             <Stat label={t("Registered")} value={f.number(snap.stats.registrations)} />
             <Stat label={t("Starting stack")} value={f.number(snap.tournament.startingStack)} />
           </div>
