@@ -13,7 +13,6 @@ import {
   Field,
   PageHeader,
   Skeleton,
-  Stat,
   Table,
   TBody,
   Td,
@@ -43,19 +42,18 @@ import {
   editableFields,
   formFromDetail,
   isClosedStatus,
-  isStartedStatus,
   mergeForms,
   type ConfigField,
   type FormErrors,
   type TournamentForm,
 } from "@/components/admin-config/tournament-form";
+import { FiguresStrip, SectionIndex, SummaryCard } from "@/components/admin-config/tournament-summary";
 import { BackLink, ConfirmDialog, QueryError, SaveBar, TableSkeleton, scrollToFirstInvalid, useUnsavedChangesWarning } from "@/components/admin-config/ui";
-import { formatDuration, pick, stableStringify, threeWay } from "@/components/admin-config/utils";
+import { pick, stableStringify, threeWay } from "@/components/admin-config/utils";
 import { useCan, useStaff } from "@/components/staff-guard";
 import { StatusBadge } from "@/components/status";
 import { actionSummary } from "@/lib/action-summary";
 import { ApiError, get, patch } from "@/lib/api";
-import { blindsLabel, useDerivedClock } from "@/lib/clock";
 import { useFormat, useT } from "@/lib/i18n";
 import { errorMessage, keys, useCommand, useTournamentSnapshot } from "@/lib/queries";
 
@@ -99,28 +97,40 @@ export default function TournamentDetailPage() {
     <div>
       <BackLink href="/admin/tournaments" label={t("Tournaments")} />
       <TournamentHeader s={s} />
-      <StatsRow s={s} />
-      <Tabs value={tab} onValueChange={setTab} className="mt-6">
-        <TabsList>
-          <TabsTrigger value="config">{t("Configuration")}</TabsTrigger>
-          {finished && <TabsTrigger value="results">{t("Results")}</TabsTrigger>}
-          <TabsTrigger value="history">
-            <History className="size-4" /> {t("History")}
-          </TabsTrigger>
-        </TabsList>
-        {/* Kept mounted so unsaved edits survive switching tabs. */}
-        <TabsContent value="config" forceMount className="data-[state=inactive]:hidden">
-          {org.data || org.isError ? <ConfigTab s={s} currency={org.data?.settings.currency ?? "EUR"} /> : <Skeleton className="h-96" />}
-        </TabsContent>
-        {finished && (
-          <TabsContent value="results">
-            <ResultsTab s={s} />
-          </TabsContent>
-        )}
-        <TabsContent value="history">
-          <HistoryTab id={s.tournament.id} />
-        </TabsContent>
-      </Tabs>
+      {/* Wide screens: the work (configuration, results, history) on the left, a sticky rail with the
+          live figures and an index of the configuration sections on the right. */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_19rem] xl:items-start xl:gap-8">
+        <div className="grid min-w-0 gap-6">
+          <div className="xl:hidden">
+            <FiguresStrip s={s} />
+          </div>
+          <Tabs value={tab} onValueChange={setTab}>
+            <TabsList>
+              <TabsTrigger value="config">{t("Configuration")}</TabsTrigger>
+              {finished && <TabsTrigger value="results">{t("Results")}</TabsTrigger>}
+              <TabsTrigger value="history">
+                <History className="size-4" /> {t("History")}
+              </TabsTrigger>
+            </TabsList>
+            {/* Kept mounted so unsaved edits survive switching tabs. */}
+            <TabsContent value="config" forceMount className="data-[state=inactive]:hidden" id="tournament-config">
+              {org.data || org.isError ? <ConfigTab s={s} currency={org.data?.settings.currency ?? "EUR"} /> : <Skeleton className="h-96" />}
+            </TabsContent>
+            {finished && (
+              <TabsContent value="results">
+                <ResultsTab s={s} />
+              </TabsContent>
+            )}
+            <TabsContent value="history">
+              <HistoryTab id={s.tournament.id} />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <aside className="hidden gap-6 xl:sticky xl:top-20 xl:grid">
+          <SummaryCard s={s} />
+          {tab === "config" && <SectionIndex rootId="tournament-config" title={t("Sections")} />}
+        </aside>
+      </div>
     </div>
   );
 }
@@ -251,45 +261,6 @@ function TournamentHeader({ s }: { s: TournamentSnapshot }) {
         </Field>
       </ConfirmDialog>
     </>
-  );
-}
-
-function StatsRow({ s }: { s: TournamentSnapshot }) {
-  const t = useT();
-  const fmt = useFormat();
-  const tt = s.tournament;
-  const st = s.stats;
-  const clock = useDerivedClock(s.clock, s.levels, 1000);
-  const started = isStartedStatus(tt.status) || isClosedStatus(tt.status);
-  const liveClock = clock && s.clock.status !== "NOT_STARTED" && s.clock.status !== "FINISHED" ? clock : null;
-  const currentLevel = liveClock ? s.levels[liveClock.levelIndex] : null;
-  return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-      <Stat
-        label={t("Registered")}
-        value={
-          <>
-            {fmt.number(st.registrations)}
-            {tt.maxPlayers ? <span className="text-base text-muted-foreground">/{fmt.number(tt.maxPlayers)}</span> : null}
-          </>
-        }
-        hint={st.waitlisted > 0 ? t("{n} on the waitlist", { n: st.waitlisted }) : undefined}
-      />
-      <Stat label={t("Checked in")} value={fmt.number(st.checkedIn)} />
-      <Stat label={t("Entries")} value={fmt.number(st.entries)} hint={st.reentries > 0 ? t("{n} re-entries", { n: st.reentries }) : undefined} />
-      {started && <Stat label={t("Remaining")} value={fmt.number(st.remaining)} hint={st.averageStack != null ? `${t("Average stack")}: ${fmt.number(Math.round(st.averageStack))}` : undefined} />}
-      {st.prizePool != null && <Stat label={t("Prize pool")} value={fmt.money(st.prizePool, tt.buyIn?.currency ?? "EUR")} />}
-      {liveClock && currentLevel && (
-        <Stat
-          label={currentLevel.type === "BREAK" ? t("Break") : t("Level {n}", { n: liveClock.playLevelNumber })}
-          value={<span className="clock-digits">{liveClock.formatted}</span>}
-          hint={currentLevel.type === "PLAY" ? blindsLabel(currentLevel, fmt.number) : s.clock.status === "PAUSED" ? t("Clock paused") : undefined}
-        />
-      )}
-      {!started && (
-        <Stat label={t("Structure")} value={t("{n} levels", { n: s.levels.length })} hint={formatDuration(s.levels.reduce((n, l) => n + l.durationSeconds, 0), t)} />
-      )}
-    </div>
   );
 }
 
@@ -431,7 +402,7 @@ function ConfigTab({ s, currency }: { s: TournamentSnapshot; currency: string })
   }
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-4">
+    <div className="grid gap-4">
       {editable && editable.size > 0 && (
         <Alert variant="warning" title={isClosedStatus(detail.status) ? t("The tournament is over") : t("The tournament has started")}>
           {t("Only some settings can still change; locked fields are marked. Blind levels after the current one can be edited in the structure editor.")}

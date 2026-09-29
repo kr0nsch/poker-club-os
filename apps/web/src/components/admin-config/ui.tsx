@@ -132,6 +132,7 @@ export function Section({
   children,
   className,
   contentClassName,
+  anchor,
 }: {
   title: ReactNode;
   description?: ReactNode;
@@ -139,9 +140,11 @@ export function Section({
   children?: ReactNode;
   className?: string;
   contentClassName?: string;
+  /** Makes the section a target of the page's section index (see SectionIndex). */
+  anchor?: { id: string; label: string };
 }) {
   return (
-    <Card className={className}>
+    <Card className={cn(anchor && "scroll-mt-24", className)} id={anchor?.id} data-toc={anchor?.label}>
       <CardHeader className="flex-row flex-wrap items-start justify-between gap-3">
         <div className="grid gap-1">
           <CardTitle>{title}</CardTitle>

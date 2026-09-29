@@ -111,7 +111,7 @@ function GeneralSection({ mode, form, errors, t, locked, set, setForm, lockReaso
   const displayTemplates = useDisplayTemplates(mode === "template");
   const L = (f: ConfigField, label: string) => <LockableLabel label={label} isLocked={locked(f)} reason={lockReason} />;
   return (
-    <Section title={t("General")}>
+    <Section title={t("General")} anchor={{ id: "cfg-general", label: t("General") }}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={L("name", mode === "template" ? t("Template name") : t("Tournament name"))} error={errors.name} className="sm:col-span-2">
           <Input value={form.name} onChange={(e) => set("name", e.target.value)} disabled={locked("name")} maxLength={160} placeholder={t("e.g. Sunday Main Event")} aria-invalid={!!errors.name || undefined} />
@@ -196,7 +196,7 @@ function ScheduleSection({ form, errors, t, locked, set, lockReason }: SectionCt
   const L = (f: ConfigField, label: string) => <LockableLabel label={label} isLocked={locked(f)} reason={lockReason} />;
   const tz = deviceTimeZone();
   return (
-    <Section title={t("Schedule")} description={tz ? t("Times are in this device's time zone ({tz}).", { tz }) : undefined}>
+    <Section title={t("Schedule")} anchor={{ id: "cfg-schedule", label: t("Schedule") }} description={tz ? t("Times are in this device's time zone ({tz}).", { tz }) : undefined}>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label={L("startAt", t("Start time"))} error={errors.startAt}>
           <Input type="datetime-local" value={form.startAt} onChange={(e) => set("startAt", e.target.value)} disabled={locked("startAt")} aria-invalid={!!errors.startAt || undefined} />
@@ -240,7 +240,7 @@ function StructureSection({ mode, form, errors, t, locked, set, lockReason, curr
   const L = (f: ConfigField, label: string) => <LockableLabel label={label} isLocked={locked(f)} reason={lockReason} />;
   const selected = structures.data?.find((s) => s.id === form.structureId);
   return (
-    <Section title={t("Structure and tables")}>
+    <Section title={t("Structure and tables")} anchor={{ id: "cfg-structure", label: t("Structure and tables") }}>
       {mode === "edit" ? (
         <div className="grid gap-3 rounded-lg border border-border p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -347,7 +347,7 @@ function BuyInSection({ form, errors, t, locked, set, lockReason }: SectionCtx) 
   const currency = form.currency.trim().toUpperCase() || "EUR";
   const validCurrency = /^[A-Z]{3}$/.test(currency);
   return (
-    <Section title={<LockableLabel label={t("Buy-in")} isLocked={isLocked} reason={lockReason} />} description={t("Leave both empty for a free tournament.")}>
+    <Section title={<LockableLabel label={t("Buy-in")} isLocked={isLocked} reason={lockReason} />} anchor={{ id: "cfg-buyin", label: t("Buy-in") }} description={t("Leave both empty for a free tournament.")}>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label={t("Prize pool contribution")} error={errors.buyInAmount}>
           <MoneyInput value={form.buyInAmount} onChange={(v) => set("buyInAmount", v)} currency={currency} disabled={isLocked} invalid={!!errors.buyInAmount} />
@@ -377,7 +377,7 @@ function LeagueSection({ form, t, locked, setForm, lockReason, set }: SectionCtx
     return null;
   };
   return (
-    <Section title={t("League and series")} description={t("Results of finalized tournaments count toward the season leaderboard.")}>
+    <Section title={t("League and series")} anchor={{ id: "cfg-league", label: t("League and series") }} description={t("Results of finalized tournaments count toward the season leaderboard.")}>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label={L("seasonId", t("Season"))}>
           <Select value={form.seasonId} onChange={(e) => set("seasonId", e.target.value)} disabled={locked("seasonId") || leagues.isLoading}>
@@ -463,7 +463,7 @@ function PolicyCard({
 }) {
   const id = useId();
   return (
-    <Card>
+    <Card className="scroll-mt-24" id={`cfg-${id.replace(/[^a-z0-9]/gi, "")}`} data-toc={title}>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div className="grid gap-1">
           <CardTitle>
