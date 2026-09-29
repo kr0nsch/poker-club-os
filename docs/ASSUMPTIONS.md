@@ -46,6 +46,11 @@ look before assuming a behaviour.
   `docker-compose.yml`, the real Caddy binary validated the `Caddyfile`, and `pnpm deploy` (used by the
   Dockerfile) was run locally. The first `docker compose up --build` on a Linux host is the remaining
   check.
+- **The reverse-proxy topology was verified locally** by running the real `deploy/caddy/Caddyfile`
+  (Caddy from `.venv`, self-signed certificate, upstreams pointed at the local API and web app through
+  `API_UPSTREAM`/`WEB_UPSTREAM`): HTTPS pages and API, HTTP→HTTPS redirect, HSTS, session cookie
+  attributes, rejection of cross-site `Origin`, WebSocket over `wss://` with event delivery, and that a
+  client-supplied `X-Forwarded-For` is not trusted.
 - **Backups were verified end-to-end in development** with PostgreSQL 18 client tools: `pg_dump`
   produced a custom-format dump and `pg_restore` restored it into an empty database with identical
   row counts, the audit append-only trigger and the migration history.

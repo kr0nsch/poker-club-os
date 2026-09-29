@@ -6,6 +6,7 @@
 #   internal                                   Caddy's own local CA (install its root on staff devices)
 #   /certs/fullchain.pem /certs/privkey.pem    certificate for a real domain, copied into deploy/certs
 #   you@example.com                            ACME (only if the hostname is publicly resolvable)
+# API_UPSTREAM / WEB_UPSTREAM  backends (Docker service names by default; host:port for other setups)
 #
 # Plain HTTP requests are redirected to HTTPS automatically.
 {
@@ -32,19 +33,19 @@
 	# API and health checks go straight to the API service.
 	@api path /api/* /health /health/*
 	handle @api {
-		reverse_proxy api:4000
+		reverse_proxy {$API_UPSTREAM:api:4000}
 	}
 
 	# Local realtime (WebSocket) — stays inside the venue LAN.
 	handle /ws {
-		reverse_proxy api:4000 {
+		reverse_proxy {$API_UPSTREAM:api:4000} {
 			flush_interval -1
 		}
 	}
 
 	# Web application (staff, player, display, kiosk).
 	handle {
-		reverse_proxy web:3000
+		reverse_proxy {$WEB_UPSTREAM:web:3000}
 	}
 
 	log {
