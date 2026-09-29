@@ -111,8 +111,8 @@ function LeaderboardPanel({ league, rows = 8 }: { league: PublicLeague; rows?: n
       </div>
       <ol className="mt-[0.8vh] grid gap-[0.5vh]" style={{ fontSize: fs(1.6, 2.9) }}>
         {league.rows.slice(0, rows).map((r) => (
-          <li key={r.playerId} className="flex items-center gap-[0.6vw]">
-            <span className={cn("w-[2.2vw] shrink-0 text-right font-bold tabular-nums", r.rank === 1 ? "text-gold" : "text-white/60")}>{r.rank}</span>
+          <li key={r.playerId} className="flex items-center gap-[0.6vmax]">
+            <span className={cn("w-[2.2vmax] shrink-0 text-right font-bold tabular-nums", r.rank === 1 ? "text-gold" : "text-white/60")}>{r.rank}</span>
             <span className="min-w-0 flex-1 truncate">{r.playerName}</span>
             <span className="shrink-0 font-semibold tabular-nums">{f.number(r.points)}</span>
           </li>
@@ -138,7 +138,8 @@ function ClockScreen({ snap, widgets, league, now, portrait }: { snap: PublicLiv
   if (widgets.has("PRIZE_POOL") && stats.prizePool != null) left.push(<Tile key="p" label={t("Prize pool")} value={f.money(stats.prizePool, snap.tournament.buyIn?.currency)} accent />);
 
   const right: ReactNode[] = [];
-  if (widgets.has("NEXT_LEVEL")) {
+  // During a break the centre already shows the next level in large type.
+  if (widgets.has("NEXT_LEVEL") && !(v.isBreak && widgets.has("BLINDS"))) {
     const following = v.followingLevel;
     right.push(
       v.isBreak || following?.type !== "BREAK" ? (
@@ -159,69 +160,77 @@ function ClockScreen({ snap, widgets, league, now, portrait }: { snap: PublicLiv
   const resumeAt = v.isBreak && !v.paused ? new Date(now + d.remainingMs) : null;
   const shownLevel = v.isBreak ? v.next : v.level;
 
-  return (
-    <div
-      className={cn(
-        "grid h-full px-[3vw]",
-        portrait ? "grid-cols-2 content-center gap-x-[3vw] gap-y-[4vh]" : "items-center gap-[2vw]",
-        !portrait && (sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1"),
-      )}
-    >
-      {sides && <div className={cn("grid gap-[1.6vh]", portrait ? "content-start" : "content-center")}>{left}</div>}
-      <div className={cn("relative flex min-w-0 flex-col items-center justify-center text-center", portrait && "order-first col-span-2")}>
-        <div
-          className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.paused ? "text-warning" : v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")}
-          style={{ fontSize: fs(2.6, 4.6) }}
-        >
-          {v.paused ? (
-            // Paused: the status replaces the level line instead of covering the digits.
-            <>
-              <Pause style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} fill="currentColor" strokeWidth={0} />
-              {t("Paused")}
-              <span className="text-white/40">· {v.isBreak ? t("Break") : t("Level {n}", { n: d.playLevelNumber })}</span>
-            </>
-          ) : v.isBreak ? (
-            <>
-              <Coffee style={{ width: fs(3, 5.2), height: fs(3, 5.2) }} /> {t("Break")}
-            </>
-          ) : (
-            t("Level {n}", { n: d.playLevelNumber })
-          )}
-        </div>
-        {widgets.has("CLOCK") && (
-          <div className="relative w-full">
-            <div className={cn("clock-digits font-semibold leading-[1.02] transition-opacity duration-300", v.paused && "opacity-45")} style={{ fontSize: clockSize }}>
-              {d.formatted}
-            </div>
-            <div className="mx-auto mt-[1.4vh] h-[0.5vh] w-4/5 overflow-hidden rounded-full bg-white/[0.08]">
-              <div className={cn("h-full w-full origin-left transition-transform duration-1000 ease-linear", v.paused ? "bg-warning" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ transform: `scaleX(${pct / 100})` }} />
-            </div>
-          </div>
-        )}
-        {resumeAt && (
-          <div className="mt-[1.2vh] text-white/70" style={{ fontSize: fs(2.2, 3.9) }}>
-            {t("Play resumes at {time}", { time: f.time(resumeAt) })}
-          </div>
-        )}
-        {widgets.has("BLINDS") && (
-          <div className="mt-[2vh]">
-            {v.isBreak && (
-              <div className="font-medium text-white/55" style={{ fontSize: fs(1.7, 3) }}>
-                {t("Next level")}
-              </div>
-            )}
-            <div className="font-bold tabular-nums leading-tight" style={{ fontSize: fs(5.2, 9.5) }}>
-              {tt.blinds(shownLevel) || "—"}
-            </div>
-            {tt.ante(shownLevel) && (
-              <div className="font-semibold tabular-nums text-white/70" style={{ fontSize: fs(2.4, 4.3) }}>
-                {tt.ante(shownLevel)}
-              </div>
-            )}
-          </div>
+  const center = (
+    <div className="relative flex min-w-0 flex-col items-center justify-center text-center">
+      <div
+        className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.paused ? "text-warning" : v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")}
+        style={{ fontSize: fs(2.6, 4.6) }}
+      >
+        {v.paused ? (
+          // Paused: the status replaces the level line instead of covering the digits.
+          <>
+            <Pause style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} fill="currentColor" strokeWidth={0} />
+            {t("Paused")}
+            <span className="text-white/40">· {v.isBreak ? t("Break") : t("Level {n}", { n: d.playLevelNumber })}</span>
+          </>
+        ) : v.isBreak ? (
+          <>
+            <Coffee style={{ width: fs(3, 5.2), height: fs(3, 5.2) }} /> {t("Break")}
+          </>
+        ) : (
+          t("Level {n}", { n: d.playLevelNumber })
         )}
       </div>
-      {sides && <div className={cn("grid gap-[1.6vh]", portrait ? "content-start" : "content-center")}>{right}</div>}
+      {widgets.has("CLOCK") && (
+        <div className="relative w-full">
+          <div className={cn("clock-digits font-semibold leading-[1.02] transition-opacity duration-300", v.paused && "opacity-45")} style={{ fontSize: clockSize }}>
+            {d.formatted}
+          </div>
+          <div className="mx-auto mt-[1.4vh] h-[0.5vh] w-4/5 overflow-hidden rounded-full bg-white/[0.08]">
+            <div className={cn("h-full w-full origin-left transition-transform duration-1000 ease-linear", v.paused ? "bg-warning" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ transform: `scaleX(${pct / 100})` }} />
+          </div>
+        </div>
+      )}
+      {resumeAt && (
+        <div className="mt-[1.2vh] text-white/70" style={{ fontSize: fs(2.2, 3.9) }}>
+          {t("Play resumes at {time}", { time: f.time(resumeAt) })}
+        </div>
+      )}
+      {widgets.has("BLINDS") && (
+        <div className="mt-[2vh]">
+          {v.isBreak && (
+            <div className="font-medium text-white/55" style={{ fontSize: fs(1.7, 3) }}>
+              {t("Next level")}
+            </div>
+          )}
+          <div className="font-bold tabular-nums leading-tight" style={{ fontSize: fs(5.2, 9.5) }}>
+            {tt.blinds(shownLevel) || "—"}
+          </div>
+          {tt.ante(shownLevel) && (
+            <div className="font-semibold tabular-nums text-white/70" style={{ fontSize: fs(2.4, 4.3) }}>
+              {tt.ante(shownLevel)}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
+  // Portrait: the clock spans the width and every tile flows into one two-column grid below it.
+  if (portrait) {
+    const tiles = [...left, ...right];
+    return (
+      <div className="grid h-full content-center gap-y-[4vh] px-[3vw]">
+        {center}
+        {tiles.length > 0 && <div className="grid grid-cols-2 items-start gap-[1.6vh]">{tiles}</div>}
+      </div>
+    );
+  }
+  return (
+    <div className={cn("grid h-full items-center gap-[2vw] px-[3vw]", sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1")}>
+      {sides && <div className="grid content-center gap-[1.6vh]">{left}</div>}
+      {center}
+      {sides && <div className="grid content-center gap-[1.6vh]">{right}</div>}
     </div>
   );
 }
@@ -277,12 +286,12 @@ function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveS
   const rows = seating.slice(current * perPage, (current + 1) * perPage);
   return (
     <div className="flex h-full flex-col px-[3vw] pt-[1.5vh]">
-      <div className="flex items-baseline justify-between">
-        <div className="font-bold uppercase tracking-[0.2em] text-[var(--tv-accent)]" style={{ fontSize: fs(2.6, 4.6) }}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-[2vw]">
+        <div className={cn("font-bold uppercase text-[var(--tv-accent)]", portrait ? "tracking-[0.08em]" : "tracking-[0.2em]")} style={{ fontSize: fs(2.6, 4.6) }}>
           {t("Find your seat")}
         </div>
         {pages > 1 && (
-          <div className="tabular-nums text-white/60" style={{ fontSize: fs(1.8, 3.2) }}>
+          <div className="whitespace-nowrap tabular-nums text-white/60" style={{ fontSize: fs(1.8, 3.2) }}>
             {t("Page {page} of {pages}", { page: current + 1, pages })}
           </div>
         )}
@@ -334,8 +343,8 @@ function FinishedScreen({ snap }: { snap: PublicLiveSnapshot }) {
           {top
             .filter((r) => r.position !== 1)
             .map((r) => (
-              <li key={`${r.position}-${r.playerName}`} className="flex items-center gap-[1vw] border-b border-white/10 pb-[0.4vh]">
-                <span className="w-[3vw] shrink-0 text-right font-bold tabular-nums text-white/60">{r.position}</span>
+              <li key={`${r.position}-${r.playerName}`} className="flex items-center gap-[1vmax] border-b border-white/10 pb-[0.4vh]">
+                <span className="w-[3vmax] shrink-0 text-right font-bold tabular-nums text-white/60">{r.position}</span>
                 <span className="min-w-0 truncate font-medium">{r.playerName}</span>
               </li>
             ))}

@@ -476,24 +476,26 @@ function ResultScreen({ result, onDone }: { result: CheckInResult; onDone: () =>
   const t = useT();
   const seat = result.seat;
   return (
-    <main className="grid flex-1 place-items-center p-8 text-center" onClick={onDone}>
-      <div className="grid max-w-4xl justify-items-center gap-5">
-        <span className="grid size-28 place-items-center rounded-full bg-primary/15 text-primary">
-          <CircleCheck className="size-16" />
+    // Sized by the screen height so the whole answer, the Done button and the countdown fit a
+    // landscape tablet (820 px) as well as a portrait kiosk.
+    <main className="grid flex-1 place-items-center overflow-y-auto p-6 text-center" onClick={onDone}>
+      <div className="grid max-w-4xl justify-items-center gap-[clamp(0.75rem,2.2vh,1.25rem)]">
+        <span className="grid size-[clamp(4rem,10vh,7rem)] place-items-center rounded-full bg-success/15 text-success">
+          <CircleCheck className="size-[55%]" />
         </span>
-        <div className="text-6xl font-bold leading-tight">{t("Welcome, {name}!", { name: result.playerName })}</div>
+        <div className="text-[clamp(2.25rem,6.5vh,3.75rem)] font-bold leading-tight">{t("Welcome, {name}!", { name: result.playerName })}</div>
         {result.alreadyCheckedIn && <div className="text-3xl text-muted-foreground">{t("You are already checked in.")}</div>}
         {seat ? (
-          <div className="mt-2 grid justify-items-center gap-2 rounded-3xl border-2 border-gold/60 bg-gold/10 px-14 py-8">
-            <Armchair className="size-12 text-gold" />
+          <div className="mt-1 grid justify-items-center gap-2 rounded-3xl border-2 border-gold/50 bg-gold/[0.08] px-14 py-[clamp(1rem,3vh,2rem)]">
+            <Armchair className="size-[clamp(2rem,5vh,3rem)] text-gold" />
             <div className="flex items-end gap-10 tabular-nums">
               <div>
                 <div className="text-2xl font-medium text-muted-foreground">{t("Table")}</div>
-                <div className="text-[clamp(5rem,16vh,10rem)] font-black leading-none text-gold">{seat.tableNumber}</div>
+                <div className="text-[clamp(4rem,14vh,10rem)] font-black leading-none text-gold">{seat.tableNumber}</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-muted-foreground">{t("Seat")}</div>
-                <div className="text-[clamp(5rem,16vh,10rem)] font-black leading-none text-gold">{seat.seatNumber}</div>
+                <div className="text-[clamp(4rem,14vh,10rem)] font-black leading-none text-gold">{seat.seatNumber}</div>
               </div>
             </div>
           </div>
@@ -505,7 +507,7 @@ function ResultScreen({ result, onDone }: { result: CheckInResult; onDone: () =>
         ) : (
           !result.alreadyCheckedIn && <div className="text-3xl text-muted-foreground">{t("You are checked in. The floor staff will assign your seat.")}</div>
         )}
-        <Button size="xl" className="mt-4 h-20 px-12 text-2xl" onClick={onDone}>
+        <Button size="xl" className="mt-2 h-[clamp(3.5rem,8vh,5rem)] px-12 text-2xl" onClick={onDone}>
           {t("Done")}
         </Button>
         <Countdown ms={RESULT_MS} />

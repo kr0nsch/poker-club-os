@@ -2,7 +2,7 @@
 
 import type { LevelView } from "@pcos/types";
 import { cn, Table, TBody, Td, Th, THead, Tr } from "@pcos/ui";
-import { Coffee } from "lucide-react";
+import { Coffee, Timer } from "lucide-react";
 import { anteLabel } from "@/lib/clock";
 import { useFormat, useT } from "@/lib/i18n";
 import { useTournamentText } from "./labels";
@@ -18,13 +18,17 @@ export function StructureTable({ levels, currentIndex }: { levels: readonly Leve
     return { l, i, n: playNo };
   });
   return (
-    <Table>
+    // Phones: tighter cells and unbroken figures, so "8 000 / 16 000" never splits after the slash.
+    <Table className="max-sm:text-[13px] max-sm:[&_td]:px-2 max-sm:[&_th]:px-2">
       <THead>
         <Tr>
-          <Th className="w-16">{t("Level")}</Th>
+          <Th className="w-16 max-sm:w-10">{t("Level")}</Th>
           <Th>{t("Blinds")}</Th>
           <Th>{t("Ante")}</Th>
-          <Th className="text-right">{t("Duration")}</Th>
+          <Th className="text-right">
+            <span className="max-sm:sr-only">{t("Duration")}</span>
+            <Timer className="ml-auto size-3.5 sm:hidden" aria-hidden />
+          </Th>
         </Tr>
       </THead>
       <TBody>
@@ -53,8 +57,8 @@ export function StructureTable({ levels, currentIndex }: { levels: readonly Leve
                   {current && <span className="rounded-[5px] bg-gold px-1.5 text-xs font-semibold leading-5 text-gold-foreground">{t("Now")}</span>}
                 </span>
               </Td>
-              <Td className="font-semibold tabular-nums">{tt.blinds(l)}</Td>
-              <Td className="tabular-nums text-muted-foreground">
+              <Td className="whitespace-nowrap font-semibold tabular-nums">{tt.blinds(l)}</Td>
+              <Td className="whitespace-nowrap tabular-nums text-muted-foreground">
                 {ante ? (
                   <>
                     {ante}
@@ -64,7 +68,7 @@ export function StructureTable({ levels, currentIndex }: { levels: readonly Leve
                   "—"
                 )}
               </Td>
-              <Td className="text-right tabular-nums text-muted-foreground">{tt.minutes(l.durationSeconds)}</Td>
+              <Td className="whitespace-nowrap text-right tabular-nums text-muted-foreground">{tt.minutes(l.durationSeconds)}</Td>
             </Tr>
           );
         })}
