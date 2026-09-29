@@ -53,7 +53,8 @@ export default function FloorConsole() {
             </>
           }
         />
-        <main className="mx-auto grid max-w-[1600px] gap-4 p-3 md:p-4">
+        {/* minmax(0,1fr): a wide row (tabs, table grid) scrolls inside itself instead of widening the page. */}
+        <main className="mx-auto grid max-w-[1600px] grid-cols-[minmax(0,1fr)] gap-4 p-3 md:p-4">
           <ClockPanel />
           <FloorRequests />
           <Tabs value={current} onValueChange={setTab}>

@@ -29,7 +29,7 @@ export function ClockPanel() {
 
   return (
     <Card className={cn("overflow-hidden", status === "PAUSED" && "border-warning/60", status === "HAND_FOR_HAND" && "border-destructive/60")}>
-      <div className="grid gap-4 p-4 md:grid-cols-[1fr_auto] md:p-5">
+      <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1fr)_auto] md:p-5">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
             {d?.isBreak ? (
