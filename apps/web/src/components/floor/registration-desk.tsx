@@ -146,7 +146,7 @@ export function RegistrationDesk() {
   const counts = snapshot.registrations.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.status]: (acc[r.status] ?? 0) + 1 }), {});
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 @3xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card className="p-4">
         <div className="mb-3 flex items-center gap-2">
           <div className="relative flex-1">

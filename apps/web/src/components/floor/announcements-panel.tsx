@@ -38,7 +38,7 @@ export function AnnouncementsPanel() {
   }
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 @3xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card className="p-4">
         <form onSubmit={send} className="grid gap-3">
           <Field label={t("Announcement")}>
