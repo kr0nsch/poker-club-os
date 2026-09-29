@@ -272,4 +272,29 @@ describe("kiosk", () => {
     const again = await core.displays.kioskCheckIn(kiosk.token, { method: "QR", code }, null);
     expect(again).toMatchObject({ alreadyCheckedIn: true, seat: first.seat });
   });
+
+  it("finds a member by the digits of a prefixed card number, but never guesses between two", async () => {
+    const base = await seedOrg(h.db, { players: 3 });
+    const t = await seedTournament(h.db, base, { buyIn: null });
+    const td = owner(base.org.id);
+    const run = async (type: Parameters<typeof cmd>[0], payload: Record<string, unknown> = {}) => {
+      const [row] = await h.db.select({ v: tournaments.version }).from(tournaments).where(eq(tournaments.id, t.id));
+      return core.executor.execute(t.id, cmd(type, payload, row!.v), td);
+    };
+    const [a, b, c] = base.players;
+    await h.db.update(players).set({ memberNumber: "M1021" }).where(eq(players.id, a!.id));
+    await h.db.update(players).set({ memberNumber: "M2040" }).where(eq(players.id, b!.id));
+    await h.db.update(players).set({ memberNumber: "V2040" }).where(eq(players.id, c!.id));
+    for (const p of [a!, b!, c!]) await core.players.setKioskPin(td, p.id, { pin: "4719" });
+    await run("PUBLISH");
+    await run("OPEN_REGISTRATION");
+    for (const p of [a!, b!]) await run("REGISTER_PLAYER", { playerId: p.id });
+    const kiosk = await core.displays.createToken(td, { name: "Kiosk", kind: "KIOSK", venueId: base.venue.id });
+
+    // The keypad has digits only: "1021" is the card "M1021".
+    const res = await core.displays.kioskCheckIn(kiosk.token, { method: "MEMBER_PIN", memberNumber: "1021", pin: "4719" }, null);
+    expect(res).toMatchObject({ alreadyCheckedIn: false });
+    // "2040" could be "M2040" or "V2040": no match rather than a guess.
+    await expectCode(core.displays.kioskCheckIn(kiosk.token, { method: "MEMBER_PIN", memberNumber: "2040", pin: "4719" }, null), "FORBIDDEN");
+  });
 });

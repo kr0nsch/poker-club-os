@@ -16,7 +16,7 @@ import {
 } from "@pcos/db";
 import type { Principal } from "@pcos/domain";
 import { DisplayTemplateInput, DisplayTokenInput, KioskCheckInInput, type PublicLiveSnapshot } from "@pcos/types";
-import { and, asc, desc, eq, gt, inArray, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
 import { assertResourceAccess, requireOrganization, requirePermission, systemActor, venueScope, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
@@ -207,6 +207,22 @@ export class DisplayService {
     return orgFlags(this.deps.db, orgId);
   }
 
+  /**
+   * The kiosk keypad has digits only, while club cards often carry a prefix ("M1021"). An exact match
+   * wins; otherwise a digits-only entry matches the one member number whose digits are the same.
+   * Two such members (e.g. "M1021" and "V1021") match neither, so the PIN is never tried on a guess.
+   */
+  private async playerByMemberNumber(orgId: string, memberNumber: string) {
+    const [exact] = await this.deps.db.select().from(players).where(and(eq(players.organizationId, orgId), eq(players.memberNumber, memberNumber)));
+    if (exact || !/^\d+$/.test(memberNumber)) return exact;
+    const digitsOnly = await this.deps.db
+      .select()
+      .from(players)
+      .where(and(eq(players.organizationId, orgId), sql`regexp_replace(${players.memberNumber}, '\\D', '', 'g') = ${memberNumber}`))
+      .limit(2);
+    return digitsOnly.length === 1 ? digitsOnly[0] : undefined;
+  }
+
   // --- kiosk self check-in ---------------------------------------------------------------------------
 
   async kioskCheckIn(token: string, raw: unknown, ip: string | null) {
@@ -230,7 +246,7 @@ export class DisplayService {
       if (input.method === "MEMBER_PIN") {
         const guard = await this.deps.rateLimiter.hit(`kiosk-pin:${orgId}:${input.memberNumber}`, 5, 900);
         if (!guard.allowed) throw new AppError("RATE_LIMITED", "too many wrong PIN attempts for this member number");
-        const [p] = await this.deps.db.select().from(players).where(and(eq(players.organizationId, orgId), eq(players.memberNumber, input.memberNumber)));
+        const p = await this.playerByMemberNumber(orgId, input.memberNumber);
         if (!p || !(await verifyPassword(p.kioskPinHash, input.pin))) throw forbidden("member number or PIN is incorrect");
         playerId = p.id;
       } else {
