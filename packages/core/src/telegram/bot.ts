@@ -108,7 +108,7 @@ export class TelegramBot {
         reply = await this.start(orgId, from, msg.chat.id, args[0]);
         break;
       case "/events":
-        reply = await this.events(orgId);
+        reply = await this.events(orgId, msg.chat.id);
         break;
       case "/my":
         reply = await this.myRegistrations(orgId, from);
@@ -161,8 +161,14 @@ export class TelegramBot {
           reply = await this.menu(orgId, cq.from);
           break;
         case "ev":
-          reply = arg ? await this.eventDetail(orgId, cq.from, arg) : await this.events(orgId);
+          reply = arg ? await this.eventDetail(orgId, cq.from, arg) : await this.events(orgId, chatId);
           break;
+        case "sc": {
+          const r = await this.toggleSchedule(orgId, cq.from, chatId);
+          reply = r.reply;
+          toast = r.on ? "You will be told about new tournaments" : "New-tournament alerts off";
+          break;
+        }
         case "rg":
           reply = await this.register(orgId, cq.from, arg!, update.update_id);
           break;
@@ -273,7 +279,7 @@ export class TelegramBot {
     return this.menu(orgId, from);
   }
 
-  private async events(orgId: string): Promise<Reply> {
+  private async events(orgId: string, chatId: number): Promise<Reply> {
     const rows = await this.deps.db
       .select({ t: tournaments, venue: venues.name })
       .from(tournaments)
@@ -281,12 +287,33 @@ export class TelegramBot {
       .where(and(eq(tournaments.organizationId, orgId), eq(tournaments.published, true), eq(tournaments.publicVisibility, "PUBLIC"), inArray(tournaments.status, OPEN)))
       .orderBy(asc(tournaments.startAt))
       .limit(8);
-    if (rows.length === 0) return { text: "No upcoming tournaments are published right now.", markup: keyboard([[button.callback("« Menu", "m")]]) };
+    // Schedule followers hear when registration opens and about club-wide announcements.
+    const following = !!(await this.scheduleSubscription(orgId, chatId));
+    const followButton = button.callback(following ? "🔕 Stop new-tournament alerts" : "🔔 Alert me about new tournaments", "sc");
+    if (rows.length === 0) return { text: "No upcoming tournaments are published right now.", markup: keyboard([[followButton], [button.callback("« Menu", "m")]]) };
     const lines = rows.map(({ t, venue }) => `• <b>${escapeHtml(t.name)}</b>\n  ${fmtDate(t.startAt)} · ${escapeHtml(venue)} · ${t.format} · ${statusLabel(t.status)}`);
     return {
       text: `📅 <b>Upcoming tournaments</b>\n\n${lines.join("\n")}`,
-      markup: keyboard([...rows.map(({ t }) => [button.callback(`${LIVE.includes(t.status) ? "🔴 " : ""}${t.name}`.slice(0, 60), `ev:${t.id}`)]), [button.callback("« Menu", "m")]]),
+      markup: keyboard([...rows.map(({ t }) => [button.callback(`${LIVE.includes(t.status) ? "🔴 " : ""}${t.name}`.slice(0, 60), `ev:${t.id}`)]), [followButton], [button.callback("« Menu", "m")]]),
     };
+  }
+
+  private async scheduleSubscription(orgId: string, chatId: number) {
+    const [sub] = await this.deps.db
+      .select()
+      .from(telegramSubscriptions)
+      .where(and(eq(telegramSubscriptions.organizationId, orgId), eq(telegramSubscriptions.telegramChatId, chatId), eq(telegramSubscriptions.topic, "schedule")));
+    return sub ?? null;
+  }
+
+  private async toggleSchedule(orgId: string, from: TgUser, chatId: number): Promise<{ reply: Reply; on: boolean }> {
+    const sub = await this.scheduleSubscription(orgId, chatId);
+    if (sub) await this.deps.db.delete(telegramSubscriptions).where(eq(telegramSubscriptions.id, sub.id));
+    else {
+      const p = await this.playerOf(orgId, from);
+      await this.deps.db.insert(telegramSubscriptions).values({ organizationId: orgId, telegramChatId: chatId, playerId: p?.playerId ?? null, topic: "schedule" }).onConflictDoNothing();
+    }
+    return { reply: await this.events(orgId, chatId), on: !sub };
   }
 
   private async eventDetail(orgId: string, from: TgUser, tournamentId: string): Promise<Reply> {

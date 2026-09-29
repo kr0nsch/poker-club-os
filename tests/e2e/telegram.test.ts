@@ -117,6 +117,24 @@ describe("Telegram bot (§95)", () => {
     await waitFor(() => stack.telegram.messagesTo(LINKED).find((m) => m.text.includes("Your registration for Friday Bounty was cancelled")), "cancellation notice", 10_000);
   });
 
+  it("alerts schedule followers when registration opens for a new tournament", async () => {
+    const reply = await ask(STRANGER, tgCallback(STRANGER, "sc"));
+    expect(JSON.stringify(reply.replyMarkup)).toContain("Stop new-tournament alerts");
+    const [venue] = await td.get<{ id: string }[]>("/api/v1/venues");
+    const [structure] = await td.get<{ id: string }[]>("/api/v1/structures");
+    const t = await td.post<{ id: string }>("/api/v1/tournaments", {
+      name: "Saturday Special",
+      venueId: venue!.id,
+      structureId: structure!.id,
+      format: "FREEZEOUT",
+      startAt: new Date(Date.now() + 26 * 3600_000).toISOString(),
+      startingStack: 20000,
+    });
+    await td.commandOk(t.id, "PUBLISH");
+    await td.commandOk(t.id, "OPEN_REGISTRATION");
+    await waitFor(() => stack.telegram.messagesTo(STRANGER).find((m) => m.text.includes("Registration open") && m.text.includes("Saturday Special")), "registration-opening alert", 10_000);
+  });
+
   it("keeps state-changing staff commands disabled", async () => {
     for (const cmd of ["/finish", "/reset", "/refund"]) {
       const reply = await ask(LINKED, tgMessage(LINKED, cmd));
