@@ -95,15 +95,21 @@ export function DropdownMenuLabel({ className, ...props }: React.ComponentPropsW
 export const Tabs = TabsPrimitive.Root;
 
 export function TabsList({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  // Underlined tabs on a hairline, not a pill-shaped segmented control.
-  return <TabsPrimitive.List className={cn("inline-flex h-10 items-end gap-5 border-b border-border text-muted-foreground", className)} {...props} />;
+  // Underlined tabs on a hairline, not a pill-shaped segmented control. The hairline is an inset
+  // shadow so the row can scroll sideways on a phone without clipping the active underline.
+  return (
+    <TabsPrimitive.List
+      className={cn("inline-flex h-10 max-w-full items-end gap-5 overflow-x-auto text-muted-foreground shadow-[inset_0_-1px_0_var(--color-border)] [scrollbar-width:none]", className)}
+      {...props}
+    />
+  );
 }
 
 export function TabsTrigger({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "-mb-px inline-flex h-10 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 border-transparent px-0.5 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 data-[state=active]:border-gold data-[state=active]:text-foreground [&_svg]:size-4",
+        "inline-flex h-10 min-w-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 border-transparent px-0.5 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 data-[state=active]:border-gold data-[state=active]:text-foreground [&_svg]:size-4",
         className,
       )}
       {...props}
@@ -121,12 +127,14 @@ export function Switch({ className, ...props }: React.ComponentPropsWithoutRef<t
   return (
     <SwitchPrimitive.Root
       className={cn(
-        "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-border-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-gold data-[state=checked]:bg-gold data-[state=unchecked]:bg-input",
+        // Touch screens get a thumb-sized switch (48×28); a mouse keeps the compact one. The ::after
+        // box extends the hit area 8 px on every side without changing the layout.
+        "peer relative inline-flex h-5 w-9 shrink-0 after:absolute after:-inset-2 cursor-pointer items-center rounded-full border border-border-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-gold data-[state=checked]:bg-gold data-[state=unchecked]:bg-input pointer-coarse:h-7 pointer-coarse:w-12",
         className,
       )}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px" />
+      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px pointer-coarse:size-6 pointer-coarse:data-[state=checked]:translate-x-[21px]" />
     </SwitchPrimitive.Root>
   );
 }

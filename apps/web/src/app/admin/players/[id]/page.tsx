@@ -384,16 +384,16 @@ function NotesCard({ player }: { player: PlayerDetail }) {
       {can("player.notes.write") && (
         <div className="grid gap-2">
           <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={3} maxLength={4000} placeholder={t("e.g. prefers seat 1, needs a table near the exit")} />
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             {can("staff.manage") ? (
-              <Select className="h-9 w-auto py-1" value={visibility} onChange={(e) => setVisibility(e.target.value as typeof visibility)} aria-label={t("Visibility")}>
+              <Select className="h-9 w-auto min-w-0 max-w-full py-1" value={visibility} onChange={(e) => setVisibility(e.target.value as typeof visibility)} aria-label={t("Visibility")}>
                 <option value="STAFF">{t("All staff")}</option>
                 <option value="MANAGEMENT">{t("Management only")}</option>
               </Select>
             ) : (
               <span />
             )}
-            <Button size="sm" disabled={!body.trim()} loading={add.isPending} onClick={() => add.mutate()}>
+            <Button size="sm" className="ml-auto" disabled={!body.trim()} loading={add.isPending} onClick={() => add.mutate()}>
               {t("Add note")}
             </Button>
           </div>

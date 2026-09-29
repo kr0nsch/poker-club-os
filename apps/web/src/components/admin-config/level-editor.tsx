@@ -3,6 +3,7 @@
 import {
   Badge,
   Button,
+  Checkbox,
   cn,
   DropdownMenu,
   DropdownMenuContent,
@@ -195,7 +196,7 @@ export function LevelEditor({ levels, onChange, issues, lockedThrough, currentIn
           <Tr>
             {!readOnly && (
               <Th className="w-8">
-                <input type="checkbox" className="size-4 accent-[var(--primary)]" aria-label={t("Select all")} checked={editableKeys.length > 0 && selectedRows.length === editableKeys.length} onChange={toggleAll} disabled={editableKeys.length === 0} />
+                <Checkbox aria-label={t("Select all")} checked={editableKeys.length > 0 && selectedRows.length === editableKeys.length} onChange={toggleAll} disabled={editableKeys.length === 0} />
               </Th>
             )}
             <Th className="w-12">{t("Level")}</Th>
@@ -228,7 +229,7 @@ export function LevelEditor({ levels, onChange, issues, lockedThrough, currentIn
               >
                 {!readOnly && (
                   <Td>
-                    <input type="checkbox" className="size-4 accent-[var(--primary)]" aria-label={t("Select row")} checked={selected.has(l.key)} disabled={isLocked} onChange={() => toggle(l.key)} />
+                    <Checkbox aria-label={t("Select row")} checked={selected.has(l.key)} disabled={isLocked} onChange={() => toggle(l.key)} />
                   </Td>
                 )}
                 <Td className="tabular-nums">
@@ -240,7 +241,7 @@ export function LevelEditor({ levels, onChange, issues, lockedThrough, currentIn
                   )}
                 </Td>
                 <Td>
-                  <Select className="h-8 py-1" value={l.type} onChange={(e) => changeType(i, e.target.value as LevelType)} disabled={isLocked} aria-label={t("Type")}>
+                  <Select className="h-8 w-28 py-1" value={l.type} onChange={(e) => changeType(i, e.target.value as LevelType)} disabled={isLocked} aria-label={t("Type")}>
                     <option value="PLAY">{t("Play")}</option>
                     <option value="BREAK">{t("Break")}</option>
                   </Select>

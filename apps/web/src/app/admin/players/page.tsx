@@ -150,7 +150,7 @@ function PlayersList() {
               {list.data?.items.map((p) => (
                 <Tr key={p.id} className="cursor-pointer" onClick={() => router.push(`/admin/players/${p.id}`)}>
                   <Td>
-                    <Link href={`/admin/players/${p.id}`} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+                    <Link href={`/admin/players/${p.id}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
                       {p.displayName}
                     </Link>
                     <div className="text-xs text-muted-foreground">

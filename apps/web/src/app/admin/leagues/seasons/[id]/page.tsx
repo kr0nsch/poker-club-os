@@ -128,7 +128,7 @@ export default function SeasonLeaderboardPage() {
                     )}
                   </Td>
                   <Td>
-                    <Link href={`/admin/players/${r.playerId}`} className="font-medium hover:underline">
+                    <Link href={`/admin/players/${r.playerId}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline">
                       {r.playerName}
                     </Link>
                   </Td>

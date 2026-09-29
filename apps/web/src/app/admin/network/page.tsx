@@ -95,7 +95,7 @@ function QrCard({ icon: Icon, title, description, url, qr, loading }: { icon: Lu
         ) : url ? (
           <>
             <QrImage value={url} dataUrl={qr} size={200} alt={t("QR code: {title}", { title })} />
-            <a href={url} target="_blank" rel="noreferrer" className="max-w-full break-all text-center font-mono text-sm text-primary hover:underline">
+            <a href={url} target="_blank" rel="noreferrer" className="max-w-full break-all py-1.5 text-center font-mono text-sm text-primary hover:underline">
               {url}
             </a>
             <CopyButton value={url} label={t("Copy link")} />

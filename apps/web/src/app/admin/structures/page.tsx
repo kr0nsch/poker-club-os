@@ -174,7 +174,7 @@ function StructuresTab() {
             {structures.data?.map((s) => (
               <Tr key={s.id}>
                 <Td>
-                  <Link href={`/admin/structures/${s.id}`} className="font-medium hover:underline">
+                  <Link href={`/admin/structures/${s.id}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline">
                     {s.name}
                   </Link>
                   {s.description && <div className="line-clamp-1 text-xs text-muted-foreground">{s.description}</div>}
@@ -330,7 +330,7 @@ function TemplatesTab() {
             {templates.data?.map((x) => (
               <Tr key={x.id}>
                 <Td>
-                  <Link href={`/admin/structures/templates/${x.id}`} className="font-medium hover:underline">
+                  <Link href={`/admin/structures/templates/${x.id}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline">
                     {x.name}
                   </Link>
                   <div className="text-xs text-muted-foreground">

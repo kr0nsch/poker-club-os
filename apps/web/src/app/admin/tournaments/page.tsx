@@ -108,7 +108,7 @@ export default function TournamentsPage() {
             resetPage();
           }}
         >
-          <TabsList className="h-auto flex-wrap">
+          <TabsList>
             {Object.entries(GROUPS).map(([key, g]) => (
               <TabsTrigger key={key} value={`group:${key}`}>
                 {t(g.label)}
@@ -236,7 +236,7 @@ export default function TournamentsPage() {
                 <Tr key={r.id} className="cursor-pointer" onClick={() => router.push(`/admin/tournaments/${r.id}`)}>
                   <Td className="whitespace-nowrap tabular-nums">{fmt.dateTime(r.startAt)}</Td>
                   <Td className="min-w-48">
-                    <Link href={`/admin/tournaments/${r.id}`} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+                    <Link href={`/admin/tournaments/${r.id}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
                       {r.name}
                     </Link>
                     <div className="text-xs text-muted-foreground">

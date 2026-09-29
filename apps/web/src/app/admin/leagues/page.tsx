@@ -151,7 +151,7 @@ function LeaguesTab() {
                         return (
                           <Tr key={s.id}>
                             <Td>
-                              <Link href={`/admin/leagues/seasons/${s.id}`} className="font-medium hover:underline">
+                              <Link href={`/admin/leagues/seasons/${s.id}`} className="-my-2 inline-flex min-h-9 min-w-8 items-center py-2 font-medium hover:underline">
                                 {s.name}
                               </Link>
                               {current && (

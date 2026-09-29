@@ -94,7 +94,7 @@ export default function DisplaysPage() {
         actions={action}
       />
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
-        <TabsList className="h-auto flex-wrap">
+        <TabsList>
           <TabsTrigger value="displays">
             <MonitorPlay className="size-4" /> {t("Displays")}
             {tokens.data && <span className="text-xs text-muted-foreground tabular-nums">{counts.displays}</span>}

@@ -156,7 +156,7 @@ export function Section({
 
 export function BackLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="mb-3 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+    <Link href={href} className="mb-3 inline-flex min-h-8 items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
       <ArrowLeft className="size-4" /> {label}
     </Link>
   );

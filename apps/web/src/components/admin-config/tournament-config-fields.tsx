@@ -280,7 +280,7 @@ function StructureSection({ mode, form, errors, t, locked, set, lockReason, curr
             selected ? (
               <span className="inline-flex flex-wrap items-center gap-x-2">
                 {t("{n} levels", { n: selected.levelCount })} · {formatDuration(selected.totalSeconds, t)}
-                <Link href={`/admin/structures/${selected.id}`} target="_blank" className="inline-flex items-center gap-1 text-primary hover:underline">
+                <Link href={`/admin/structures/${selected.id}`} target="_blank" className="inline-flex min-h-8 items-center gap-1 text-primary hover:underline">
                   {t("Open in the structure editor")} <ExternalLink className="size-3" />
                 </Link>
               </span>

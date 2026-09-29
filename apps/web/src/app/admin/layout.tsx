@@ -113,7 +113,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh">
       <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 overflow-y-auto border-r border-border bg-card/40 p-4 lg:flex">
-        <Link href="/admin">
+        <Link href="/admin" className="flex h-10 items-center">
           <Brand />
         </Link>
         <Nav />
@@ -137,7 +137,8 @@ function Shell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 border-b border-border bg-background">
           <ConnectivityBanner />
-          <div className="flex h-14 items-center gap-3 px-4">
+          {/* Same column as <main> so the header edges line up with the page on wide screens. */}
+          <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-6 min-[1800px]:max-w-[96rem]">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
               <Menu />
             </Button>
@@ -146,7 +147,7 @@ function Shell({ children }: { children: ReactNode }) {
             <UserMenu />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-6 min-[1800px]:max-w-[96rem]">{children}</main>
       </div>
     </div>
   );

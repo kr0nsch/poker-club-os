@@ -185,11 +185,12 @@ function DevicesContent() {
             <Tr>
               <Th>{t("Device")}</Th>
               <Th>{t("Connection")}</Th>
-              <Th>{t("User")}</Th>
-              <Th>IP</Th>
+              {/* Phones and tablets keep device, connection, last seen and trust; the rest returns on wider screens. */}
+              <Th className="max-md:hidden">{t("User")}</Th>
+              <Th className="max-lg:hidden">IP</Th>
               <Th>{t("Last seen")}</Th>
-              <Th>{t("Dealer table")}</Th>
-              <Th>{t("App version")}</Th>
+              <Th className="max-md:hidden">{t("Dealer table")}</Th>
+              <Th className="max-xl:hidden">{t("App version")}</Th>
               <Th>{t("Trusted")}</Th>
               <Th className="text-right">
                 <span className="sr-only">{t("Actions")}</span>
@@ -218,12 +219,12 @@ function DevicesContent() {
                       {d.connected ? (d.connections > 1 ? t("Online ({n} connections)", { n: d.connections }) : t("Online")) : <span className="text-muted-foreground">{t("Offline")}</span>}
                     </span>
                   </Td>
-                  <Td>{d.currentUser ?? <span className="text-muted-foreground">—</span>}</Td>
-                  <Td className="font-mono text-xs">{d.ip ?? "—"}</Td>
+                  <Td className="max-md:hidden">{d.currentUser ?? <span className="text-muted-foreground">—</span>}</Td>
+                  <Td className="font-mono text-xs max-lg:hidden">{d.ip ?? "—"}</Td>
                   <Td className="whitespace-nowrap" title={fmt.dateTime(d.lastSeenAt)}>
                     {d.lastSeenAt ? fmt.relative(d.lastSeenAt) : "—"}
                   </Td>
-                  <Td>
+                  <Td className="max-md:hidden">
                     {table ? (
                       <div>
                         <div>{t("Table {n}", { n: table.tableNumber })}</div>
@@ -237,7 +238,7 @@ function DevicesContent() {
                       <span className="text-muted-foreground">—</span>
                     )}
                   </Td>
-                  <Td className="text-xs text-muted-foreground">{d.appVersion ?? "—"}</Td>
+                  <Td className="text-xs text-muted-foreground max-xl:hidden">{d.appVersion ?? "—"}</Td>
                   <Td>
                     <Switch
                       checked={d.trusted}

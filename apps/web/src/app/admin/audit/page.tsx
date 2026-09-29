@@ -160,7 +160,7 @@ function AuditContent() {
       <Card>
         <CardContent className="pt-5">
           <form
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             onSubmit={(e) => {
               e.preventDefault();
               apply();
@@ -227,7 +227,7 @@ function AuditContent() {
                 ))}
               </Select>
             </Field>
-            <div className="flex items-end gap-2">
+            <div className="flex flex-wrap items-end gap-2">
               <Button type="submit" className="flex-1">
                 <Filter /> {t("Apply")}
               </Button>
