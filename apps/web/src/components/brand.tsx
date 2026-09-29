@@ -14,10 +14,10 @@ export function SpadeMark({ className, style }: { className?: string; style?: CS
 export function Brand({ className, name = "Poker Club OS" }: { className?: string; name?: string }) {
   return (
     <div className={cn("flex min-w-0 items-center gap-2.5", className)}>
-      <span className="grid size-7 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
+      <span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-gradient-to-b from-gold to-gold/75 text-gold-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_1px_3px_rgb(0_0_0/0.5)]">
         <SpadeMark className="size-3.5" />
       </span>
-      <span className="truncate text-[15px] font-semibold tracking-tight">{name}</span>
+      <span className="truncate text-[15px] font-semibold tracking-[-0.015em]">{name}</span>
     </div>
   );
 }

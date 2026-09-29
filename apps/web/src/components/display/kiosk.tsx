@@ -272,7 +272,7 @@ export function Kiosk({ token }: { token: string }) {
       onContextMenu={(e) => e.preventDefault()}
     >
       <header className="flex items-center gap-4 border-b border-border bg-card px-6 py-3">
-        <span className="grid size-11 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-gradient-to-b from-gold to-gold/75 text-gold-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_1px_3px_rgb(0_0_0/0.5)]">
           <SpadeMark className="size-5" />
         </span>
         <div className="min-w-0 flex-1">

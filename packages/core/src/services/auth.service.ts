@@ -144,7 +144,7 @@ export class AuthService {
         organizationId: org!.id,
         name: "Standard clock",
         widgets: ["CLOCK", "BLINDS", "NEXT_LEVEL", "NEXT_BREAK", "ENTRIES", "REMAINING", "AVERAGE_STACK", "ANNOUNCEMENTS", "LOGO"],
-        theme: { accent: "#d4ae5c", background: "#0b0c0e" },
+        theme: { accent: "#ededef", background: "#08090a" },
       });
       await tx.insert(scoreRules).values({
         organizationId: org!.id,

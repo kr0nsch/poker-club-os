@@ -55,7 +55,7 @@ export function TournamentCard({ tour, org, registration }: { tour: PublicTourna
 
 /**
  * A tournament in play, read at a glance: level, clock and blinds large, the field below, the player's
- * own seat as a brass strip. The whole card opens the live page (which links to the details).
+ * own seat as a highlighted strip. The whole card opens the live page (which links to the details).
  */
 export function LiveTournamentCard({ tour, org, registration }: { tour: PublicTournament; org: string; registration?: MyRegistration | null }) {
   const t = useT();

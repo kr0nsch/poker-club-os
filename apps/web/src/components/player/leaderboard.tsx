@@ -5,7 +5,8 @@ import { useFormat, useT } from "@/lib/i18n";
 import type { PublicLeague } from "./api";
 
 export function RankBadge({ rank, className }: { rank: number; className?: string }) {
-  const tone = rank === 1 ? "bg-gold text-black" : rank === 2 ? "bg-slate-300 text-black" : rank === 3 ? "bg-amber-700 text-white" : "bg-muted text-muted-foreground";
+  // Medal colours carry meaning (gold, silver, bronze), so they stay coloured in the monochrome UI.
+  const tone = rank === 1 ? "bg-[#e3c16f] text-black" : rank === 2 ? "bg-slate-300 text-black" : rank === 3 ? "bg-amber-700 text-white" : "bg-white/[0.06] text-muted-foreground";
   return <span className={cn("inline-grid size-7 place-items-center rounded-full text-xs font-bold tabular-nums", tone, className)}>{rank}</span>;
 }
 

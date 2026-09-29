@@ -77,12 +77,12 @@ export const DisplayTemplateInput = z.object({
   widgets: z.array(z.enum(DISPLAY_WIDGETS)).min(1),
   theme: z
     .object({
-      accent: z.string().max(16).default("#d4ae5c"),
+      accent: z.string().max(16).default("#ededef"),
       background: z.string().max(16).default("#0b0c0e"),
       logoFileId: z.uuid().nullish(),
       sponsorText: z.string().max(120).nullish(),
     })
-    .default({ accent: "#d4ae5c", background: "#0b0c0e" }),
+    .default({ accent: "#ededef", background: "#08090a" }),
 });
 
 export const DisplayTokenInput = z.object({

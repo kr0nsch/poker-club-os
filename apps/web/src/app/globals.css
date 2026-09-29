@@ -1,45 +1,49 @@
 @import "tailwindcss";
-/* Fonts ship with the app (npm packages, served by the edge): nothing is fetched from the Internet. */
-@import "@fontsource-variable/onest";
+/* Fonts ship with the app (npm packages, served by the edge): nothing is fetched from the Internet.
+   Inter 4 with its optical-size axis: display sizes get the tighter display cut automatically. */
+@import "@fontsource-variable/inter/opsz.css";
 @import "@fontsource-variable/jetbrains-mono";
 
 /* Scan the shared UI package for class names. */
 @source "../../../../packages/ui/src";
 
 /*
- * Card-room instrument panel: neutral graphite surfaces for dim rooms, warm ivory type, and a
- * single brass accent reserved for what matters on the floor (focus, current level, winners).
- * Status colours are only used for status. No gradients or glows: depth comes from surface steps
- * and a hairline top light, and only floating layers (menus, dialogs) cast a soft shadow.
+ * Modern monochrome dark: a near-black canvas with a four-step surface ladder carrying hierarchy
+ * (canvas → card → popover → raised), hairline borders and light ink with two quieter tones. There
+ * is no brand hue: the accent (the `gold` token) is near-white, used for focus, the active item,
+ * the current level and the player's own seat, and the primary action is a light inverse button.
+ * Colour appears only as status (green, amber, red). Depth is surface steps and a hairline top
+ * light; only floating layers cast shadows.
  */
 :root {
-  --background: #0d0e10;
-  --foreground: #ebe7df;
-  --card: #141619;
-  --card-foreground: #ebe7df;
-  --popover: #1a1c20;
-  --popover-foreground: #ebe7df;
-  --primary: #ebe7df;
-  --primary-foreground: #0d0e10;
-  --secondary: #1d2024;
-  --secondary-foreground: #dcd8cf;
-  --muted: #17191c;
-  --muted-foreground: #8e929a;
-  --accent: #212428;
-  --accent-foreground: #ebe7df;
-  --destructive: #e5534b;
+  --background: #08090a;
+  --foreground: #f7f8f8;
+  --card: #101113;
+  --card-foreground: #f7f8f8;
+  --popover: #16171a;
+  --popover-foreground: #f7f8f8;
+  --primary: #f7f8f8;
+  --primary-foreground: #08090a;
+  --secondary: #1a1b1e;
+  --secondary-foreground: #e6e7e9;
+  --muted: #141518;
+  --muted-foreground: #8a8f98;
+  --accent: #1d1e22;
+  --accent-foreground: #f7f8f8;
+  --destructive: #eb5757;
   --destructive-foreground: #ffffff;
-  --success: #5cb88a;
-  --success-foreground: #07140d;
-  --warning: #e3a23b;
+  --success: #4cb782;
+  --success-foreground: #04120b;
+  --warning: #f2a33a;
   --warning-foreground: #1a1203;
-  --gold: #d4ae5c;
-  --gold-foreground: #16110a;
-  --border: #25282d;
-  --border-strong: #33373e;
-  --input: #2f3339;
-  --ring: #d4ae5c;
-  --radius: 0.375rem;
+  /* The accent: near-white. Named gold for history; every accent use in the app goes through it. */
+  --gold: #ededef;
+  --gold-foreground: #0a0a0b;
+  --border: #1f2024;
+  --border-strong: #2b2c31;
+  --input: #2a2b30;
+  --ring: var(--gold);
+  --radius: 0.5rem;
   color-scheme: dark;
 }
 
@@ -70,14 +74,14 @@
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-sans: "Onest Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", Consolas, monospace;
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 6px);
-  --radius-3xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
 }
 
 @layer base {
@@ -90,12 +94,15 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
   }
+  /* Headings pull in slightly, the way Inter's display sizes are meant to be set. */
   h1,
   h2,
   h3 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.022em;
   }
   ::selection {
     background: color-mix(in oklab, var(--gold) 35%, transparent);
@@ -103,7 +110,7 @@
   a {
     text-underline-offset: 0.2em;
   }
-  /* Keyboard focus: one brass ring everywhere, never the browser default. */
+  /* Keyboard focus: one accent ring everywhere, never the browser default. */
   :focus-visible {
     outline: 2px solid color-mix(in oklab, var(--gold) 80%, transparent);
     outline-offset: 2px;
@@ -173,15 +180,20 @@
   .felt {
     background: var(--background);
   }
+  /* Clocks use Inter's tabular figures: steady widths while the seconds tick, display shapes at size. */
   .clock-digits {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum", "zero" 0;
+    font-feature-settings: "tnum", "cv01";
     letter-spacing: -0.04em;
   }
-  /* A lifted surface: the faintest light edge on top instead of a heavier border. */
+  /* A lifted surface: light falls from above — a faint top-down wash, a hairline of light on the top
+     edge and a soft contact shadow below. */
   .edge-light {
-    box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.04);
+    background-image: linear-gradient(to bottom, rgb(255 255 255 / 0.022), transparent 42%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.045),
+      0 1px 2px rgb(0 0 0 / 0.35);
   }
   /* Motion: confident deceleration, short, state-only. */
   .fade-in {

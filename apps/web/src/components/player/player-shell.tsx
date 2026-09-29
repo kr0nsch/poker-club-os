@@ -46,11 +46,11 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-30 border-b border-border bg-background pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-background/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
         {/* Phone-first column; from lg the frame widens so pages can lay out two columns. */}
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center gap-2 px-4 lg:max-w-6xl">
           <Link href={base} className="flex h-10 min-w-0 items-center gap-2 font-semibold tracking-tight">
-            <span className="grid size-7 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
+            <span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-gradient-to-b from-gold to-gold/75 text-gold-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_1px_3px_rgb(0_0_0/0.5)]">
               <SpadeMark className="size-3.5" />
             </span>
             <span className="truncate">{clubName ?? t("Poker Club")}</span>
@@ -95,7 +95,7 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
         )}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("Main navigation")}>
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.06] bg-background/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden" aria-label={t("Main navigation")}>
         <div className="mx-auto grid max-w-3xl grid-cols-3">
           {items.map((i) => {
             const Icon = i.icon;

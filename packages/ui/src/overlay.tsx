@@ -17,20 +17,20 @@ export const DialogClose = DialogPrimitive.Close;
 export function DialogContent({ className, children, wide, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { wide?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fade-in fixed inset-0 z-50 bg-black/75" />
+      <DialogPrimitive.Overlay className="fade-in fixed inset-0 z-50 bg-black/65 backdrop-blur-[3px]" />
       {/* Centred by a plain wrapper so the entrance transform on the panel cannot fight the centring. */}
       <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-4">
         <DialogPrimitive.Content
           className={cn(
-            "rise-in edge-light pointer-events-auto relative grid max-h-[90dvh] w-full gap-4 overflow-y-auto rounded-xl border border-border-strong bg-popover p-6 shadow-[0_24px_64px_-24px_rgb(0_0_0/0.8)]",
+            "rise-in pointer-events-auto relative grid max-h-[90dvh] w-full gap-4 overflow-y-auto rounded-2xl border border-white/[0.08] bg-popover p-6 shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_32px_80px_-16px_rgb(0_0_0/0.75)]",
             wide ? "max-w-3xl" : "max-w-lg",
             className,
           )}
           {...props}
         >
           {children}
-          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <X className="size-5" />
+          <DialogPrimitive.Close className="absolute right-3.5 top-3.5 grid size-8 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <X className="size-[18px]" />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         </DialogPrimitive.Content>
@@ -47,7 +47,7 @@ export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLD
   return <div className={cn("sticky -bottom-6 z-10 -mx-6 -mb-6 flex flex-col-reverse gap-2 bg-popover px-6 pb-6 pt-3 sm:flex-row sm:justify-end", className)} {...props} />;
 }
 export function DialogTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>) {
-  return <DialogPrimitive.Title className={cn("text-lg font-semibold", className)} {...props} />;
+  return <DialogPrimitive.Title className={cn("text-lg font-semibold tracking-[-0.018em]", className)} {...props} />;
 }
 export function DialogDescription({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>) {
   return <DialogPrimitive.Description className={cn("text-sm text-muted-foreground", className)} {...props} />;
@@ -63,7 +63,7 @@ export function DropdownMenuContent({ className, sideOffset = 4, ...props }: Rea
     <DropdownPrimitive.Portal>
       <DropdownPrimitive.Content
         sideOffset={sideOffset}
-        className={cn("fade-in edge-light z-50 min-w-44 overflow-hidden rounded-lg border border-border-strong bg-popover p-1 text-popover-foreground shadow-[0_12px_32px_-12px_rgb(0_0_0/0.6)]", className)}
+        className={cn("fade-in z-50 min-w-48 overflow-hidden rounded-xl border border-white/[0.08] bg-popover p-1 text-popover-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_16px_48px_-12px_rgb(0_0_0/0.7)]", className)}
         {...props}
       />
     </DropdownPrimitive.Portal>
@@ -74,7 +74,7 @@ export function DropdownMenuItem({ className, destructive, ...props }: React.Com
   return (
     <DropdownPrimitive.Item
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2.5 py-2 text-sm outline-none focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4",
+        "relative flex cursor-pointer select-none items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] outline-none focus:bg-white/[0.07] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 pointer-coarse:py-2.5 [&_svg]:size-4 [&_svg]:text-muted-foreground",
         destructive && "text-destructive focus:bg-destructive/15",
         className,
       )}
@@ -84,7 +84,7 @@ export function DropdownMenuItem({ className, destructive, ...props }: React.Com
 }
 
 export function DropdownMenuSeparator({ className }: { className?: string }) {
-  return <DropdownPrimitive.Separator className={cn("-mx-1 my-1 h-px bg-border", className)} />;
+  return <DropdownPrimitive.Separator className={cn("-mx-1 my-1 h-px bg-white/[0.06]", className)} />;
 }
 
 export function DropdownMenuLabel({ className, ...props }: React.ComponentPropsWithoutRef<typeof DropdownPrimitive.Label>) {
@@ -96,11 +96,11 @@ export function DropdownMenuLabel({ className, ...props }: React.ComponentPropsW
 export const Tabs = TabsPrimitive.Root;
 
 export function TabsList({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  // Underlined tabs on a hairline, not a pill-shaped segmented control. The hairline is an inset
-  // shadow so the row can scroll sideways on a phone without clipping the active underline.
+  // A segmented control: a recessed track with the active tab lifted onto it. Scrolls sideways on a
+  // phone when the labels do not fit.
   return (
     <TabsPrimitive.List
-      className={cn("inline-flex h-10 max-w-full items-end gap-5 overflow-x-auto text-muted-foreground shadow-[inset_0_-1px_0_var(--color-border)] [scrollbar-width:none]", className)}
+      className={cn("inline-flex h-9 max-w-full items-center gap-0.5 overflow-x-auto rounded-lg border border-white/[0.06] bg-white/[0.03] p-0.5 text-muted-foreground [scrollbar-width:none] pointer-coarse:h-11", className)}
       {...props}
     />
   );
@@ -110,7 +110,7 @@ export function TabsTrigger({ className, ...props }: React.ComponentPropsWithout
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex h-10 min-w-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 border-transparent px-0.5 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 data-[state=active]:border-gold data-[state=active]:text-foreground [&_svg]:size-4",
+        "inline-flex h-full min-w-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 text-[13px] font-medium transition-[color,background-color,box-shadow] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_1px_2px_rgb(0_0_0/0.4)] [&_svg]:size-4",
         className,
       )}
       {...props}
@@ -130,12 +130,12 @@ export function Switch({ className, ...props }: React.ComponentPropsWithoutRef<t
       className={cn(
         // Touch screens get a thumb-sized switch (48×28); a mouse keeps the compact one. The ::after
         // box extends the hit area 8 px on every side without changing the layout.
-        "peer relative inline-flex h-5 w-9 shrink-0 after:absolute after:-inset-2 cursor-pointer items-center rounded-full border border-border-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-gold data-[state=checked]:bg-gold data-[state=unchecked]:bg-input pointer-coarse:h-7 pointer-coarse:w-12",
+        "peer relative inline-flex h-5 w-9 shrink-0 after:absolute after:-inset-2 cursor-pointer items-center rounded-full border border-border-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-transparent data-[state=checked]:bg-gold data-[state=unchecked]:bg-white/[0.1] pointer-coarse:h-7 pointer-coarse:w-12",
         className,
       )}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px pointer-coarse:size-6 pointer-coarse:data-[state=checked]:translate-x-[21px]" />
+      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.45)] ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=checked]:translate-x-[17px] data-[state=unchecked]:translate-x-px pointer-coarse:size-6 pointer-coarse:data-[state=checked]:translate-x-[21px]" />
     </SwitchPrimitive.Root>
   );
 }

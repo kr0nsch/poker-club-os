@@ -346,7 +346,7 @@ function TemplateCard({
         </div>
       </CardHeader>
       <CardContent className="grid gap-3">
-        <TemplatePreview compact widgets={template.widgets} accent={theme.accent ?? "#d4ae5c"} background={theme.background ?? "#0b0c0e"} sponsorText={theme.sponsorText} />
+        <TemplatePreview compact widgets={template.widgets} accent={theme.accent ?? "#ededef"} background={theme.background ?? "#08090a"} sponsorText={theme.sponsorText} />
         <div className="flex flex-wrap gap-1">
           {template.widgets.map((w) => (
             <Badge key={w} variant="secondary">
@@ -357,10 +357,10 @@ function TemplateCard({
       </CardContent>
       <CardFooter className="mt-auto gap-3 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-3 rounded-sm border border-border" style={{ background: theme.accent ?? "#d4ae5c" }} /> {t("Accent")}
+          <span className="size-3 rounded-sm border border-border" style={{ background: theme.accent ?? "#ededef" }} /> {t("Accent")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="size-3 rounded-sm border border-border" style={{ background: theme.background ?? "#0b0c0e" }} /> {t("Background")}
+          <span className="size-3 rounded-sm border border-border" style={{ background: theme.background ?? "#08090a" }} /> {t("Background")}
         </span>
         {theme.sponsorText && <span className="truncate">“{theme.sponsorText}”</span>}
       </CardFooter>

@@ -163,7 +163,7 @@ function ClockScreen({ snap, widgets, league, now, portrait }: { snap: PublicLiv
   const center = (
     <div className="relative flex min-w-0 flex-col items-center justify-center text-center">
       <div
-        className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.paused ? "text-warning" : v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")}
+        className={cn("flex items-center gap-[1vw] font-semibold tracking-[-0.01em]", v.paused ? "text-warning" : v.isBreak ? "text-white/70" : "text-[var(--tv-accent)]")}
         style={{ fontSize: fs(2.6, 4.6) }}
       >
         {v.paused ? (
@@ -243,7 +243,7 @@ function NotStartedScreen({ snap, now }: { snap: PublicLiveSnapshot; now: number
   const first = snap.levels.find((l) => l.type === "PLAY") ?? null;
   return (
     <div className="flex h-full flex-col items-center justify-center gap-[2vh] px-[3vw] text-center">
-      <div className="font-bold uppercase tracking-[0.22em] text-[var(--tv-accent)]" style={{ fontSize: fs(3, 5.2) }}>
+      <div className="font-semibold tracking-[-0.015em] text-[var(--tv-accent)]" style={{ fontSize: fs(3, 5.2) }}>
         {snap.tournament.status === "SEATING" ? t("Seating in progress") : t("Starts at {time}", { time: f.time(snap.tournament.startAt) })}
       </div>
       <div className="clock-digits font-bold leading-none" style={{ fontSize: until > 3_600_000 ? fs(13, 25) : fs(17, 31) }}>
@@ -287,7 +287,7 @@ function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveS
   return (
     <div className="flex h-full flex-col px-[3vw] pt-[1.5vh]">
       <div className="flex flex-wrap items-baseline justify-between gap-x-[2vw]">
-        <div className={cn("font-bold uppercase text-[var(--tv-accent)]", portrait ? "tracking-[0.08em]" : "tracking-[0.2em]")} style={{ fontSize: fs(2.6, 4.6) }}>
+        <div className="font-semibold tracking-[-0.015em] text-[var(--tv-accent)]" style={{ fontSize: fs(2.6, 4.6) }}>
           {t("Find your seat")}
         </div>
         {pages > 1 && (
@@ -325,7 +325,7 @@ function FinishedScreen({ snap }: { snap: PublicLiveSnapshot }) {
   const winner = top.find((r) => r.position === 1);
   return (
     <div className="flex h-full flex-col items-center justify-center gap-[2.5vh] px-[3vw]">
-      <div className="flex items-center gap-[1.2vw] font-bold uppercase tracking-[0.2em] text-gold" style={{ fontSize: fs(3, 5.4) }}>
+      <div className="flex items-center gap-[1.2vw] font-semibold tracking-[-0.015em] text-[var(--tv-accent)]" style={{ fontSize: fs(3, 5.4) }}>
         <Trophy style={{ width: fs(3.6, 6.4), height: fs(3.6, 6.4) }} /> {t("Tournament finished")}
       </div>
       {winner && (
@@ -391,7 +391,7 @@ function IdleScreen({ state, now, league, portrait }: { state: DeviceState; now:
 function MessageScreen({ title, detail, now }: { title: string; detail?: string; now: number }) {
   const f = useFormat();
   return (
-    <div className="flex h-dvh w-screen flex-col items-center justify-center gap-[2vh] bg-[#0b0c0e] text-center text-white">
+    <div className="flex h-dvh w-screen flex-col items-center justify-center gap-[2vh] bg-[#08090a] text-center text-white">
       <SpadeMark className="text-gold" style={{ width: fs(6, 10), height: fs(6, 10) }} />
       <div className="clock-digits font-bold" style={{ fontSize: fs(10, 18) }}>
         {f.time(new Date(now))}
@@ -433,7 +433,7 @@ export function TvDisplay({ token }: { token: string }) {
   }
 
   const offline = rt.socket !== "open" || (state.isError && !isRevoked(state.error));
-  const style = { "--tv-accent": safeColor(s.template.theme.accent, "#d4ae5c"), backgroundColor: safeColor(s.template.theme.background, "#0b0c0e") } as CSSProperties;
+  const style = { "--tv-accent": safeColor(s.template.theme.accent, "#ededef"), backgroundColor: safeColor(s.template.theme.background, "#08090a") } as CSSProperties;
   const announcement = widgets.has("ANNOUNCEMENTS") ? (snap?.announcements.find((a) => !a.displayUntil || Date.parse(a.displayUntil) > now) ?? null) : null;
   const sponsor = widgets.has("SPONSOR") ? (s.template.theme.sponsorText?.trim() || null) : null;
   const status = snap?.tournament.status;
@@ -453,7 +453,7 @@ export function TvDisplay({ token }: { token: string }) {
 
   return (
     <div
-      className={cn("relative flex h-dvh w-screen select-none flex-col overflow-hidden text-[#ebe7df]", idle && "cursor-none")}
+      className={cn("relative flex h-dvh w-screen select-none flex-col overflow-hidden text-[#f7f8f8]", idle && "cursor-none")}
       style={style}
       onDoubleClick={() => {
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
@@ -462,7 +462,7 @@ export function TvDisplay({ token }: { token: string }) {
     >
       <Header state={s} snap={snap} now={now} offline={offline} widgets={widgets} />
       {v.handForHand && !v.finished && (
-        <div className="relative mx-[3vw] mt-[1.5vh] flex items-center justify-center gap-[1vw] rounded-[1.2vh] bg-red-600 py-[0.8vh] font-bold uppercase tracking-[0.16em]" style={{ fontSize: fs(2.6, 4.6) }}>
+        <div className="relative mx-[3vw] mt-[1.5vh] flex items-center justify-center gap-[1vw] rounded-[1.2vh] bg-red-600 py-[0.8vh] font-semibold tracking-[-0.01em]" style={{ fontSize: fs(2.6, 4.6) }}>
           <Hand style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} /> {t("Hand-for-hand")}
         </div>
       )}

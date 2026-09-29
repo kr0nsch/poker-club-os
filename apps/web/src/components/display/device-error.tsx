@@ -20,7 +20,7 @@ export function DeviceCrashScreen({ error, reloadAfterSeconds = 20 }: { error: E
     if (left <= 0) window.location.reload();
   }, [left]);
   return (
-    <div className="grid h-dvh w-screen place-items-center bg-[#0b0c0e] text-center text-white" onClick={() => window.location.reload()}>
+    <div className="grid h-dvh w-screen place-items-center bg-[#08090a] text-center text-white" onClick={() => window.location.reload()}>
       <div className="grid justify-items-center gap-4">
         <SpadeMark className="size-14 text-gold" />
         <div className="text-2xl font-semibold">{t("Restarting…")}</div>

@@ -75,13 +75,13 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
     },
   ];
   return (
-    <nav className="grid gap-5 text-sm">
+    <nav className="grid gap-6 text-sm">
       {groups.map((g) => {
         const items = g.items.filter((i) => !i.permission || can(i.permission));
         if (items.length === 0) return null;
         return (
           <div key={g.title} className="grid gap-0.5">
-            <div className="px-3 pb-1 text-xs font-medium text-muted-foreground/80">{g.title}</div>
+            <div className="px-2.5 pb-1.5 text-[11.5px] font-medium text-muted-foreground/70">{g.title}</div>
             {items.map((i) => {
               const active = i.href === "/admin" ? path === "/admin" : path.startsWith(i.href);
               const Icon = i.icon;
@@ -92,8 +92,10 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-md px-3 py-2 transition-colors",
-                    active ? "edge-light bg-accent font-medium text-foreground [&_svg]:text-gold" : "text-foreground/75 hover:bg-accent/60 hover:text-foreground [&_svg]:text-muted-foreground",
+                    "flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium transition-colors pointer-coarse:h-10",
+                    active
+                      ? "bg-white/[0.07] text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.04)] [&_svg]:text-gold"
+                      : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground [&_svg]:text-muted-foreground/80",
                   )}
                 >
                   <Icon className="size-4 transition-colors" />
@@ -112,18 +114,18 @@ function Shell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-h-dvh">
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 overflow-y-auto border-r border-border bg-card/40 p-4 lg:flex">
-        <Link href="/admin" className="flex h-10 items-center">
+      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col gap-6 overflow-y-auto border-r border-white/[0.06] bg-[#0b0c0d] px-3 py-4 lg:flex">
+        <Link href="/admin" className="flex h-10 shrink-0 items-center px-1.5">
           <Brand />
         </Link>
         <Nav />
-        <div className="mt-auto flex items-center gap-2 px-3 text-xs text-muted-foreground">
+        <div className="mt-auto flex items-center gap-2 px-2.5 text-xs text-muted-foreground/70">
           <ShieldCheck className="size-3.5" /> Venue Edge Server
         </div>
       </aside>
       {open && (
         <div className="fade-in fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setOpen(false)}>
-          <aside className="h-full w-72 overflow-y-auto border-r border-border bg-card p-4" onClick={(e) => e.stopPropagation()}>
+          <aside className="rise-in h-full w-72 overflow-y-auto border-r border-white/[0.06] bg-[#0b0c0d] px-3 py-4" onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
               <Brand />
               <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
@@ -135,10 +137,10 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 border-b border-border bg-background">
+        <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-background/80 backdrop-blur-xl">
           <ConnectivityBanner />
           {/* Same column as <main> so the header edges line up with the page on wide screens. */}
-          <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-6 min-[1800px]:max-w-[96rem]">
+          <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-4 md:px-8 min-[1800px]:max-w-[96rem]">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
               <Menu />
             </Button>
@@ -147,7 +149,7 @@ function Shell({ children }: { children: ReactNode }) {
             <UserMenu />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-6 min-[1800px]:max-w-[96rem]">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:px-8 md:py-8 min-[1800px]:max-w-[96rem]">{children}</main>
       </div>
     </div>
   );

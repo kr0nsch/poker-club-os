@@ -140,7 +140,7 @@ export default function TelegramMiniAppPage() {
   return (
     <main className="felt flex min-h-dvh flex-col items-center justify-center gap-6 p-4">
       <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => void start()} onError={() => setPhase((p) => (p === "loading" ? "not-telegram" : p))} />
-      <span className="grid size-14 place-items-center rounded-lg border border-gold/45 text-gold">
+      <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-b from-gold to-gold/75 text-gold-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_2px_8px_rgb(0_0_0/0.5)]">
         <SpadeMark className="size-7" />
       </span>
       <Card className="w-full max-w-sm">
