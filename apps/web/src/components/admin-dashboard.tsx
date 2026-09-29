@@ -284,7 +284,7 @@ export function Schedule({ tournaments, href = (x) => `/admin/tournaments/${x.id
               const fill = x.maxPlayers ? Math.min(1, x.registrationCount / x.maxPlayers) : null;
               return (
                 <li key={x.id}>
-                  <Link href={href(x)} className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-accent/40 sm:grid-cols-[3.5rem_minmax(0,1fr)_9rem_auto]">
+                  <Link href={href(x)} className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-accent/40 sm:grid-cols-[3.5rem_minmax(0,1fr)_10.5rem_auto]">
                     <span className="text-sm font-semibold tabular-nums">{f.time(x.startAt)}</span>
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{x.name}</span>
@@ -292,10 +292,10 @@ export function Schedule({ tournaments, href = (x) => `/admin/tournaments/${x.id
                         {tt.buyIn(x.buyIn)} · {tt.format(x.format)}
                       </span>
                     </span>
-                    <span className="max-sm:hidden">
-                      <span className="flex items-baseline justify-between text-xs text-muted-foreground">
-                        <span>{t("Registered")}</span>
-                        <span className="font-medium text-foreground tabular-nums">
+                    <span className="min-w-0 max-sm:hidden">
+                      <span className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
+                        <span className="truncate">{t("Registered")}</span>
+                        <span className="shrink-0 whitespace-nowrap font-medium text-foreground tabular-nums">
                           {x.registrationCount}
                           {x.maxPlayers ? ` / ${x.maxPlayers}` : ""}
                         </span>
