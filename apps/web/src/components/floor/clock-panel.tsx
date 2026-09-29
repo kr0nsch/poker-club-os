@@ -115,13 +115,13 @@ export function ClockPanel() {
                   <ChevronRight />
                 </Button>
               </div>
-              {/* "End hand-for-hand" is long: labels wrap inside the half-width buttons. */}
+              {/* Labels wrap inside the half-width buttons; while hand-for-hand runs, ending it takes the full row on top. */}
               <div className="grid grid-cols-2 gap-2 [&>button]:h-auto [&>button]:min-h-10 [&>button]:whitespace-normal [&>button]:px-2 [&>button]:py-1.5 [&>button]:leading-tight">
                 <Button variant="outline" onClick={() => setSetTime(true)}>
                   <Timer /> {t("Set time")}
                 </Button>
                 {status === "HAND_FOR_HAND" || tournament.pausedFromStatus === "HAND_FOR_HAND" ? (
-                  <Button variant="destructive" loading={pending} onClick={() => run("END_HAND_FOR_HAND")}>
+                  <Button variant="destructive" className="order-first col-span-2" loading={pending} onClick={() => run("END_HAND_FOR_HAND")}>
                     <Hand /> {t("End hand-for-hand")}
                   </Button>
                 ) : (

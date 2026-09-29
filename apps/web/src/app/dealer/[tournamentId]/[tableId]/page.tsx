@@ -1,8 +1,8 @@
 "use client";
 
-import { Alert, Badge, Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Skeleton, cn } from "@pcos/ui";
+import { Alert, Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Skeleton, cn } from "@pcos/ui";
 import { useQuery } from "@tanstack/react-query";
-import { BellRing, Check, Crown, LogIn, Skull, UserCheck } from "lucide-react";
+import { BellRing, Check, Crown, Hand, LogIn, Skull, UserCheck } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -84,6 +84,12 @@ export default function DealerTable() {
         }
       />
       <main className="mx-auto grid max-w-4xl gap-4 p-3 md:p-4">
+        {/* Hand-for-hand changes how the dealer runs the table: a full-width strip, not a small tag. */}
+        {s.tournament.status === "HAND_FOR_HAND" && (
+          <div className="fade-in flex items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 text-lg font-semibold text-destructive-foreground">
+            <Hand className="size-5" /> {t("Hand-for-hand")}
+          </div>
+        )}
         <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <div className="text-sm text-muted-foreground">{clock?.isBreak ? t("Break") : `${t("Level")} ${clock?.playLevelNumber ?? 1}`}</div>
@@ -93,7 +99,6 @@ export default function DealerTable() {
             </div>
           </div>
           <div className={cn("clock-digits text-5xl font-bold", s.tournament.status === "PAUSED" && "text-warning/70")}>{clock?.formatted ?? "--:--"}</div>
-          {s.tournament.status === "HAND_FOR_HAND" && <Badge variant="destructive">{t("Hand-for-hand")}</Badge>}
         </Card>
 
         {!table && <Alert variant="warning">{t("This table is not part of the tournament any more.")}</Alert>}
