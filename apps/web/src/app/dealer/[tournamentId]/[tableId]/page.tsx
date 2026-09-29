@@ -114,9 +114,8 @@ export default function DealerTable() {
                 <div key={m.id} className="fade-in flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2">
                   <span className="min-w-0 flex-[1_1_12rem] text-lg">
                     <b>{names.get(m.entryId) ?? "?"}</b> → {t("Seat")} {m.toSeat}
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      ({t("from table {n}", { n: m.fromTableNumber ?? "?" })})
-                    </span>
+                    {/* A player restored after a mistaken bust comes back from no table: nothing to show. */}
+                    {m.fromTableNumber != null && <span className="ml-2 text-sm text-muted-foreground">({t("from table {n}", { n: m.fromTableNumber })})</span>}
                   </span>
                   <Button size="lg" className="ml-auto" onClick={() => run("DEALER_CONFIRM_MOVEMENT", { movementId: m.id }, t("Arrival confirmed"))}>
                     <Check /> {t("Arrived")}
