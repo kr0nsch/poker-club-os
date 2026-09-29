@@ -135,20 +135,20 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
       <div className="grid grid-cols-2 border-t border-border/60">
         <div className="p-4">
           <div className="eyebrow">{v.isBreak ? t("Next level") : t("Blinds")}</div>
-          <div className="mt-1 text-2xl font-bold tabular-nums">{v.isBreak ? (next ? tt.blinds(next) : "—") : tt.blinds(level)}</div>
+          <div className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums min-[420px]:text-2xl">{v.isBreak ? (next ? tt.blinds(next) : "—") : tt.blinds(level)}</div>
           {(v.isBreak ? nextAnte : ante) && <div className="text-sm text-muted-foreground tabular-nums">{v.isBreak ? nextAnte : ante}</div>}
         </div>
         <div className="border-l border-border/60 p-4">
           <div className="eyebrow">{v.isBreak ? t("Next break") : t("Next level")}</div>
           {v.isBreak ? (
-            <div className="mt-1 text-2xl font-bold tabular-nums">{d.msUntilNextBreak != null ? formatClock(d.msUntilNextBreak) : "—"}</div>
+            <div className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums min-[420px]:text-2xl">{d.msUntilNextBreak != null ? formatClock(d.msUntilNextBreak) : "—"}</div>
           ) : followingLevel?.type === "BREAK" ? (
             <div className="mt-1 text-2xl font-bold text-gold">
               {t("Break")} <span className="whitespace-nowrap text-base font-medium text-muted-foreground">· {tt.minutes(followingLevel.durationSeconds)}</span>
             </div>
           ) : (
             <>
-              <div className="mt-1 text-2xl font-bold tabular-nums">{next ? tt.blinds(next) : "—"}</div>
+              <div className="mt-1 whitespace-nowrap text-xl font-bold tabular-nums min-[420px]:text-2xl">{next ? tt.blinds(next) : "—"}</div>
               {nextAnte && <div className="text-sm text-muted-foreground tabular-nums">{nextAnte}</div>}
             </>
           )}
