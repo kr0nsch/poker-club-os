@@ -27,6 +27,7 @@ import { sysKeys, useEdgeHealth, useStaffList, useTelegramIntegration, useTourna
 import type { BackupRun, NetworkInfo } from "@/components/admin-system/types";
 import { Bar, CopyButton, CopyField, ErrorState, InfoList, InfoRow, LiveDot, QrImage, RowsSkeleton, useLocaleTag } from "@/components/admin-system/ui";
 import { useCan, useStaff } from "@/components/staff-guard";
+import { UrlText } from "@/components/url-text";
 import { get } from "@/lib/api";
 import { useFormat, useT } from "@/lib/i18n";
 import { useRealtimeState, useServerNow } from "@/lib/realtime-context";
@@ -95,8 +96,8 @@ function QrCard({ icon: Icon, title, description, url, qr, loading }: { icon: Lu
         ) : url ? (
           <>
             <QrImage value={url} dataUrl={qr} size={200} alt={t("QR code: {title}", { title })} />
-            <a href={url} target="_blank" rel="noreferrer" className="max-w-full break-all py-1.5 text-center font-mono text-sm text-primary hover:underline">
-              {url}
+            <a href={url} target="_blank" rel="noreferrer" className="max-w-full py-1.5 text-center font-mono text-sm text-primary [overflow-wrap:anywhere] hover:underline">
+              <UrlText url={url} />
             </a>
             <CopyButton value={url} label={t("Copy link")} />
           </>
