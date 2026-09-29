@@ -93,8 +93,9 @@ function Banner({ announcement, sponsor }: { announcement: AnnouncementView | nu
         <div className="flex-1" />
       )}
       {sponsor && (
-        <div className="flex max-w-[30vw] shrink-0 items-center truncate text-white/55" style={{ fontSize: fs(1.6, 2.8) }}>
-          {sponsor}
+        // Next to an announcement the sponsor line stays narrow; alone it may use the whole width.
+        <div className={cn("flex min-w-0 items-center text-white/55", announcement ? "max-w-[30vw] shrink-0 portrait:max-w-[45vw]" : "max-w-full")} style={{ fontSize: fs(1.6, 2.8) }}>
+          <span className="truncate">{sponsor}</span>
         </div>
       )}
     </footer>
@@ -272,9 +273,9 @@ function NotStartedScreen({ snap, now }: { snap: PublicLiveSnapshot; now: number
 function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveSnapshot["seating"]>; portrait: boolean }) {
   const t = useT();
   // A vertical panel fits fewer, longer columns.
-  const cols = portrait ? 2 : SEATING_COLS;
-  const rowsPerCol = portrait ? 18 : SEATING_ROWS;
-  const perPage = rowsPerCol * cols;
+  const maxCols = portrait ? 2 : SEATING_COLS;
+  const maxRows = portrait ? 18 : SEATING_ROWS;
+  const perPage = maxRows * maxCols;
   const pages = Math.max(1, Math.ceil(seating.length / perPage));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -284,6 +285,11 @@ function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveS
   }, [pages]);
   const current = page % pages;
   const rows = seating.slice(current * perPage, (current + 1) * perPage);
+  // Fit the page to its field: a small field spreads over two columns in larger type instead of
+  // filling a third of the screen; a full page keeps the dense grid.
+  const cols = Math.min(maxCols, Math.max(portrait ? 1 : 2, Math.ceil(rows.length / maxRows)));
+  const rowsPerCol = Math.max(Math.ceil(rows.length / cols), portrait ? 10 : 6);
+  const scale = Math.min(1.7, maxRows / rowsPerCol);
   return (
     <div className="flex h-full flex-col px-[3vw] pt-[1.5vh]">
       <div className="flex flex-wrap items-baseline justify-between gap-x-[2vw]">
@@ -302,7 +308,7 @@ function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveS
         style={{ gridTemplateRows: `repeat(${rowsPerCol}, minmax(0, 1fr))`, gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
         {rows.map((r) => (
-          <div key={`${r.tableNumber}-${r.seatNumber}`} className="flex items-center justify-between gap-[1vw] border-b border-white/10" style={{ fontSize: fs(1.9, 3.4) }}>
+          <div key={`${r.tableNumber}-${r.seatNumber}`} className="flex items-center justify-between gap-[1vw] border-b border-white/10" style={{ fontSize: fs(1.9 * scale, 3.4 * scale) }}>
             <span className="min-w-0 truncate font-medium">{r.playerName}</span>
             <span className="shrink-0 font-bold tabular-nums text-white/85">
               {r.tableNumber}
