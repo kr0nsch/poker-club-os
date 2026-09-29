@@ -2,7 +2,7 @@
 
 import { Alert, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Field, Input } from "@pcos/ui";
 import { useQueryClient } from "@tanstack/react-query";
-import type { MeView } from "@pcos/types";
+import { slugify, type MeView } from "@pcos/types";
 import { KeyRound, Network, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,14 +11,6 @@ import { ApiError, post, setCsrfToken } from "@/lib/api";
 import { useT } from "@/lib/i18n";
 import { keys } from "@/lib/queries";
 
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^\w\s-]/g, "")
-    .trim()
-    .replace(/[\s_]+/g, "-")
-    .slice(0, 40);
 
 /** First-run setup (spec §101). Requires the one-time token printed on the edge server console. */
 export default function SetupPage() {
@@ -49,8 +41,8 @@ export default function SetupPage() {
     try {
       const me = await post<MeView>("/api/v1/auth/setup", {
         setupToken: f.setupToken.trim(),
-        organization: { name: f.orgName, slug: f.orgSlug || slugify(f.orgName) },
-        venue: { name: f.venueName, slug: f.venueSlug || slugify(f.venueName), timezone: f.timezone, localHostname: f.localHostname || undefined },
+        organization: { name: f.orgName, slug: f.orgSlug || slugify(f.orgName) || "club" },
+        venue: { name: f.venueName, slug: f.venueSlug || slugify(f.venueName) || "main", timezone: f.timezone, localHostname: f.localHostname || undefined },
         edgeNode: { name: f.edgeName },
         admin: { email: f.adminEmail, displayName: f.adminName, password: f.adminPassword },
       });

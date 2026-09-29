@@ -32,6 +32,7 @@ import {
 import {
   CreateFromTemplateInput,
   TDA_2026_STYLE,
+  slugify,
   TournamentCreateInput,
   TournamentListQuery,
   TournamentUpdateInput,
@@ -54,18 +55,7 @@ import type { StructureService } from "./structure.service.js";
 const LIVE_EDITABLE = new Set(["name", "description", "maxPlayers", "expectedPlayers", "lateRegistrationPolicy", "reentryPolicy", "rebuyPolicy", "addonPolicy", "publicVisibility", "seasonId", "seriesId"]);
 const CLOSED_EDITABLE = new Set(["name", "description", "seasonId", "seriesId", "publicVisibility"]);
 
-function slugify(name: string) {
-  return (
-    name
-      .toLowerCase()
-      .normalize("NFKD")
-      .replace(/[^\w\s-]/g, "")
-      .trim()
-      .replace(/[\s_]+/g, "-")
-      .replace(/-+/g, "-")
-      .slice(0, 50) || "tournament"
-  );
-}
+const tournamentSlug = (name: string) => slugify(name) || "tournament";
 
 export class TournamentService {
   constructor(
@@ -116,7 +106,7 @@ export class TournamentService {
       }
       const id = randomUUID();
       const snapshot = await this.structures.snapshotForTournament(tx, orgId, input.structureId, id);
-      const slug = await this.uniqueSlug(tx, orgId, input.slug ?? `${slugify(input.name)}-${input.startAt.slice(0, 10)}`);
+      const slug = await this.uniqueSlug(tx, orgId, input.slug ?? `${tournamentSlug(input.name)}-${input.startAt.slice(0, 10)}`);
       const [t] = await tx
         .insert(tournaments)
         .values({

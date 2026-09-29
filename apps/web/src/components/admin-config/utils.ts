@@ -1,3 +1,4 @@
+import { slugify as baseSlugify } from "@pcos/types";
 // Small pure helpers shared by the configuration pages.
 
 type T = (text: string, vars?: Record<string, string | number | null | undefined>) => string;
@@ -133,15 +134,7 @@ export function ordinal(n: number, locale: string): string {
 }
 
 export function slugify(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^\w\s-]/g, "")
-    .trim()
-    .replace(/[\s_]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 64);
+  return baseSlugify(s, 64);
 }
 
 export const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

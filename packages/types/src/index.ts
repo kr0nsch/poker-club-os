@@ -9,3 +9,4 @@ export * from "./schemas/players.js";
 export * from "./schemas/tournaments.js";
 export * from "./schemas/commands.js";
 export * from "./schemas/misc.js";
+export * from "./slug.js";
