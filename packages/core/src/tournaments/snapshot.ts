@@ -21,7 +21,7 @@ import {
   type TournamentSnapshot,
   type TournamentStatus,
 } from "@pcos/types";
-import { deriveClock, isLateRegistrationOpen } from "@pcos/domain";
+import { deriveClock, isLateRegistrationOpen, isLive } from "@pcos/domain";
 import { and, asc, desc, eq, gt, isNull, ne, or } from "drizzle-orm";
 import { computeTournamentStats } from "./stats.js";
 import {
@@ -49,6 +49,8 @@ import {
 /** Late registration as the rules evaluate it right now (level/time based closing included). */
 export function lateRegistrationOpenNow(t: TournamentRow, levels: readonly LevelRow[], clock: ClockRow, nowMs: number): boolean {
   if (t.status === "REGISTRATION_OPEN") return true;
+  // Not yet open (draft/scheduled) or already over.
+  if (t.status !== "SEATING" && !isLive(t.status as TournamentStatus)) return false;
   return isLateRegistrationOpen({
     status: t.status as TournamentStatus,
     policy: policies(t).lateReg,

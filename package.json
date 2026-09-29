@@ -16,6 +16,7 @@
     "db:migrate": "pnpm --filter @pcos/db run migrate",
     "db:generate": "pnpm --filter @pcos/db run generate",
     "db:seed": "pnpm --filter @pcos/db run seed",
+    "seed:demo": "node --env-file=.env scripts/seed-demo.mjs",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",

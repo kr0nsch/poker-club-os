@@ -373,10 +373,11 @@ export class TournamentService {
     const nowMs = this.deps.now().getTime();
     const items = [];
     for (const r of rows) {
-      // Only running tournaments need the clock to know whether late registration is still open.
-      const registrationOpen = isLive(r.t.status as TournamentStatus)
-        ? lateRegistrationOpenNow(r.t, await loadLevels(this.deps.db, r.t.structureId), await loadClockRow(this.deps.db, r.t.id), nowMs)
-        : r.t.status === "REGISTRATION_OPEN";
+      // Only the seat draw and running tournaments need the clock to know whether late registration is still open.
+      const registrationOpen =
+        r.t.status === "SEATING" || isLive(r.t.status as TournamentStatus)
+          ? lateRegistrationOpenNow(r.t, await loadLevels(this.deps.db, r.t.structureId), await loadClockRow(this.deps.db, r.t.id), nowMs)
+          : r.t.status === "REGISTRATION_OPEN";
       items.push({
         ...toSummaryView(r.t, counts.get(r.t.id) ?? 0),
         venueName: r.venueName,

@@ -26,6 +26,11 @@ if (!existsSync(envFile)) {
     COOKIE_SECURE: "false",
     EDGE_NODE_ID: "edge-dev",
     NODE_ENV: "development",
+    // Known up front so `pnpm seed:demo` can run the first-run setup (never reuse it in production).
+    SETUP_TOKEN: randomBytes(16).toString("hex"),
+    // Absolute: API and worker run from their own package folders but must share files and backups.
+    STORAGE_DIR: path.join(root, ".data", "files").replaceAll("\\", "/"),
+    BACKUP_DIR: path.join(root, ".data", "backups").replaceAll("\\", "/"),
   };
   let out = template;
   for (const [k, v] of Object.entries(values)) out = out.replace(new RegExp(`^${k}=.*$`, "m"), `${k}=${v}`);

@@ -82,7 +82,9 @@ export const registrationHandlers = {
       if (!ctx.flags.playerRegistration) throw new AppError("FEATURE_DISABLED", "online registration is disabled");
       if (!SELF_SERVICE_SOURCES.has(payload.source)) throw forbidden("invalid registration source");
       if (!ctx.tournament.published || ctx.tournament.publicVisibility === "PRIVATE") throw notFound("tournament");
-      if (ctx.tournament.status !== "REGISTRATION_OPEN" && !(isLive(ctx.tournament.status as TournamentStatus) && lateRegOpen(ctx))) {
+      // During the seat draw and after the start, players may still register while late registration is open.
+      const status = ctx.tournament.status as TournamentStatus;
+      if (status !== "REGISTRATION_OPEN" && !((status === "SEATING" || isLive(status)) && lateRegOpen(ctx))) {
         throw ruleViolation("registration is not open");
       }
     }

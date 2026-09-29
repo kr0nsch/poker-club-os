@@ -212,6 +212,34 @@ describe("notification delivery rules (§21, §92)", () => {
   });
 });
 
+describe("public registration window", () => {
+  it("is closed while scheduled, open during registration and the seat draw", async () => {
+    const base = await seedOrg(h.db, { players: 3 });
+    const t = await seedTournament(h.db, base);
+    const td = owner(base.org.id);
+    const run = async (actor: Actor, type: Parameters<typeof cmd>[0], payload: Record<string, unknown> = {}) => {
+      const [row] = await h.db.select({ v: tournaments.version }).from(tournaments).where(eq(tournaments.id, t.id));
+      return core.executor.execute(t.id, cmd(type, payload, row!.v), actor);
+    };
+    const open = async () => (await core.tournaments.publicList(base.org.slug)).tournaments.find((x) => x.id === t.id)?.registrationOpen;
+
+    await run(td, "PUBLISH");
+    expect(await open()).toBe(false);
+    await run(td, "OPEN_REGISTRATION");
+    expect(await open()).toBe(true);
+    const r = await run(td, "REGISTER_PLAYER", { playerId: base.players[0]!.id });
+    await run(td, "CHECK_IN", { registrationId: (r.result as { registrationId: string }).registrationId, seat: "NONE" });
+    await run(td, "START_SEATING", { draw: true });
+    expect(await open()).toBe(true);
+
+    // A player registering from their phone during the seat draw is accepted.
+    const p = base.players[1]!;
+    const player: Actor = { principal: { kind: "player", userId: randomUUID(), organizationId: base.org.id, playerId: p.id }, userId: null, deviceId: null, ip: null, channel: "WEB" };
+    const self = await run(player, "REGISTER_PLAYER", { playerId: p.id, source: "PLAYER_WEB" });
+    expect(self.result).toMatchObject({ status: "REGISTERED" });
+  });
+});
+
 describe("kiosk", () => {
   it("shows the seat again when a player checks in twice", async () => {
     const base = await seedOrg(h.db, { players: 4 });

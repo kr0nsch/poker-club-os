@@ -33,7 +33,7 @@ import type { CoreDeps } from "../deps.js";
 import { AppError } from "../errors.js";
 import type { TournamentCommandExecutor } from "../tournaments/executor.js";
 import { anchorFromRow, levelLikes, loadClockRow, loadLevels } from "../tournaments/repo.js";
-import { buildPublicSnapshot, orgFlags } from "../tournaments/snapshot.js";
+import { buildPublicSnapshot, lateRegistrationOpenNow, orgFlags } from "../tournaments/snapshot.js";
 import type { EdgeService } from "../services/edge.service.js";
 import type { TelegramBotProvider } from "./bot-provider.js";
 import type { TelegramService } from "./telegram.service.js";
@@ -308,7 +308,8 @@ export class TelegramBot {
       `👥 ${snap.stats.registrations}${t.maxPlayers ? `/${t.maxPlayers}` : ""} registered · ${statusLabel(t.status)}`,
       mine ? `✅ Your registration: <b>${mine.status}</b>` : "",
     ].filter(Boolean);
-    const canRegister = !mine && (t.status === "REGISTRATION_OPEN" || (LIVE.includes(t.status) && !t.lateRegistrationClosed));
+    const levels = await loadLevels(this.deps.db, t.structureId);
+    const canRegister = !mine && lateRegistrationOpenNow(t, levels, await loadClockRow(this.deps.db, t.id), this.deps.now().getTime());
     const canCancel = mine && ["REGISTERED", "RESERVED", "WAITLISTED"].includes(mine.status);
     const [sub] = await this.deps.db
       .select()
