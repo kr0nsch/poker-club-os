@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, EmptyState, Skeleton } from "@pcos/ui";
+import { Button, EmptyState, Skeleton } from "@pcos/ui";
 import type { TournamentSummaryView } from "@pcos/types";
 import { useQuery } from "@tanstack/react-query";
 import { LayoutGrid } from "lucide-react";
@@ -40,23 +40,32 @@ export default function DealerPicker() {
           </div>
         )}
         {selected && snap.data && (
-          <Card className="p-4">
-            <div className="mb-3 font-medium">{t("Choose your table")}</div>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+          <section className="grid gap-3">
+            <h2 className="text-lg font-semibold tracking-tight">{t("Choose your table")}</h2>
+            {/* Big square targets: the table number reads from arm's length, with how full it is below. */}
+            <div className="grid grid-cols-2 gap-3 min-[480px]:grid-cols-3 sm:grid-cols-4">
               {snap.data.tables
                 .filter((x) => x.status !== "CLOSED")
                 .map((table) => (
-                  <Button key={table.id} asChild size="xl" variant="secondary" className="h-24 flex-col text-2xl">
-                    <Link href={`/dealer/${selected}/${table.id}`}>
-                      {table.tableNumber}
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {table.occupied}/{table.capacity}
+                  <Link
+                    key={table.id}
+                    href={`/dealer/${selected}/${table.id}`}
+                    className="edge-light group grid aspect-square content-between rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-accent/40 active:bg-accent"
+                  >
+                    <span className="text-sm text-muted-foreground">{t("Table")}</span>
+                    <span className="text-6xl font-semibold leading-none tabular-nums">{table.tableNumber}</span>
+                    <span className="grid gap-1.5">
+                      <span className="text-sm tabular-nums text-muted-foreground">
+                        {table.occupied} / {table.capacity}
                       </span>
-                    </Link>
-                  </Button>
+                      <span className="h-1 overflow-hidden rounded-full bg-muted">
+                        <span className="block h-full w-full origin-left bg-gold/80" style={{ transform: `scaleX(${table.capacity ? table.occupied / table.capacity : 0})` }} />
+                      </span>
+                    </span>
+                  </Link>
                 ))}
             </div>
-          </Card>
+          </section>
         )}
       </main>
     </div>

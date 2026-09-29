@@ -255,7 +255,7 @@ export function TodayStrip({ items }: { items: { label: string; value: ReactNode
 }
 
 /** Upcoming tournaments grouped by day, with how full each one is. */
-export function Schedule({ tournaments }: { tournaments: TournamentSummaryView[] }) {
+export function Schedule({ tournaments, href = (x) => `/admin/tournaments/${x.id}` }: { tournaments: TournamentSummaryView[]; href?: (x: TournamentSummaryView) => string }) {
   const t = useT();
   const f = useFormat();
   const { locale } = useI18n();
@@ -284,7 +284,7 @@ export function Schedule({ tournaments }: { tournaments: TournamentSummaryView[]
               const fill = x.maxPlayers ? Math.min(1, x.registrationCount / x.maxPlayers) : null;
               return (
                 <li key={x.id}>
-                  <Link href={`/admin/tournaments/${x.id}`} className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-accent/40 sm:grid-cols-[3.5rem_minmax(0,1fr)_9rem_auto]">
+                  <Link href={href(x)} className="group grid grid-cols-[3.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 transition-colors hover:bg-accent/40 sm:grid-cols-[3.5rem_minmax(0,1fr)_9rem_auto]">
                     <span className="text-sm font-semibold tabular-nums">{f.time(x.startAt)}</span>
                     <span className="min-w-0">
                       <span className="block truncate font-medium">{x.name}</span>
