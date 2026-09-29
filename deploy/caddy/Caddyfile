@@ -1,0 +1,55 @@
+# Reverse proxy for the Venue Edge Server (spec §10).
+#
+# SITE_ADDRESS  local hostname(s) staff devices use, e.g. "poker.royalclub.example, 192.168.10.10"
+#               (split-horizon / router DNS entry → the edge server's LAN IP)
+# CADDY_TLS     how HTTPS certificates are obtained:
+#   internal                                   Caddy's own local CA (install its root on staff devices)
+#   /certs/fullchain.pem /certs/privkey.pem    certificate for a real domain, copied into deploy/certs
+#   you@example.com                            ACME (only if the hostname is publicly resolvable)
+#
+# Plain HTTP requests are redirected to HTTPS automatically.
+{
+	# The Caddy admin API never leaves the container.
+	admin localhost:2019
+	servers {
+		timeouts {
+			# Long-lived WebSockets from venue devices.
+			idle 5m
+		}
+	}
+}
+
+{$SITE_ADDRESS:poker.local} {
+	tls {$CADDY_TLS:internal}
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		-Server
+	}
+
+	# API and health checks go straight to the API service.
+	@api path /api/* /health /health/*
+	handle @api {
+		reverse_proxy api:4000
+	}
+
+	# Local realtime (WebSocket) — stays inside the venue LAN.
+	handle /ws {
+		reverse_proxy api:4000 {
+			flush_interval -1
+		}
+	}
+
+	# Web application (staff, player, display, kiosk).
+	handle {
+		reverse_proxy web:3000
+	}
+
+	log {
+		output stdout
+		format console
+		level WARN
+	}
+}

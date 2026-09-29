@@ -94,6 +94,7 @@ export function createCore(config: AppConfig, opts: CoreOptions = {}) {
 
   /** Background machinery (started by the worker process only). */
   function createRunners() {
+    const telegramPolling = new TelegramPollingManager(deps, bots, bot, edge);
     const wan = new WanMonitor(edge, {
       urls: config.WAN_PROBE_URLS,
       intervalMs: config.WAN_PROBE_INTERVAL_MS,
@@ -103,6 +104,7 @@ export function createCore(config: AppConfig, opts: CoreOptions = {}) {
         if (!node) return;
         if (online) {
           // WAN restored: deliver what is still valid, resume cloud sync (spec §92).
+          telegramPolling.wake();
           void dispatcher.runOnce().catch(() => undefined);
           void sync.pushOnce().catch(() => undefined);
           await notifications.staffAlert(node.organizationId, "INFO", "Internet restored", "Edge server WAN connectivity restored. Queued notifications are being delivered.", `wan-restored:${Date.now()}`);
@@ -123,7 +125,7 @@ export function createCore(config: AppConfig, opts: CoreOptions = {}) {
       dispatcher,
       fanout: new NotificationFanout(deps, notifications),
       clock: new ClockTicker(deps, executor),
-      telegramPolling: new TelegramPollingManager(deps, bots, bot, edge),
+      telegramPolling,
       scheduler: new Scheduler(deps, notifications),
     };
   }

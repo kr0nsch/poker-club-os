@@ -56,7 +56,13 @@ const EnvSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v ? v.split(",").map((s) => s.trim()).filter(Boolean) : ["https://api.telegram.org", "https://1.1.1.1"])),
-  WAN_PROBE_INTERVAL_MS: z.coerce.number().int().min(1000).default(15_000),
+  WAN_PROBE_INTERVAL_MS: z.coerce.number().int().min(200).default(15_000),
+  /** worker loop intervals (tests and demos shorten them) */
+  FANOUT_INTERVAL_MS: z.coerce.number().int().min(100).default(1_000),
+  DISPATCH_INTERVAL_MS: z.coerce.number().int().min(100).default(2_000),
+  SYNC_PUSH_INTERVAL_MS: z.coerce.number().int().min(100).default(10_000),
+  SYNC_PULL_INTERVAL_MS: z.coerce.number().int().min(100).default(60_000),
+  TELEGRAM_POLL_TIMEOUT_S: z.coerce.number().int().min(1).max(50).default(25),
 
   STORAGE_DIR: z.string().default("./data/files"),
   BACKUP_DIR: z.string().default("./data/backups"),

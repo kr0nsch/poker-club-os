@@ -196,7 +196,7 @@ export class DisplayService {
         .from(tournamentRegistrations)
         .where(and(eq(tournamentRegistrations.checkInCode, input.code.toUpperCase()), eq(tournamentRegistrations.tournamentId, t.id)));
     } else {
-      let playerId: string | null = null;
+      let playerId: string;
       if (input.method === "MEMBER_PIN") {
         const guard = await this.deps.rateLimiter.hit(`kiosk-pin:${orgId}:${input.memberNumber}`, 5, 900);
         if (!guard.allowed) throw new AppError("RATE_LIMITED", "too many wrong PIN attempts for this member number");

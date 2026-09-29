@@ -61,6 +61,7 @@ export class TelegramPollingManager {
         if (!lock.held) continue; // another worker instance polls this bot
         const poller = new LongPoller({
           client,
+          pollTimeoutSeconds: this.deps.config.TELEGRAM_POLL_TIMEOUT_S,
           loadOffset: async () => {
             const [row] = await this.deps.db.select({ id: telegramIntegrations.lastUpdateId }).from(telegramIntegrations).where(eq(telegramIntegrations.organizationId, orgId));
             return row?.id ?? null;
@@ -85,10 +86,15 @@ export class TelegramPollingManager {
     }
   }
 
-  start(intervalMs = 15_000) {
+  start(intervalMs = Math.min(15_000, this.deps.config.DISPATCH_INTERVAL_MS * 5)) {
     if (this.timer) return;
     void this.reconcile().catch((e) => console.error("[telegram] reconcile failed:", e instanceof Error ? e.message : e));
     this.timer = setInterval(() => void this.reconcile().catch((e) => console.error("[telegram] reconcile failed:", e instanceof Error ? e.message : e)), intervalMs);
+  }
+
+  /** The Internet is back: retry immediately instead of finishing the back-off. */
+  wake() {
+    for (const a of this.active.values()) a.poller.wake();
   }
 
   async stop() {

@@ -19,6 +19,11 @@
       "dependsOn": ["^build"],
       "outputs": []
     },
+    "e2e": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

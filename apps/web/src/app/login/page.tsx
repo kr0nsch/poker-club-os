@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { Brand, LanguageSwitch } from "@/components/brand";
 import { ApiError, post, setCsrfToken } from "@/lib/api";
+import { homeFor } from "@/lib/home";
 import { useT } from "@/lib/i18n";
 import { keys } from "@/lib/queries";
 
@@ -30,10 +31,9 @@ function LoginForm() {
       setCsrfToken(me.csrfToken);
       qc.setQueryData(keys.me, me);
       const next = params.get("next");
-      if (next && next.startsWith("/")) router.replace(next);
-      else if (me.permissions.length > 0) router.replace("/admin");
-      else if (me.organization) router.replace(`/p/${me.organization.slug}`);
-      else router.replace("/");
+      // Only same-site relative paths are accepted as a redirect target (no open redirect).
+      if (next && next.startsWith("/") && !next.startsWith("//")) router.replace(next);
+      else router.replace(homeFor(me));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t("Something went wrong"));
     } finally {

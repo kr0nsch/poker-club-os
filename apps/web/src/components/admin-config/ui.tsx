@@ -274,6 +274,11 @@ export function useUnsavedChangesWarning(dirty: boolean) {
   }, [dirty]);
 }
 
+/** Bring the first invalid input into view after a failed validation. */
+export function scrollToFirstInvalid() {
+  requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.scrollIntoView({ block: "center", behavior: "smooth" }));
+}
+
 /** Debounced copy of a value. */
 export function useDebounced<V>(value: V, delayMs = 300): V {
   const [v, setV] = useState(value);
@@ -285,10 +290,28 @@ export function useDebounced<V>(value: V, delayMs = 300): V {
 }
 
 /** Sticky bottom bar for long forms with unsaved changes. */
-export function SaveBar({ dirty, saving, onSave, onDiscard, saveLabel, disabled, children }: { dirty: boolean; saving?: boolean; onSave: () => void; onDiscard?: () => void; saveLabel?: string; disabled?: boolean; children?: ReactNode }) {
+export function SaveBar({
+  dirty,
+  saving,
+  onSave,
+  onDiscard,
+  saveLabel,
+  disabled,
+  children,
+  className,
+}: {
+  dirty: boolean;
+  saving?: boolean;
+  onSave: () => void;
+  onDiscard?: () => void;
+  saveLabel?: string;
+  disabled?: boolean;
+  children?: ReactNode;
+  className?: string;
+}) {
   const t = useT();
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-6 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6">
+    <div className={cn("sticky bottom-0 z-20 -mx-4 mt-6 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6", className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="text-sm text-muted-foreground">{children ?? (dirty ? <span className="text-warning">{t("Unsaved changes")}</span> : t("All changes saved"))}</div>
         <div className="flex items-center gap-2">

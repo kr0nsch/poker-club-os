@@ -129,7 +129,7 @@ export async function buildPublicSnapshot(
         .sort((a, b) => a.playerName.localeCompare(b.playerName))
     : null;
 
-  let results: { position: number; playerName: string }[] = [];
+  let results: { position: number; playerName: string }[];
   const finalRows = await db
     .select({ position: tournamentResults.position, playerName: players.displayName })
     .from(tournamentResults)

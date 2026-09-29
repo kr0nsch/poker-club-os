@@ -41,7 +41,7 @@ export class ImportService {
   ) {}
 
   private parse(content: string) {
-    const res = Papa.parse<Record<string, string>>(content.replace(/^﻿/, ""), { header: true, skipEmptyLines: "greedy", transformHeader: (h) => h.trim() });
+    const res = Papa.parse<Record<string, string>>(content.replace(/^\uFEFF/, ""), { header: true, skipEmptyLines: "greedy", transformHeader: (h) => h.trim() });
     if (res.errors.length > 0 && res.data.length === 0) throw validation(`CSV could not be parsed: ${res.errors[0]!.message}`);
     return { headers: res.meta.fields ?? [], rows: res.data };
   }

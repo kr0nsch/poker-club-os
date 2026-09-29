@@ -99,7 +99,7 @@ export const venueEdgeNodes = pgTable(
     lastCloudSyncAt: ts(),
     createdAt: createdAt(),
   },
-  (t) => [check("venue_edge_nodes_status_ck", inList("status", ["ONLINE", "DEGRADED", "OFFLINE", "MAINTENANCE"]))],
+  () => [check("venue_edge_nodes_status_ck", inList("status", ["ONLINE", "DEGRADED", "OFFLINE", "MAINTENANCE"]))],
 );
 
 export const users = pgTable("users", {
@@ -934,7 +934,7 @@ export const displayTokens = pgTable(
     lastSeenAt: ts(),
     revokedAt: ts(),
   },
-  (t) => [check("display_tokens_kind_ck", inList("kind", ["DISPLAY", "KIOSK"]))],
+  () => [check("display_tokens_kind_ck", inList("kind", ["DISPLAY", "KIOSK"]))],
 );
 
 export const oneTimeCodes = pgTable(
@@ -1062,7 +1062,7 @@ export const telegramLinkTokens = pgTable(
     usedAt: ts(),
     createdAt: createdAt(),
   },
-  (t) => [check("tg_link_tokens_kind_ck", inList("kind", ["DEEP_LINK", "CODE"]))],
+  () => [check("tg_link_tokens_kind_ck", inList("kind", ["DEEP_LINK", "CODE"]))],
 );
 
 // ---------------------------------------------------------------------------

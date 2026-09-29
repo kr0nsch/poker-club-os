@@ -138,7 +138,7 @@ export default function TournamentPage() {
   const waitlistPosition = regs.data?.find((r) => r.tournamentId === tid && r.status === "WAITLISTED")?.waitlistPosition ?? null;
   const next = encodeURIComponent(path);
 
-  let panel: ReactNode = null;
+  let panel: ReactNode;
   if (myReg) {
     const cancellable = myReg.status === "REGISTERED" || myReg.status === "RESERVED" || myReg.status === "WAITLISTED";
     panel = (
@@ -250,11 +250,7 @@ export default function TournamentPage() {
           {snap && snap.stats.waitlisted > 0 && <span className="ml-1 text-xs font-normal text-warning">(+{f.number(snap.stats.waitlisted)})</span>}
         </Fact>
         {levelSeconds != null && <Fact label={t("Levels")}>{tt.minutes(levelSeconds)}</Fact>}
-        {!closed && (
-          <Fact label={t("Late registration")}>
-            {lateClosed ? <span className="text-muted-foreground">{t("Closed")}</span> : playing ? <span className="text-primary">{t("Open")}</span> : t("Available")}
-          </Fact>
-        )}
+        {playing && <Fact label={t("Late registration")}>{lateClosed ? <span className="text-muted-foreground">{t("Closed")}</span> : <span className="text-primary">{t("Still open")}</span>}</Fact>}
       </dl>
 
       {snap && snap.levels.length > 0 && (

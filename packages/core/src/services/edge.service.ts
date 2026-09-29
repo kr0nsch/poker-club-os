@@ -67,6 +67,11 @@ export class EdgeService {
     return n ?? null;
   }
 
+  /** Another process (the worker) changed the state: the next status() reads the database. */
+  invalidate(): void {
+    this.cached = null;
+  }
+
   /** Current edge status (cached for 2 s; cheap enough for every WS welcome). */
   async status(force = false): Promise<EdgeStatusPayload> {
     const nowMs = this.deps.now().getTime();

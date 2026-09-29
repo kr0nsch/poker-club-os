@@ -339,6 +339,7 @@ export class RealtimeHub implements PresenceProvider {
     if (e.name === "device.updated" && data.disconnect && typeof data.deviceId === "string") {
       for (const c of this.conns.values()) if (c.deviceId === data.deviceId && c.principal.kind === "staff") c.ws.close(4403, "device disconnected by administrator");
     }
+    if (e.name === "edge.status.updated") this.core.edge.invalidate();
     if (e.name === "tournament.updated") {
       // Visibility / status may have changed: drop cached authorization targets.
       const tid = data.tournamentId;

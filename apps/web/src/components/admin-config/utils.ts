@@ -6,7 +6,7 @@ type T = (text: string, vars?: Record<string, string | number | null | undefined
 
 /** "12.50" / "12,5" → 1250; "" → null; malformed → NaN. */
 export function unitsToCents(raw: string): number | null {
-  const s = raw.trim().replace(/[\s ]/g, "").replace(",", ".");
+  const s = raw.trim().replace(/\s/g, "").replace(",", ".");
   if (s === "") return null;
   if (!/^\d+(\.\d{0,2})?$/.test(s)) return Number.NaN;
   return Math.round(Number.parseFloat(s) * 100);
@@ -21,7 +21,7 @@ export function centsToUnits(cents: number | null | undefined): string {
 
 /** "" → null; non-integer → NaN. */
 export function parseIntOrNull(raw: string): number | null {
-  const s = raw.trim().replace(/[\s ]/g, "");
+  const s = raw.trim().replace(/\s/g, "");
   if (s === "") return null;
   if (!/^-?\d+$/.test(s)) return Number.NaN;
   return Number.parseInt(s, 10);

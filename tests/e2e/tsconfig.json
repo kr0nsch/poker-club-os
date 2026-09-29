@@ -1,0 +1,9 @@
+{
+  "extends": "@pcos/config/tsconfig/library.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "incremental": false
+  },
+  "include": ["src", "*.test.ts", "global-setup.ts", "vitest.config.ts"]
+}

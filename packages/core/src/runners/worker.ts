@@ -35,16 +35,17 @@ export async function startWorkerLoops(core: Core): Promise<WorkerHandle> {
   r.clock.start();
   r.telegramPolling.start();
 
+  const c = core.config;
   const stops = [
-    every(1_000, "fanout", async () => {
+    every(c.FANOUT_INTERVAL_MS, "fanout", async () => {
       // Drain the outbox quickly after bursts (e.g. seat draw of 200 players).
       for (let i = 0; i < 20 && (await r.fanout.runOnce()) > 0; i++);
     }),
-    every(2_000, "dispatch", () => r.dispatcher.runOnce()),
-    every(10_000, "cloud-push", async () => {
+    every(c.DISPATCH_INTERVAL_MS, "dispatch", () => r.dispatcher.runOnce()),
+    every(c.SYNC_PUSH_INTERVAL_MS, "cloud-push", async () => {
       if (core.sync.enabled && r.wan.isOnline()) await core.sync.pushOnce();
     }),
-    every(60_000, "cloud-pull", async () => {
+    every(c.SYNC_PULL_INTERVAL_MS, "cloud-pull", async () => {
       if (core.sync.enabled && r.wan.isOnline()) await core.sync.pullOnce();
     }),
     every(60_000, "reminders", () => r.scheduler.reminders()),

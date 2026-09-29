@@ -19,7 +19,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:e2e": "pnpm --filter @pcos/e2e run test",
+    "test:e2e": "turbo run e2e",
     "format": "prettier --write .",
     "clean": "turbo run clean"
   },

@@ -34,24 +34,25 @@ export class WanMonitor {
       await res.body?.cancel().catch(() => undefined);
       return true;
     });
-    let reachable = false;
+    let reachable: boolean;
     try {
       reachable = await Promise.any(attempts);
     } catch {
       reachable = false;
     }
-    const changed = !this.known || reachable !== this.online;
+    const wasKnown = this.known;
+    const flipped = wasKnown && reachable !== this.online;
     this.online = reachable;
     this.known = true;
+    // The persisted state also catches outages that began or ended while the worker was down.
+    let persistedChange = false;
     try {
-      await this.edge.setWanState(reachable);
+      persistedChange = await this.edge.setWanState(reachable);
     } catch (e) {
       console.error("[wan] could not persist WAN state:", e instanceof Error ? e.message : e);
     }
-    if (changed) {
-      console.log(`[wan] Internet ${reachable ? "available" : "UNAVAILABLE — local operations continue"}`);
-      await this.opts.onChange?.(reachable);
-    }
+    if (!wasKnown || flipped) console.log(`[wan] Internet ${reachable ? "available" : "UNAVAILABLE — local operations continue"}`);
+    if (flipped || persistedChange) await this.opts.onChange?.(reachable);
     return reachable;
   }
 

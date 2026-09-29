@@ -1,0 +1,24 @@
+{
+  "name": "@pcos/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@pcos/api": "workspace:*",
+    "@pcos/config": "workspace:*",
+    "@pcos/testkit": "workspace:*",
+    "@pcos/types": "workspace:*",
+    "@pcos/worker": "workspace:*",
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.15.0",
+    "@types/ws": "^8.18.1",
+    "pg": "^8.23.0",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.2",
+    "ws": "^8.22.0"
+  }
+}

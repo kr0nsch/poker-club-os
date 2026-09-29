@@ -55,7 +55,7 @@ export async function api<T = unknown>(path: string, opts: RequestOptions = {}):
   }
   if (res.status === 204) return undefined as T;
   const text = await res.text();
-  let data: unknown = null;
+  let data: unknown;
   try {
     data = text ? JSON.parse(text) : null;
   } catch {

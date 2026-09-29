@@ -24,7 +24,7 @@ const isZod = (e: unknown): e is ZodLike => typeof e === "object" && e !== null 
 export class ErrorFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const reply = host.switchToHttp().getResponse<FastifyReply>();
-    let status = 500;
+    let status: number;
     let body: ApiErrorBody;
 
     if (isZod(exception)) {

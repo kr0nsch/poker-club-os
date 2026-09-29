@@ -136,6 +136,36 @@ export const HOUSE_RULE_OPTION_LABEL: {
   },
 };
 
+/** Human names of tournament configuration fields (conflict and lock messages). */
+export const CONFIG_FIELD_LABEL: Record<string, string> = {
+  name: "Tournament name",
+  description: "Description",
+  gameType: "Game",
+  format: "Format",
+  startingStack: "Starting stack",
+  tableSize: "Players per table",
+  maxPlayers: "Maximum players",
+  expectedPlayers: "Expected players",
+  buyIn: "Buy-in",
+  lateRegistrationPolicy: "Late registration",
+  reentryPolicy: "Re-entry",
+  rebuyPolicy: "Rebuys",
+  addonPolicy: "Add-on",
+  bountyPolicy: "Bounties",
+  structureId: "Blind structure",
+  houseRulesProfileId: "House rules",
+  venueId: "Venue",
+  slug: "Link name (slug)",
+  startAt: "Start time",
+  registrationOpenAt: "Registration opens",
+  registrationCloseAt: "Pre-registration closes",
+  publicVisibility: "Visibility",
+  seasonId: "Season",
+  seriesId: "Series",
+  displayTemplateId: "TV display layout",
+  templateId: "Template",
+};
+
 export const HOUSE_PRESET_LABEL = {
   TDA_2026_STYLE: "TDA 2026 style",
   CUSTOM: "Custom",

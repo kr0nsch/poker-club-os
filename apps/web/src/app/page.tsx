@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { get } from "@/lib/api";
+import { homeFor } from "@/lib/home";
 import { useMe } from "@/lib/queries";
 
 /** Entry point: route each person to their surface. */
@@ -15,9 +16,7 @@ export default function Home() {
   useEffect(() => {
     if (setup.data?.needsSetup) return router.replace("/setup");
     if (!me.data || setup.isLoading) return;
-    if (me.data.permissions.length > 0) router.replace("/admin");
-    else if (me.data.player && me.data.organization) router.replace(`/p/${me.data.organization.slug}`);
-    else router.replace("/login");
+    router.replace(homeFor(me.data));
   }, [setup.data, setup.isLoading, me.data, router]);
   return (
     <main className="felt grid min-h-dvh place-items-center">
