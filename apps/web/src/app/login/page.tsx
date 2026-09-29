@@ -73,7 +73,7 @@ export default function LoginPage() {
         <LoginForm />
       </Suspense>
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
+        <Link href="/" className="inline-flex min-h-8 items-center transition-colors hover:text-foreground">
           {t("Back")}
         </Link>
         <LanguageSwitch />
