@@ -105,6 +105,7 @@ export function createCore(config: AppConfig, opts: CoreOptions = {}) {
         if (online) {
           // WAN restored: deliver what is still valid, resume cloud sync (spec §92).
           telegramPolling.wake();
+          await dispatcher.rearmAfterOutage().catch(() => 0);
           void dispatcher.runOnce().catch(() => undefined);
           void sync.pushOnce().catch(() => undefined);
           await notifications.staffAlert(node.organizationId, "INFO", "Internet restored", "Edge server WAN connectivity restored. Queued notifications are being delivered.", `wan-restored:${Date.now()}`);

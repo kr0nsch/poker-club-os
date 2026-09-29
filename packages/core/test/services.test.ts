@@ -204,7 +204,12 @@ describe("notification delivery rules (§21, §92)", () => {
     await d.runOnce();
     let [row] = await h.db.select().from(notifications).where(eq(notifications.id, n.id));
     expect(row).toMatchObject({ status: "PENDING", attemptCount: 0 });
-    clock += 60_000;
+    expect(row!.nextAttemptAt!.getTime()).toBeGreaterThan(clock); // postponed while the network is down
+    await d.runOnce();
+    [row] = await h.db.select().from(notifications).where(eq(notifications.id, n.id));
+    expect(row!.status).toBe("PENDING"); // not due yet
+    // The WAN monitor sees the Internet return: postponed retries are due immediately.
+    expect(await d.rearmAfterOutage()).toBe(1);
     await d.runOnce();
     [row] = await h.db.select().from(notifications).where(eq(notifications.id, n.id));
     expect(row).toMatchObject({ status: "SENT", attemptCount: 1 });

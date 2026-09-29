@@ -5,10 +5,12 @@
 import { notifications, telegramDeliveries } from "@pcos/db";
 import { afterAttempt, isExpired } from "@pcos/domain";
 import type { NotificationType } from "@pcos/types";
-import { and, asc, eq, lte, ne, sql } from "drizzle-orm";
+import { and, asc, eq, like, lte, ne, sql } from "drizzle-orm";
 import type { CoreDeps } from "../deps.js";
 import { renderNotification } from "./templates.js";
 import type { NotificationRow, NotificationTransport } from "./transports.js";
+
+const NETWORK_ERROR_PREFIX = "network: ";
 
 export interface DispatchStats {
   expired: number;
@@ -27,6 +29,16 @@ export class NotificationDispatcher {
     private readonly wanOnline: () => boolean,
     private readonly onNetworkDown?: () => void,
   ) {}
+
+  /** The Internet is back: retries postponed by a network outage are due now (still bounded by their TTL). */
+  async rearmAfterOutage(): Promise<number> {
+    const rows = await this.deps.db
+      .update(notifications)
+      .set({ nextAttemptAt: this.deps.now() })
+      .where(and(eq(notifications.status, "PENDING"), like(notifications.lastError, `${NETWORK_ERROR_PREFIX}%`)))
+      .returning({ id: notifications.id });
+    return rows.length;
+  }
 
   /** Rows left in SENDING by a crash are returned to the queue. */
   async recoverStale(): Promise<number> {
@@ -96,6 +108,8 @@ export class NotificationDispatcher {
       const message = renderNotification(n.type as NotificationType, n.payload as Record<string, unknown>, (n.payload as { locale?: string }).locale);
       const result = await transport.send(n, message);
       const next = afterAttempt({ attemptCount: n.attemptCount, expiresAt: n.expiresAt?.getTime() ?? null }, result, this.deps.now().getTime());
+      // Marked so the retry can be brought forward as soon as the WAN is back (rearmAfterOutage).
+      if (result.kind === "network_down" && next.status === "PENDING") next.error = `${NETWORK_ERROR_PREFIX}${result.error}`;
       if (n.channel === "TELEGRAM") {
         await this.deps.db.insert(telegramDeliveries).values({
           organizationId: n.organizationId,

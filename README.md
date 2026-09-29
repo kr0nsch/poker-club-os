@@ -85,8 +85,9 @@ pnpm test:e2e
 ```
 
 `pnpm test` runs unit and integration tests against embedded PostgreSQL; `pnpm test:e2e` starts the
-real API and worker and exercises LAN operation, realtime delivery, an Internet outage, power loss and
-the Telegram bot (spec §91–95).
+real API and worker and exercises LAN operation, realtime delivery, an Internet outage, power loss,
+the Telegram bot (spec §91–95) and the complete final acceptance scenario of spec §103
+(`tests/e2e/acceptance.test.ts`).
 
 ## Production (edge server)
 
