@@ -44,6 +44,19 @@ export function useScreenScale() {
   }, []);
 }
 
+/** true while the screen is taller than wide (a TV mounted vertically). */
+export function usePortrait() {
+  const [portrait, setPortrait] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(orientation: portrait)");
+    const sync = () => setPortrait(m.matches);
+    sync();
+    m.addEventListener("change", sync);
+    return () => m.removeEventListener("change", sync);
+  }, []);
+  return portrait;
+}
+
 /** true after `ms` without mouse movement: used to hide the cursor on TVs. */
 export function useIdleCursor(ms = 3_000) {
   const [idle, setIdle] = useState(false);

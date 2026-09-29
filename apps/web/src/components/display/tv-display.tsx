@@ -11,12 +11,13 @@ import { useTournamentText } from "@/components/player/labels";
 import { useLiveClock } from "@/components/player/live-clock";
 import { useFormat, useI18n, useT } from "@/lib/i18n";
 import { useRealtimeState, useServerNow } from "@/lib/realtime-context";
-import { useIdleCursor, useVenueDevice, useWakeLock } from "./device-hooks";
+import { useIdleCursor, usePortrait, useVenueDevice, useWakeLock } from "./device-hooks";
 import { isRevoked, safeColor, useDeviceSnapshot, useDeviceState, type DeviceState } from "./device-state";
 
-// Everything is sized in viewport units so the same page reads well on any
-// 16:9 TV from across the room. min(vw, vh) keeps odd aspect ratios sane.
-const fs = (vw: number, vh: number) => `min(${vw}vw, ${vh}vh)`;
+// Everything is sized in viewport units so the same page reads well on any TV from across the
+// room, 720p to 4K. The long side / short side pair equals vw / vh on a landscape screen and keeps
+// the same physical text size when the panel is mounted vertically.
+const fs = (long: number, short: number) => `min(${long}vmax, ${short}vmin)`;
 
 const FALLBACK_WIDGETS: DisplayWidget[] = ["CLOCK", "BLINDS", "NEXT_LEVEL", "ENTRIES", "REMAINING", "AVERAGE_STACK", "ANNOUNCEMENTS"];
 const SEATING_ROWS = 12;
@@ -30,7 +31,11 @@ function Tile({ label, value, sub, accent }: { label: string; value: ReactNode; 
       <div className="font-medium text-white/55" style={{ fontSize: fs(1.35, 2.4) }}>
         {label}
       </div>
-      <div className={cn("mt-[0.6vh] font-semibold leading-tight tracking-tight tabular-nums", accent && "text-[var(--tv-accent)]")} style={{ fontSize: fs(3, 5.4) }}>
+      {/* Blinds such as "3 000 / 6 000" step down a size so they stay on one line in a side column. */}
+      <div
+        className={cn("mt-[0.6vh] whitespace-nowrap font-semibold leading-tight tracking-tight tabular-nums", accent && "text-[var(--tv-accent)]")}
+        style={{ fontSize: typeof value === "string" && value.length > 9 ? fs(2.2, 4) : fs(3, 5.4) }}
+      >
         {value}
       </div>
       {sub && (
@@ -118,7 +123,7 @@ function LeaderboardPanel({ league, rows = 8 }: { league: PublicLeague; rows?: n
   );
 }
 
-function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot; widgets: Widgets; league: PublicLeague | null; now: number }) {
+function ClockScreen({ snap, widgets, league, now, portrait }: { snap: PublicLiveSnapshot; widgets: Widgets; league: PublicLeague | null; now: number; portrait: boolean }) {
   const t = useT();
   const f = useFormat();
   const tt = useTournamentText();
@@ -148,15 +153,22 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
 
   const sides = left.length > 0 || right.length > 0;
   const long = d.formatted.length > 5;
-  const clockSize = sides ? (long ? fs(11, 24) : fs(15, 29)) : long ? fs(16, 30) : fs(22, 36);
+  // Portrait: the clock spans the width (sized by it) and the tiles sit below in two columns.
+  const clockSize = portrait ? (long ? "21vw" : "30vw") : sides ? (long ? fs(11, 24) : fs(15, 29)) : long ? fs(16, 30) : fs(22, 36);
   const pct = d.levelDurationMs > 0 ? Math.min(100, (d.elapsedMs / d.levelDurationMs) * 100) : 0;
   const resumeAt = v.isBreak && !v.paused ? new Date(now + d.remainingMs) : null;
   const shownLevel = v.isBreak ? v.next : v.level;
 
   return (
-    <div className={cn("grid h-full items-center gap-[2vw] px-[3vw]", sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1")}>
-      {sides && <div className="grid content-center gap-[1.6vh]">{left}</div>}
-      <div className="relative flex min-w-0 flex-col items-center justify-center text-center">
+    <div
+      className={cn(
+        "grid h-full px-[3vw]",
+        portrait ? "grid-cols-2 content-center gap-x-[3vw] gap-y-[4vh]" : "items-center gap-[2vw]",
+        !portrait && (sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1"),
+      )}
+    >
+      {sides && <div className={cn("grid gap-[1.6vh]", portrait ? "content-start" : "content-center")}>{left}</div>}
+      <div className={cn("relative flex min-w-0 flex-col items-center justify-center text-center", portrait && "order-first col-span-2")}>
         <div
           className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.paused ? "text-warning" : v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")}
           style={{ fontSize: fs(2.6, 4.6) }}
@@ -209,7 +221,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
           </div>
         )}
       </div>
-      {sides && <div className="grid content-center gap-[1.6vh]">{right}</div>}
+      {sides && <div className={cn("grid gap-[1.6vh]", portrait ? "content-start" : "content-center")}>{right}</div>}
     </div>
   );
 }
@@ -248,9 +260,12 @@ function NotStartedScreen({ snap, now }: { snap: PublicLiveSnapshot; now: number
   );
 }
 
-function SeatingScreen({ seating }: { seating: NonNullable<PublicLiveSnapshot["seating"]> }) {
+function SeatingScreen({ seating, portrait }: { seating: NonNullable<PublicLiveSnapshot["seating"]>; portrait: boolean }) {
   const t = useT();
-  const perPage = SEATING_ROWS * SEATING_COLS;
+  // A vertical panel fits fewer, longer columns.
+  const cols = portrait ? 2 : SEATING_COLS;
+  const rowsPerCol = portrait ? 18 : SEATING_ROWS;
+  const perPage = rowsPerCol * cols;
   const pages = Math.max(1, Math.ceil(seating.length / perPage));
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -275,7 +290,7 @@ function SeatingScreen({ seating }: { seating: NonNullable<PublicLiveSnapshot["s
       <div
         key={current}
         className="mt-[1.5vh] grid flex-1 grid-flow-col gap-x-[2.5vw] gap-y-[0.5vh]"
-        style={{ gridTemplateRows: `repeat(${SEATING_ROWS}, minmax(0, 1fr))`, gridTemplateColumns: `repeat(${SEATING_COLS}, minmax(0, 1fr))` }}
+        style={{ gridTemplateRows: `repeat(${rowsPerCol}, minmax(0, 1fr))`, gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
         {rows.map((r) => (
           <div key={`${r.tableNumber}-${r.seatNumber}`} className="flex items-center justify-between gap-[1vw] border-b border-white/10" style={{ fontSize: fs(1.9, 3.4) }}>
@@ -330,12 +345,12 @@ function FinishedScreen({ snap }: { snap: PublicLiveSnapshot }) {
   );
 }
 
-function IdleScreen({ state, now, league }: { state: DeviceState; now: number; league: PublicLeague | null }) {
+function IdleScreen({ state, now, league, portrait }: { state: DeviceState; now: number; league: PublicLeague | null; portrait: boolean }) {
   const t = useT();
   const f = useFormat();
   const { locale } = useI18n();
   return (
-    <div className="flex h-full items-center justify-center gap-[5vw] px-[3vw]">
+    <div className={cn("flex h-full items-center justify-center px-[3vw]", portrait ? "flex-col gap-[5vh]" : "gap-[5vw]")}>
       <div className="flex flex-col items-center text-center">
         <span className="grid place-items-center rounded-[1.6vh] border-[0.4vh] border-[color-mix(in_srgb,var(--tv-accent)_55%,transparent)] text-[var(--tv-accent)]" style={{ width: fs(8, 14), height: fs(8, 14) }}>
           <SpadeMark style={{ width: fs(4.2, 7.5), height: fs(4.2, 7.5) }} />
@@ -356,7 +371,7 @@ function IdleScreen({ state, now, league }: { state: DeviceState; now: number; l
         </div>
       </div>
       {league && league.rows.length > 0 && (
-        <div className="w-[30vw]">
+        <div className={portrait ? "w-[80vw]" : "w-[30vw]"}>
           <LeaderboardPanel league={league} rows={10} />
         </div>
       )}
@@ -390,6 +405,7 @@ export function TvDisplay({ token }: { token: string }) {
   useVenueDevice("DISPLAY");
   useWakeLock();
   const idle = useIdleCursor(3_000);
+  const portrait = usePortrait();
   const state = useDeviceState(token);
   const s = state.data;
   const snap = useDeviceSnapshot(s);
@@ -414,7 +430,7 @@ export function TvDisplay({ token }: { token: string }) {
   const status = snap?.tournament.status;
 
   let body: ReactNode;
-  if (!snap) body = <IdleScreen state={s} now={now} league={widgets.has("LEADERBOARD") ? league : null} />;
+  if (!snap) body = <IdleScreen state={s} now={now} league={widgets.has("LEADERBOARD") ? league : null} portrait={portrait} />;
   else if (v.cancelled)
     body = (
       <div className="grid h-full place-items-center font-bold text-red-400" style={{ fontSize: fs(4, 7) }}>
@@ -422,9 +438,9 @@ export function TvDisplay({ token }: { token: string }) {
       </div>
     );
   else if (v.finished) body = <FinishedScreen snap={snap} />;
-  else if (status === "SEATING" && widgets.has("SEATING") && snap.seating && snap.seating.length > 0) body = <SeatingScreen seating={snap.seating} />;
+  else if (status === "SEATING" && widgets.has("SEATING") && snap.seating && snap.seating.length > 0) body = <SeatingScreen seating={snap.seating} portrait={portrait} />;
   else if (v.notStarted || !v.d) body = <NotStartedScreen snap={snap} now={now} />;
-  else body = <ClockScreen snap={snap} widgets={widgets} league={league} now={now} />;
+  else body = <ClockScreen snap={snap} widgets={widgets} league={league} now={now} portrait={portrait} />;
 
   return (
     <div
