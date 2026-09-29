@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, Card, Checkbox, Field, Select, Textarea } from "@pcos/ui";
+import { Badge, Button, Card, Checkbox, Chip, Field, Select, Textarea } from "@pcos/ui";
 import { Megaphone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export function AnnouncementsPanel() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card className="p-4">
         <form onSubmit={send} className="grid gap-3">
           <Field label={t("Announcement")}>
@@ -46,12 +46,12 @@ export function AnnouncementsPanel() {
           </Field>
           <div className="flex flex-wrap gap-1.5">
             {presets.map((p) => (
-              <button key={p} type="button" onClick={() => setBody(p)} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground">
+              <Chip key={p} active={body === p} onClick={() => setBody(p)} className="h-auto min-h-8 whitespace-normal py-1.5 text-left pointer-coarse:h-auto pointer-coarse:min-h-10">
                 {p}
-              </button>
+              </Chip>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 items-end gap-3">
             <Field label={t("Severity")}>
               <Select value={severity} onChange={(e) => setSeverity(e.target.value)}>
                 <option value="INFO">{t("Info")}</option>

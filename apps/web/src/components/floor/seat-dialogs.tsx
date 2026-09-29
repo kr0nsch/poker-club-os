@@ -82,7 +82,8 @@ export function SeatDialog({ target, onClose }: { target: SeatRef | null; onClos
             <Button size="xl" variant="destructive" onClick={() => setMode("eliminate")}>
               <Skull /> {t("Eliminate")}
             </Button>
-            <div className="grid grid-cols-2 gap-2">
+            {/* Two equal columns: long labels wrap inside the button instead of spilling over it on phones. */}
+            <div className="grid grid-cols-2 gap-2 [&>button]:h-auto [&>button]:min-h-12 [&>button]:whitespace-normal [&>button]:py-2 [&>button]:leading-tight">
               <Button size="lg" variant="secondary" onClick={() => setMode("move")}>
                 <ArrowRightLeft /> {t("Move")}
               </Button>

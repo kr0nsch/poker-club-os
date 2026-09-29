@@ -22,7 +22,8 @@ export function ConnectivityBadge({ compact = false, className }: { compact?: bo
   return (
     <span role="status" title={map.title} className={cn("inline-flex items-center gap-2 whitespace-nowrap text-xs font-medium", map.tone, className)}>
       <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", map.dot)} />
-      {compact ? <span className="sr-only">{map.label}</span> : map.label}
+      {/* On phones the dot alone carries the state; the words return from the sm breakpoint. */}
+      <span className={compact ? "sr-only" : "max-sm:sr-only"}>{map.label}</span>
     </span>
   );
 }

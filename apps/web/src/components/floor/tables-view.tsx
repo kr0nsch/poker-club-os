@@ -181,7 +181,8 @@ export function TablesView() {
       {tables.length === 0 ? (
         <EmptyState icon={<LayoutGrid />} title={t("No tables yet")} description={t("Tables open automatically at the seat draw, or add them manually.")} />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        // As many ~22rem columns as fit: one on a phone, two on a portrait tablet, four to five on large monitors.
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,22rem),1fr))] gap-3">
           {tables.map((table) => (
             <Card key={table.id} className={cn("p-3", table.status === "BREAKING" && "border-warning/60")}>
               <div className="mb-2 flex items-center justify-between gap-2">

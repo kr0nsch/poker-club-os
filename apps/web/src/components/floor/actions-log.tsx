@@ -30,14 +30,14 @@ export function ActionsLog({ compact = false }: { compact?: boolean }) {
       {!compact && <div className="mb-3 text-sm font-medium">{t("Recent actions")}</div>}
       {actions.isLoading && <Spinner />}
       {!actions.isLoading && list.length === 0 && <EmptyState icon={<History />} title={t("No actions yet")} />}
-      <div className="grid gap-1.5">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5">
         {list.map((a) => (
           <div key={a.id} className="flex items-center gap-3 rounded-md border border-border px-3 py-2 text-sm">
             <span className="w-12 shrink-0 text-xs tabular-nums text-muted-foreground">{fmt.time(a.createdAt)}</span>
             <div className="min-w-0 flex-1">
               <div className={a.compensatedByActionId ? "truncate text-muted-foreground line-through" : "truncate"}>{actionSummary(a.summary, t)}</div>
               {!compact && (
-                <div className="text-xs text-muted-foreground">
+                <div className="truncate text-xs text-muted-foreground">
                   {!a.actorName || a.actorName === "system" ? t("system") : a.actorName}
                   {a.deviceName && ` · ${a.deviceName}`} · v{a.resultVersion}
                 </div>

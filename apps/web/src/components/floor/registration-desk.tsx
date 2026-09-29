@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, EmptyState, Field, Input, Spinner, cn } from "@pcos/ui";
+import { Badge, Button, Card, Chip, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, EmptyState, Field, Input, Spinner } from "@pcos/ui";
 import type { RegistrationView } from "@pcos/types";
 import { useQuery } from "@tanstack/react-query";
 import { Ban, Check, ListPlus, MoreVertical, Repeat, Search, Undo2, UserPlus, UserRoundX } from "lucide-react";
@@ -146,7 +146,7 @@ export function RegistrationDesk() {
   const counts = snapshot.registrations.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.status]: (acc[r.status] ?? 0) + 1 }), {});
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <Card className="p-4">
         <div className="mb-3 flex items-center gap-2">
           <div className="relative flex-1">
@@ -192,14 +192,10 @@ export function RegistrationDesk() {
       <Card className="p-4">
         <div className="mb-3 flex flex-wrap gap-1.5">
           {["ALL", "REGISTERED", "CHECKED_IN", "PLAYING", "WAITLISTED", "ELIMINATED", "CANCELLED", "NO_SHOW"].map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setFilter(s)}
-              className={cn("rounded-full border px-3 py-1 text-xs", filter === s ? "border-primary bg-primary/15 text-primary" : "border-border text-muted-foreground hover:text-foreground")}
-            >
-              {s === "ALL" ? t("All") : t(s)} {s === "ALL" ? snapshot.registrations.length : (counts[s] ?? 0)}
-            </button>
+            <Chip key={s} active={filter === s} onClick={() => setFilter(s)}>
+              {s === "ALL" ? t("All") : t(s)}
+              <span className="tabular-nums opacity-60">{s === "ALL" ? snapshot.registrations.length : (counts[s] ?? 0)}</span>
+            </Chip>
           ))}
         </div>
         <div className="grid max-h-[60dvh] gap-1.5 overflow-y-auto pr-1">

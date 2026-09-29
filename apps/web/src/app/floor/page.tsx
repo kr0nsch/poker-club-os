@@ -24,7 +24,7 @@ export default function FloorPicker() {
   });
   return (
     <div className="min-h-dvh">
-      <FloorHeader back="/admin" title={<span className="font-semibold">{t("Floor control")}</span>} />
+      <FloorHeader back="/admin" width="max-w-3xl" title={<span className="font-semibold">{t("Floor control")}</span>} />
       <main className="mx-auto grid max-w-3xl gap-3 p-4">
         {list.isLoading && <Skeleton className="h-20" />}
         {list.data && items.length === 0 && <EmptyState icon={<Trophy />} title={t("No tournaments to run")} description={t("Create a tournament in the back office first.")} />}

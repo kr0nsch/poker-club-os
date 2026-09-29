@@ -37,9 +37,9 @@ export function EntriesView() {
     });
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-64 flex-1">
+        <div className="relative min-w-[min(16rem,100%)] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("Search")} className="pl-9" />
         </div>
@@ -95,8 +95,9 @@ export function EntriesView() {
               <Tr>
                 <Th>{t("Place")}</Th>
                 <Th>{t("Player")}</Th>
-                <Th>{t("Time")}</Th>
-                <Th>{t("Eliminated by")}</Th>
+                {/* Phones keep place, player and actions; time and knockout credit return from sm. */}
+                <Th className="max-sm:hidden">{t("Time")}</Th>
+                <Th className="max-sm:hidden">{t("Eliminated by")}</Th>
                 <Th className="text-right">{t("Actions")}</Th>
               </Tr>
             </THead>
@@ -107,11 +108,11 @@ export function EntriesView() {
                   <Td>
                     {e.playerName} <span className="text-xs text-muted-foreground">#{e.entryNumber}</span>
                   </Td>
-                  <Td className="text-xs text-muted-foreground">{fmt.time(e.eliminatedAt)}</Td>
-                  <Td className="text-xs text-muted-foreground">{e.eliminatedByEntryId ? byId.get(e.eliminatedByEntryId)?.playerName : "—"}</Td>
-                  <Td className="text-right">
-                    <Button size="sm" variant="outline" onClick={() => setRestore(e)}>
-                      <RotateCcw /> {t("Restore")}
+                  <Td className="text-xs text-muted-foreground max-sm:hidden">{fmt.time(e.eliminatedAt)}</Td>
+                  <Td className="text-xs text-muted-foreground max-sm:hidden">{e.eliminatedByEntryId ? byId.get(e.eliminatedByEntryId)?.playerName : "—"}</Td>
+                  <Td className="whitespace-nowrap text-right">
+                    <Button size="sm" variant="outline" onClick={() => setRestore(e)} title={t("Restore")}>
+                      <RotateCcw /> <span className="max-sm:sr-only">{t("Restore")}</span>
                     </Button>
                     <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setVoidEntry(e)} title={t("Void entry")}>
                       <Trash2 />

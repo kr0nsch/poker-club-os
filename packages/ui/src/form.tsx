@@ -59,8 +59,9 @@ export function Field({ label, hint, error, children, className, htmlFor }: { la
 
 export function Checkbox({ label, className, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode }) {
   return (
-    <label className={cn("inline-flex cursor-pointer items-center gap-2 text-sm", className)}>
-      <input type="checkbox" className="size-4 accent-[var(--gold)]" {...props} />
+    // The label is the hit area: at least 32 px under a mouse, 40 px on touch screens.
+    <label className={cn("inline-flex min-h-8 min-w-8 cursor-pointer items-center justify-center gap-2 text-sm pointer-coarse:min-h-10 pointer-coarse:min-w-10", className)}>
+      <input type="checkbox" className="size-4 accent-[var(--gold)] pointer-coarse:size-5" {...props} />
       {label}
     </label>
   );

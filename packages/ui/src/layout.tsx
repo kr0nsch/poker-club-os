@@ -44,6 +44,22 @@ export function Badge({ className, variant, ...props }: React.HTMLAttributes<HTM
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />;
 }
 
+/** Filter toggle or quick-pick pill. Compact under a mouse, a full finger-sized target on touch screens. */
+export function Chip({ active, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      className={cn(
+        "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-xs font-medium transition-colors pointer-coarse:h-10 pointer-coarse:px-4 pointer-coarse:text-sm",
+        active ? "border-gold/50 bg-gold/10 text-gold" : "border-border-strong text-muted-foreground hover:border-input hover:text-foreground",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export function Spinner({ className, label }: { className?: string; label?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-2 text-sm text-muted-foreground", className)} role="status">

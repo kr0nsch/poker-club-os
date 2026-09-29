@@ -47,45 +47,50 @@ export function FloorRequests() {
   }, [open]);
   if (open.length === 0) return null;
   return (
-    <Card className="border-warning/50 bg-warning/5 p-3">
+    <Card className="border-warning/35 bg-warning/[0.06] p-3">
       <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-warning">
-        <BellRing className="size-4 animate-pulse-soft" /> {t("Floor requests")} ({open.length})
+        <BellRing className="size-4" /> {t("Floor requests")} ({open.length})
       </div>
       <div className="grid gap-2">
         {open.map((r) => {
           const entryId = r.kind === "BUST_REPORT" && r.message?.startsWith("entry:") ? r.message.slice(6) : null;
           const entry = entryId ? snapshot.entries.find((e) => e.id === entryId) : undefined;
           return (
-            <div key={r.id} className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-card px-3 py-2">
-              <span className="text-xs tabular-nums text-muted-foreground">{fmt.time(r.createdAt)}</span>
-              <span className="font-semibold">
-                {t("Table")} {r.tableNumber}
-                {r.seatNumber ? ` · ${t("Seat")} ${r.seatNumber}` : ""}
-              </span>
-              <span className="flex-1 text-sm">
-                {r.kind === "BUST_REPORT" ? t("Bust reported: {name}", { name: entry?.playerName ?? "?" }) : r.message || t("Floor called to the table")}
-              </span>
-              {r.kind === "BUST_REPORT" && entry?.status === "ACTIVE" && (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  loading={pending}
-                  onClick={async () => {
-                    const res = await run("ELIMINATE_PLAYERS", { entryIds: [entry.id] }, { success: t("{name} eliminated", { name: entry.playerName }) });
-                    if (res) await run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "RESOLVED" });
-                  }}
-                >
-                  <Skull /> {t("Confirm elimination")}
+            // The text takes the row when there is room; on a phone the actions drop below it, right-aligned.
+            <div key={r.id} className="fade-in flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-card px-3 py-2">
+              <div className="flex min-w-0 flex-[1_1_16rem] flex-wrap items-baseline gap-x-2">
+                <span className="text-xs tabular-nums text-muted-foreground">{fmt.time(r.createdAt)}</span>
+                <span className="font-semibold">
+                  {t("Table")} {r.tableNumber}
+                  {r.seatNumber ? ` · ${t("Seat")} ${r.seatNumber}` : ""}
+                </span>
+                <span className="text-sm">
+                  {r.kind === "BUST_REPORT" ? t("Bust reported: {name}", { name: entry?.playerName ?? "?" }) : r.message || t("Floor called to the table")}
+                </span>
+              </div>
+              <div className="ml-auto flex shrink-0 flex-wrap justify-end gap-2">
+                {r.kind === "BUST_REPORT" && entry?.status === "ACTIVE" && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    loading={pending}
+                    onClick={async () => {
+                      const res = await run("ELIMINATE_PLAYERS", { entryIds: [entry.id] }, { success: t("{name} eliminated", { name: entry.playerName }) });
+                      if (res) await run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "RESOLVED" });
+                    }}
+                  >
+                    <Skull /> {t("Confirm elimination")}
+                  </Button>
+                )}
+                {r.status === "OPEN" && r.kind === "CALL_FLOOR" && (
+                  <Button size="sm" variant="outline" onClick={() => run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "ACKNOWLEDGED" })}>
+                    {t("On my way")}
+                  </Button>
+                )}
+                <Button size="sm" variant="ghost" onClick={() => run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "RESOLVED" })}>
+                  <Check /> {t("Resolve")}
                 </Button>
-              )}
-              {r.status === "OPEN" && r.kind === "CALL_FLOOR" && (
-                <Button size="sm" variant="outline" onClick={() => run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "ACKNOWLEDGED" })}>
-                  {t("On my way")}
-                </Button>
-              )}
-              <Button size="sm" variant="ghost" onClick={() => run("RESOLVE_FLOOR_REQUEST", { requestId: r.id, resolution: "RESOLVED" })}>
-                <Check /> {t("Resolve")}
-              </Button>
+              </div>
             </div>
           );
         })}

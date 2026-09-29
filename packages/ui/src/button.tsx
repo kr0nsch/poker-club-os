@@ -23,7 +23,8 @@ export const buttonVariants = cva(
         link: "text-gold underline-offset-4 hover:underline active:scale-100",
       },
       size: {
-        sm: "h-8 px-3 text-sm [&_svg]:size-4",
+        // Small buttons grow to a finger-sized target on touch screens (floor and dealer tablets).
+        sm: "h-8 px-3 text-sm pointer-coarse:h-10 [&_svg]:size-4",
         md: "h-10 px-4 text-sm [&_svg]:size-4",
         lg: "h-12 px-6 text-base [&_svg]:size-5",
         // Floor tablets: large touch targets for fast operation during play.

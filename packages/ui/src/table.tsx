@@ -3,7 +3,9 @@ import { cn } from "./cn.js";
 
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="relative w-full overflow-x-auto rounded-lg border border-border bg-card">
+    // @container (inline-size containment) keeps a wide table from widening its grid or flex parent:
+    // the wrapper takes the width it is given and the table scrolls inside it.
+    <div className="@container relative w-full overflow-x-auto rounded-lg border border-border bg-card">
       <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );

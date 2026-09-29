@@ -115,7 +115,8 @@ export function ClockPanel() {
                   <ChevronRight />
                 </Button>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              {/* "End hand-for-hand" is long: labels wrap inside the half-width buttons. */}
+              <div className="grid grid-cols-2 gap-2 [&>button]:h-auto [&>button]:min-h-10 [&>button]:whitespace-normal [&>button]:py-1.5 [&>button]:leading-tight">
                 <Button variant="outline" onClick={() => setSetTime(true)}>
                   <Timer /> {t("Set time")}
                 </Button>

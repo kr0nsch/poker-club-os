@@ -115,6 +115,22 @@
   table {
     font-variant-numeric: tabular-nums;
   }
+  /*
+   * 4K-class screens at 100% OS scaling (3840×2160 CSS px, 5K and up) would otherwise render the
+   * interface at desktop density on a much finer grid. Scale the rem-based UI so it reads like a
+   * 2560 px layout there. Both width and height are checked, so ultrawide monitors keep 100%.
+   * Breakpoints are unaffected: media queries resolve rem against the browser default, not <html>.
+   */
+  @media (min-width: 3000px) and (min-height: 1700px) {
+    html {
+      font-size: 150%;
+    }
+  }
+  @media (min-width: 4600px) and (min-height: 2600px) {
+    html {
+      font-size: 200%;
+    }
+  }
   /* Tablet ergonomics: no accidental text selection on big touch buttons. */
   button {
     touch-action: manipulation;

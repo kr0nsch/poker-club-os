@@ -40,6 +40,14 @@ export default function FloorConsole() {
   const s = snap.data;
   const unseated = s.entries.filter((e) => e.status === "ACTIVE" && !e.tableId).length;
   const waitlisted = s.registrations.filter((r) => r.status === "WAITLISTED").length;
+  const tabs = [
+    ["tables", LayoutGrid, t("Tables"), unseated],
+    ["registration", ClipboardCheck, t("Registration desk"), waitlisted],
+    ["players", Users, t("Players"), 0],
+    ["actions", History, t("Actions"), 0],
+    ["announce", Megaphone, t("Announcements"), 0],
+    ["results", Trophy, t("Results"), 0],
+  ] as const;
   return (
     <FloorProvider snapshot={s}>
       <div className="min-h-dvh">
@@ -54,31 +62,30 @@ export default function FloorConsole() {
           }
         />
         {/* minmax(0,1fr): a wide row (tabs, table grid) scrolls inside itself instead of widening the page. */}
-        <main className="mx-auto grid max-w-[1600px] grid-cols-[minmax(0,1fr)] gap-4 p-3 md:p-4">
+        <main className="mx-auto grid max-w-[120rem] grid-cols-[minmax(0,1fr)] gap-4 p-3 md:p-4 2xl:px-6">
           <ClockPanel />
           <FloorRequests />
           <Tabs value={current} onValueChange={setTab}>
-            <TabsList className="h-12 w-full justify-start overflow-x-auto">
-              <TabsTrigger value="tables" className="h-10 px-4">
-                <LayoutGrid className="size-4" /> {t("Tables")}
-                {unseated > 0 && <Badge variant="warning">{unseated}</Badge>}
-              </TabsTrigger>
-              <TabsTrigger value="registration" className="h-10 px-4">
-                <ClipboardCheck className="size-4" /> {t("Registration desk")}
-                {waitlisted > 0 && <Badge variant="warning">{waitlisted}</Badge>}
-              </TabsTrigger>
-              <TabsTrigger value="players" className="h-10 px-4">
-                <Users className="size-4" /> {t("Players")}
-              </TabsTrigger>
-              <TabsTrigger value="actions" className="h-10 px-4">
-                <History className="size-4" /> {t("Actions")}
-              </TabsTrigger>
-              <TabsTrigger value="announce" className="h-10 px-4">
-                <Megaphone className="size-4" /> {t("Announcements")}
-              </TabsTrigger>
-              <TabsTrigger value="results" className="h-10 px-4">
-                <Trophy className="size-4" /> {t("Results")}
-              </TabsTrigger>
+            {/* Phones: a 3×2 grid of icon-over-label tabs, all visible. Tablets and up: one underlined row. */}
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-0 sm:flex sm:h-12 sm:justify-start sm:gap-1 sm:overflow-x-auto lg:gap-4">
+              {tabs.map(([value, Icon, label, count]) => (
+                <TabsTrigger key={value} value={value} className="h-auto flex-col gap-1 py-2 text-xs sm:h-10 sm:flex-row sm:gap-1.5 sm:px-3 sm:py-0 sm:text-sm lg:px-4">
+                  <span className="relative">
+                    <Icon className="size-5 sm:size-4" />
+                    {count > 0 && (
+                      <Badge variant="warning" className="absolute -right-3 -top-2 px-1 sm:hidden">
+                        {count}
+                      </Badge>
+                    )}
+                  </span>
+                  <span className="max-w-full truncate">{label}</span>
+                  {count > 0 && (
+                    <Badge variant="warning" className="max-sm:hidden">
+                      {count}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              ))}
             </TabsList>
             <TabsContent value="tables">
               <TablesView />
