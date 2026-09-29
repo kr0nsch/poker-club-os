@@ -142,9 +142,21 @@ export class SyncService {
   }
 
   private async applyChange(change: CloudChange): Promise<string> {
+    // Tenant guard: a change may only touch the club this edge node serves.
+    const node = await this.edge.node();
+    if (!node) return "SKIP"; // first-run setup not done yet
+    if (change.organizationId !== node.organizationId) {
+      // Recorded under this edge's club so its administrators see the rejected change.
+      await this.recordConflict(this.deps.db, change, null, `organization ${change.organizationId} is not served by this edge node`, node.organizationId);
+      return "REJECT";
+    }
     return this.deps.db.transaction(async (tx) => {
       if (change.entityType === "player") {
         const [local] = await tx.select().from(players).where(eq(players.id, change.entityId)).for("update");
+        if (local && local.organizationId !== change.organizationId) {
+          await this.recordConflict(tx, change, null, "entity belongs to another organization");
+          return "REJECT";
+        }
         const decision = decideInbound(
           change,
           { exists: !!local, version: local?.version ?? 0, lastSyncedVersion: local ? await this.lastSyncedVersion("player", local.id) : null, lockedByLiveOperation: false },
@@ -192,6 +204,10 @@ export class SyncService {
       }
       if (change.entityType === "tournament") {
         const [local] = await tx.select().from(tournaments).where(eq(tournaments.id, change.entityId)).for("update");
+        if (local && local.organizationId !== change.organizationId) {
+          await this.recordConflict(tx, change, null, "entity belongs to another organization");
+          return "REJECT";
+        }
         const locked = !!local && !["DRAFT", "SCHEDULED"].includes(local.status);
         const decision = decideInbound(
           change,
@@ -217,9 +233,9 @@ export class SyncService {
     });
   }
 
-  private async recordConflict(tx: Executor, change: CloudChange, local: { version: number } | null, reason: string) {
+  private async recordConflict(tx: Executor, change: CloudChange, local: { version: number } | null, reason: string, organizationId = change.organizationId) {
     await tx.insert(syncConflicts).values({
-      organizationId: change.organizationId,
+      organizationId,
       entityType: change.entityType,
       entityId: change.entityId,
       localVersion: local?.version ?? null,
@@ -267,7 +283,11 @@ export class SyncService {
       if (input.resolution === "ACCEPT_REMOTE" && c.entityType === "player" && c.remotePayload) {
         const p = c.remotePayload as Record<string, unknown>;
         const fields = Object.fromEntries(["firstName", "lastName", "displayName", "nickname", "email", "phone", "memberNumber"].filter((k) => k in p).map((k) => [k, p[k]]));
-        const [local] = await tx.select().from(players).where(eq(players.id, c.entityId)).for("update");
+        const [local] = await tx
+          .select()
+          .from(players)
+          .where(and(eq(players.id, c.entityId), eq(players.organizationId, orgId)))
+          .for("update");
         if (local) await tx.update(players).set({ ...fields, version: local.version + 1, updatedAt: now }).where(eq(players.id, local.id));
       }
       if (input.resolution === "KEEP_LOCAL") {
