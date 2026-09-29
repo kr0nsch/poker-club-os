@@ -53,6 +53,8 @@ export type CommandResponse<T = unknown> = {
 export class ApiClient {
   cookie = "";
   csrf = "";
+  /** X-Device-Id of the tablet/phone this client plays (registered in the device registry). */
+  deviceId: string | null = null;
   constructor(readonly base: string) {}
 
   async call<T = unknown>(method: string, p: string, body?: unknown): Promise<{ status: number; body: T }> {
@@ -60,6 +62,7 @@ export class ApiClient {
       method,
       headers: {
         "content-type": "application/json",
+        ...(this.deviceId ? { "x-device-id": this.deviceId } : {}),
         ...(this.cookie ? { cookie: this.cookie } : {}),
         ...(this.csrf && method !== "GET" ? { "x-csrf-token": this.csrf } : {}),
       },
@@ -404,11 +407,13 @@ export function snapshot(client: ApiClient, tournamentId: string) {
 
 /** A seated active entry and a free seat at another table (for MOVE_PLAYER). */
 export function pickMove(s: TournamentSnapshot) {
-  const entry = s.entries.find((e) => e.status === "ACTIVE" && e.tableId && e.seatNumber)!;
-  for (const t of s.tables) {
-    if (t.id === entry.tableId || t.status !== "ACTIVE") continue;
-    const free = t.seats.find((x) => !x.entryId && !x.locked);
-    if (free) return { entry, toTableId: t.id, toSeatNumber: free.seatNumber };
+  // Seating is random: look for any seated player with a free seat at a different open table.
+  for (const entry of s.entries.filter((e) => e.status === "ACTIVE" && e.tableId && e.seatNumber)) {
+    for (const t of s.tables) {
+      if (t.id === entry.tableId || t.status === "CLOSED" || t.status === "BREAKING") continue;
+      const free = t.seats.find((x) => !x.entryId && !x.locked);
+      if (free) return { entry, toTableId: t.id, toSeatNumber: free.seatNumber };
+    }
   }
   throw new Error("no free seat at another table");
 }

@@ -89,6 +89,9 @@ describe("local operation (§91)", () => {
   });
 
   it("never seats two players in the same seat", async () => {
+    // Free a seat first so the test does not depend on earlier eliminations.
+    const before = await snapshot(td, tournamentId);
+    await td.commandOk(tournamentId, "ELIMINATE_PLAYERS", { entryIds: [before.entries.find((e) => e.status === "ACTIVE")!.id] });
     const s = await snapshot(td, tournamentId);
     const move = pickMove(s);
     const other = s.entries.find((e) => e.status === "ACTIVE" && e.id !== move.entry.id && e.tableId && e.tableId !== move.toTableId)!;
