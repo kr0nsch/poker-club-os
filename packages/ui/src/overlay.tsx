@@ -43,7 +43,8 @@ export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLD
   return <div className={cn("flex flex-col gap-1.5 pr-6", className)} {...props} />;
 }
 export function DialogFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />;
+  // Sticks to the bottom of a dialog that scrolls (long forms on a phone), so the actions stay in reach.
+  return <div className={cn("sticky -bottom-6 z-10 -mx-6 -mb-6 flex flex-col-reverse gap-2 bg-popover px-6 pb-6 pt-3 sm:flex-row sm:justify-end", className)} {...props} />;
 }
 export function DialogTitle({ className, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>) {
   return <DialogPrimitive.Title className={cn("text-lg font-semibold", className)} {...props} />;
