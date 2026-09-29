@@ -46,7 +46,7 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-border bg-background pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center gap-2 px-4">
           <Link href={base} className="flex min-w-0 items-center gap-2 font-semibold tracking-tight">
             <span className="grid size-7 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
@@ -94,7 +94,7 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
         )}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden" aria-label={t("Main navigation")}>
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden" aria-label={t("Main navigation")}>
         <div className="mx-auto grid max-w-3xl grid-cols-3">
           {items.map((i) => {
             const Icon = i.icon;
@@ -107,7 +107,7 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
               >
                 <span className="relative">
                   <Icon className="size-[22px]" strokeWidth={i.active ? 2 : 1.6} />
-                  {i.dot && <span className="absolute -right-1 -top-0.5 size-2.5 animate-pulse rounded-full bg-destructive ring-2 ring-background" />}
+                  {i.dot && <span className="absolute -right-1 -top-0.5 size-2.5 rounded-full bg-destructive ring-2 ring-background" />}
                   {!!i.badge && (
                     <span className="absolute -right-2.5 -top-1.5 min-w-4.5 rounded-sm bg-gold px-1 text-center text-[10px] font-bold leading-4.5 text-gold-foreground ring-2 ring-background">
                       {i.badge > 9 ? "9+" : i.badge}

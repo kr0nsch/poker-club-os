@@ -270,7 +270,7 @@ export function Kiosk({ token }: { token: string }) {
       className={cn("felt flex h-dvh select-none flex-col overflow-hidden text-foreground", idleCursor && "cursor-none")}
       onContextMenu={(e) => e.preventDefault()}
     >
-      <header className="flex items-center gap-4 border-b border-border bg-background/70 px-6 py-3 backdrop-blur">
+      <header className="flex items-center gap-4 border-b border-border bg-card px-6 py-3">
         <span className="grid size-11 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
           <SpadeMark className="size-5" />
         </span>
@@ -280,7 +280,7 @@ export function Kiosk({ token }: { token: string }) {
         </div>
         {snap && v.d && !v.notStarted && !closed && (
           <div className="text-right">
-            <div className={cn("text-xs font-semibold uppercase tracking-widest", v.isBreak ? "text-gold" : "text-primary")}>
+            <div className={cn("text-sm font-semibold", v.isBreak ? "text-gold" : v.paused ? "text-warning" : "text-muted-foreground")}>
               {v.isBreak ? t("Break") : t("Level {n}", { n: v.d.playLevelNumber })}
               {v.paused && ` · ${t("Paused")}`}
             </div>
@@ -292,7 +292,7 @@ export function Kiosk({ token }: { token: string }) {
         )}
         {snap && v.notStarted && !closed && <div className="text-lg text-muted-foreground">{t("Starts at {time}", { time: f.time(snap.tournament.startAt) })}</div>}
         <div className="flex items-center gap-2 pl-2 text-xl tabular-nums text-muted-foreground">
-          {offline && <span className="size-3 animate-pulse rounded-full bg-destructive" title={t("Local server unreachable")} />}
+          {offline && <span className="size-3 rounded-full bg-destructive" title={t("Local server unreachable")} />}
           {f.time(new Date(now))}
         </div>
       </header>
@@ -347,7 +347,7 @@ export function Kiosk({ token }: { token: string }) {
                 <>
                   <div className="relative grid size-48 place-items-center rounded-3xl border-4 border-dashed border-primary/60 bg-primary/5">
                     <QrCode className="size-28 text-primary" />
-                    <span className="absolute inset-x-6 top-1/2 h-1 animate-pulse rounded-full bg-primary/70" />
+                    <span className="scan-line absolute inset-x-6 top-1/2 h-0.5 rounded-full bg-gold/80" />
                   </div>
                   <div className="max-w-2xl text-3xl font-semibold leading-snug">{t("Hold your registration QR code in front of the scanner")}</div>
                 </>
@@ -373,7 +373,7 @@ export function Kiosk({ token }: { token: string }) {
                   spellCheck={false}
                   placeholder={t("Registration code")}
                   aria-label={t("Registration code")}
-                  className="h-16 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-5 font-mono text-2xl uppercase tracking-[0.2em] outline-none focus:border-primary"
+                  className="h-16 min-w-0 flex-1 rounded-2xl border-2 border-border bg-background px-5 font-mono text-2xl uppercase tracking-[0.2em] outline-none transition-colors placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-gold/70"
                 />
                 <Button type="submit" size="xl" className="h-16" disabled={normalizeScan(scan).length < 6}>
                   {t("Check in")}
@@ -465,8 +465,8 @@ function Countdown({ ms }: { ms: number }) {
     return () => cancelAnimationFrame(id);
   }, []);
   return (
-    <div className="mt-2 h-2 w-80 max-w-full overflow-hidden rounded-full bg-white/10">
-      <div className="h-full rounded-full bg-primary/70 ease-linear" style={{ width: started ? "0%" : "100%", transition: `width ${ms}ms linear` }} />
+    <div className="mt-2 h-1.5 w-80 max-w-full overflow-hidden rounded-full bg-white/10">
+      <div className="h-full w-full origin-left bg-primary/70" style={{ transform: started ? "scaleX(0)" : "scaleX(1)", transition: `transform ${ms}ms linear` }} />
     </div>
   );
 }
@@ -487,11 +487,11 @@ function ResultScreen({ result, onDone }: { result: CheckInResult; onDone: () =>
             <Armchair className="size-12 text-gold" />
             <div className="flex items-end gap-10 tabular-nums">
               <div>
-                <div className="text-2xl font-semibold uppercase tracking-widest text-muted-foreground">{t("Table")}</div>
+                <div className="text-2xl font-medium text-muted-foreground">{t("Table")}</div>
                 <div className="text-[clamp(5rem,16vh,10rem)] font-black leading-none text-gold">{seat.tableNumber}</div>
               </div>
               <div>
-                <div className="text-2xl font-semibold uppercase tracking-widest text-muted-foreground">{t("Seat")}</div>
+                <div className="text-2xl font-medium text-muted-foreground">{t("Seat")}</div>
                 <div className="text-[clamp(5rem,16vh,10rem)] font-black leading-none text-gold">{seat.seatNumber}</div>
               </div>
             </div>

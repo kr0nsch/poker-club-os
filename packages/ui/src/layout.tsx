@@ -6,7 +6,7 @@ import * as React from "react";
 import { cn } from "./cn.js";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-lg border border-border bg-card text-card-foreground", className)} {...props} />;
+  return <div className={cn("edge-light rounded-lg border border-border bg-card text-card-foreground", className)} {...props} />;
 }
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("flex flex-col gap-1 p-5 pb-3", className)} {...props} />;
@@ -25,7 +25,7 @@ export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDiv
 }
 
 // Status tags: square-ish, hairline border in the status colour, no filled pills.
-export const badgeVariants = cva("inline-flex items-center gap-1 rounded-sm border px-1.5 py-px text-[11px] font-medium leading-4 whitespace-nowrap [&_svg]:size-3", {
+export const badgeVariants = cva("inline-flex items-center gap-1.5 rounded-[5px] border px-1.5 py-px text-xs font-medium leading-4 whitespace-nowrap [&_svg]:size-3", {
   variants: {
     variant: {
       default: "border-gold/35 bg-gold/8 text-gold",
@@ -54,7 +54,7 @@ export function Spinner({ className, label }: { className?: string; label?: stri
 }
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("animate-pulse rounded-md bg-muted", className)} {...props} />;
+  return <div className={cn("sheen rounded-md bg-muted", className)} {...props} />;
 }
 
 export function EmptyState({ icon, title, description, action, className }: { icon?: React.ReactNode; title: React.ReactNode; description?: React.ReactNode; action?: React.ReactNode; className?: string }) {
@@ -70,10 +70,10 @@ export function EmptyState({ icon, title, description, action, className }: { ic
 
 export function Stat({ label, value, hint, className }: { label: React.ReactNode; value: React.ReactNode; hint?: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card px-4 py-3.5", className)}>
+    <div className={cn("edge-light rounded-lg border border-border bg-card px-4 py-3.5", className)}>
       <div className="eyebrow">{label}</div>
-      <div className="mt-1.5 font-mono text-2xl font-medium tracking-tight tabular-nums">{value}</div>
-      {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
+      <div className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
+      {hint && <div className="mt-0.5 text-xs text-muted-foreground">{hint}</div>}
     </div>
   );
 }
@@ -99,16 +99,20 @@ export function PageHeader({ title, description, actions, className }: { title: 
 }
 
 export function Alert({ variant = "default", title, children, className }: { variant?: "default" | "warning" | "destructive" | "success"; title?: React.ReactNode; children?: React.ReactNode; className?: string }) {
-  // A coloured rule on the left carries the tone; the box itself stays neutral.
+  // A faint tint of the state colour; the title carries the colour, the text stays readable.
   const tone = {
-    default: "border-l-border-strong",
-    warning: "border-l-warning text-warning",
-    destructive: "border-l-destructive text-destructive",
-    success: "border-l-success text-success",
+    default: "border-border-strong bg-card",
+    warning: "border-warning/30 bg-warning/[0.07] [&_[data-title]]:text-warning",
+    destructive: "border-destructive/35 bg-destructive/[0.08] [&_[data-title]]:text-destructive",
+    success: "border-success/30 bg-success/[0.07] [&_[data-title]]:text-success",
   }[variant];
   return (
-    <div role="alert" className={cn("rounded-md border border-l-[3px] border-border bg-card px-4 py-3 text-sm", tone, className)}>
-      {title && <div className="font-medium">{title}</div>}
+    <div role="alert" className={cn("rounded-lg border px-4 py-3 text-sm", tone, className)}>
+      {title && (
+        <div data-title className="font-semibold">
+          {title}
+        </div>
+      )}
       {children && <div className={cn(title && "mt-1", "text-foreground/85")}>{children}</div>}
     </div>
   );

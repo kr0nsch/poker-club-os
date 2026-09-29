@@ -96,7 +96,7 @@ export function NotificationQueueCard() {
               aria-pressed={status === x.key}
               className={cn("rounded-lg border px-3 py-2 text-left transition-colors", status === x.key ? "border-primary bg-primary/10" : "border-border hover:bg-accent")}
             >
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{x.label}</div>
+              <div className="eyebrow">{x.label}</div>
               <div className={cn("text-xl font-semibold tabular-nums", x.value ? x.tone : "")}>{x.value ?? "—"}</div>
             </button>
           ))}

@@ -31,7 +31,7 @@ export function TournamentCard({ tour, org, registration }: { tour: PublicTourna
   return (
     <Link
       href={`/p/${org}/t/${tour.slug}`}
-      className="block rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-accent"
+      className="edge-light block rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-accent"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="text-sm font-medium text-gold">{f.dateTime(tour.startAt)}</div>
@@ -61,15 +61,15 @@ export function LiveTournamentCard({ tour, org, registration }: { tour: PublicTo
   const snap = live.data;
   const playing = isLiveStatus(tour.status);
   return (
-    <div className={cn("felt rounded-xl border p-4", playing ? "border-primary/40" : "border-border")}>
+    <div className={cn("edge-light rounded-xl border bg-card p-4", playing ? "border-gold/35" : "border-border")}>
       <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-destructive">
-          <span className="size-2 animate-pulse rounded-full bg-destructive" />
+        <span className={cn("flex items-center gap-2 text-sm font-semibold", playing ? "text-destructive" : "text-gold")}>
+          <span aria-hidden className="size-2 rounded-full bg-current" />
           {playing ? t("Live") : t("Seating")}
         </span>
         <StatusBadge status={tour.status} />
       </div>
-      <Link href={`/p/${org}/live/${tour.slug}`} className="mt-1 block text-xl font-semibold leading-tight hover:text-primary">
+      <Link href={`/p/${org}/live/${tour.slug}`} className="mt-1.5 block text-xl font-semibold leading-tight transition-colors hover:text-gold">
         {tour.name}
       </Link>
       {snap && <LiveClockLine snap={snap} className="mt-2" />}
@@ -87,7 +87,7 @@ export function LiveTournamentCard({ tour, org, registration }: { tour: PublicTo
         </div>
       )}
       {snap?.mySeat && (
-        <div className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-sm">
+        <div className="mt-3 rounded-lg border border-gold/30 bg-gold/[0.07] px-3 py-2 text-sm">
           <span className="text-muted-foreground">{t("Your seat")}: </span>
           <span className="font-semibold text-gold">{t("Table {table}, seat {seat}", { table: snap.mySeat.tableNumber, seat: snap.mySeat.seatNumber })}</span>
         </div>

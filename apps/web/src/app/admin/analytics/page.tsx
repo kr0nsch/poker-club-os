@@ -210,7 +210,7 @@ function Report({ d }: { d: AnalyticsView }) {
                 <BarRow label={t("Played")} value={reg.played} max={reg.registrations} display={`${fmt.number(reg.played)} · ${pct(conversion)}`} tone="gold" />
               </div>
               <div className="grid gap-2">
-                <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("Sources")}</div>
+                <div className="eyebrow">{t("Sources")}</div>
                 {sources.map((s) => (
                   <BarRow key={s.label} label={s.label} value={s.value} max={maxSource} display={fmt.number(s.value)} />
                 ))}

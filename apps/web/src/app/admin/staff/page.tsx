@@ -194,7 +194,7 @@ function RolesMatrix({ roles, permissions }: { roles: RoleView[]; permissions: s
                 {[...groups.entries()].map(([group, perms]) => (
                   <Fragment key={group}>
                     <tr className="bg-muted/40">
-                      <td colSpan={columns.length + 1} className="sticky left-0 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                      <td colSpan={columns.length + 1} className="sticky left-0 px-3 py-1.5 text-xs font-semibold text-muted-foreground">
                         {lbl(L.permissionGroup, group)}
                       </td>
                     </tr>

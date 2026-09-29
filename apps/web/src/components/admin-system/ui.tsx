@@ -4,7 +4,6 @@
 
 import {
   Alert,
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -268,30 +267,28 @@ export function RowsSkeleton({ rows = 4, className }: { rows?: number; className
   );
 }
 
-const STATE_TONE: Record<ComponentState, "success" | "warning" | "destructive" | "muted"> = {
-  OK: "success",
-  DEGRADED: "warning",
-  DOWN: "destructive",
-  DISABLED: "muted",
+// Health states read as a dot and a word; only problems get colour on the text as well.
+const STATE_TONE: Record<ComponentState, { dot: string; text: string }> = {
+  OK: { dot: "bg-success", text: "text-foreground/85" },
+  DEGRADED: { dot: "bg-warning", text: "text-warning" },
+  DOWN: { dot: "bg-destructive", text: "text-destructive" },
+  DISABLED: { dot: "bg-muted-foreground/40", text: "text-muted-foreground" },
 };
 
 export function StateBadge({ state, className }: { state: string; className?: string }) {
   const t = useT();
   const labels: Record<string, string> = { OK: t("OK"), DEGRADED: t("Degraded"), DOWN: t("Down"), DISABLED: t("Disabled") };
+  const tone = STATE_TONE[state as ComponentState] ?? { dot: "bg-border-strong", text: "text-muted-foreground" };
   return (
-    <Badge variant={STATE_TONE[state as ComponentState] ?? "outline"} className={className}>
+    <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-medium", tone.text, className)}>
+      <span aria-hidden className={cn("size-1.5 shrink-0 rounded-full", tone.dot)} />
       {labels[state] ?? state}
-    </Badge>
+    </span>
   );
 }
 
 export function LiveDot({ on, className, title }: { on: boolean; className?: string; title?: string }) {
-  return (
-    <span
-      title={title}
-      className={cn("inline-block size-2 shrink-0 rounded-full", on ? "bg-success shadow-[0_0_0_3px_color-mix(in_oklab,var(--success)_25%,transparent)]" : "bg-muted-foreground/40", className)}
-    />
-  );
+  return <span title={title} className={cn("inline-block size-2 shrink-0 rounded-full", on ? "bg-success" : "bg-muted-foreground/40", className)} />;
 }
 
 /** Label/value rows for detail panels. */
@@ -313,8 +310,8 @@ export function Bar({ value, max, className, tone = "primary" }: { value: number
   const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   const color = { primary: "bg-primary", warning: "bg-warning", destructive: "bg-destructive", muted: "bg-muted-foreground/50", gold: "bg-gold" }[tone];
   return (
-    <div className={cn("h-2 w-full overflow-hidden rounded-full bg-muted", className)}>
-      <div className={cn("h-full rounded-full transition-[width] duration-500", color)} style={{ width: `${pct}%` }} />
+    <div className={cn("h-1.5 w-full overflow-hidden rounded-full bg-muted", className)}>
+      <div className={cn("h-full w-full origin-left transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]", color)} style={{ transform: `scaleX(${pct / 100})` }} />
     </div>
   );
 }

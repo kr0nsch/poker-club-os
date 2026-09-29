@@ -28,7 +28,7 @@ interface RegisterResult {
 function Fact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="rounded-xl border border-border bg-card p-3">
-      <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="eyebrow">{label}</dt>
       <dd className="mt-1 font-semibold tabular-nums">{children}</dd>
     </div>
   );

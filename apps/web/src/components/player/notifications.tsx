@@ -189,7 +189,7 @@ export function NotificationPreferences() {
   const rows = (prefs.data ?? []).filter((p) => p.type !== "STAFF_ALERT");
   return (
     <div className="overflow-hidden rounded-xl border border-border">
-      <div className="grid grid-cols-[1fr_repeat(3,3.75rem)] items-center gap-x-1 border-b border-border bg-muted/50 px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="grid grid-cols-[1fr_repeat(3,3.75rem)] items-center gap-x-1 border-b border-border bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
         <span>{t("Notification")}</span>
         {PREF_CHANNELS.map((c) => (
           <span key={c} className="text-center">

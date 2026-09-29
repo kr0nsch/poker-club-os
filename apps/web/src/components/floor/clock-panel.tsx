@@ -35,7 +35,7 @@ export function ClockPanel() {
             {d?.isBreak ? (
               <Badge variant="warning">{t("Break")}</Badge>
             ) : (
-              <span className="eyebrow text-gold">
+              <span className="text-sm font-semibold text-gold">
                 {t("Level")} {d?.playLevelNumber ?? 1}
               </span>
             )}
@@ -43,7 +43,7 @@ export function ClockPanel() {
             {status === "HAND_FOR_HAND" && <Badge variant="destructive">{t("Hand-for-hand")}</Badge>}
             {live && (lateRegOpen ? <Badge variant="outline">{t("Late registration open")}</Badge> : <Badge variant="muted">{t("Late registration closed")}</Badge>)}
           </div>
-          <div className={cn("clock-digits mt-2 text-7xl font-semibold leading-none md:text-8xl", lowTime && "text-warning", status === "PAUSED" && "animate-pulse-soft text-warning")}>
+          <div className={cn("clock-digits mt-2 text-7xl font-semibold leading-none md:text-8xl", lowTime && "text-warning", status === "PAUSED" && "text-warning/70")}>
             {d?.formatted ?? "--:--"}
           </div>
           <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -153,7 +153,7 @@ export function ClockPanel() {
         ].map(([label, value], i) => (
           <div key={i} className="border-border px-2 py-2.5 [&:not(:last-child)]:border-r">
             <div className="eyebrow">{i === 5 && stats.prizePool == null ? t("Total chips") : label}</div>
-            <div className="mt-0.5 font-mono text-lg font-medium tabular-nums">{value}</div>
+            <div className="mt-0.5 text-lg font-semibold tabular-nums">{value}</div>
           </div>
         ))}
       </div>

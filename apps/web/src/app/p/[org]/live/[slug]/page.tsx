@@ -94,7 +94,7 @@ export default function LivePage() {
             <Armchair className="size-6" />
           </span>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-widest text-gold">{t("Your seat")}</div>
+            <div className="text-sm font-semibold text-gold">{t("Your seat")}</div>
             <div className="text-2xl font-bold tabular-nums">{t("Table {table}, seat {seat}", { table: snap.mySeat.tableNumber, seat: snap.mySeat.seatNumber })}</div>
           </div>
         </div>

@@ -17,21 +17,24 @@ export const DialogClose = DialogPrimitive.Close;
 export function DialogContent({ className, children, wide, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { wide?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/75 data-[state=open]:animate-in data-[state=open]:fade-in" />
-      <DialogPrimitive.Content
-        className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid max-h-[90dvh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-border-strong bg-popover p-6",
-          wide ? "max-w-3xl" : "max-w-lg",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <X className="size-5" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
+      <DialogPrimitive.Overlay className="fade-in fixed inset-0 z-50 bg-black/75" />
+      {/* Centred by a plain wrapper so the entrance transform on the panel cannot fight the centring. */}
+      <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-4">
+        <DialogPrimitive.Content
+          className={cn(
+            "rise-in edge-light pointer-events-auto relative grid max-h-[90dvh] w-full gap-4 overflow-y-auto rounded-xl border border-border-strong bg-popover p-6 shadow-[0_24px_64px_-24px_rgb(0_0_0/0.8)]",
+            wide ? "max-w-3xl" : "max-w-lg",
+            className,
+          )}
+          {...props}
+        >
+          {children}
+          <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm p-0.5 text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <X className="size-5" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </div>
     </DialogPrimitive.Portal>
   );
 }
@@ -59,7 +62,7 @@ export function DropdownMenuContent({ className, sideOffset = 4, ...props }: Rea
     <DropdownPrimitive.Portal>
       <DropdownPrimitive.Content
         sideOffset={sideOffset}
-        className={cn("z-50 min-w-44 overflow-hidden rounded-md border border-border-strong bg-popover p-1 text-popover-foreground shadow-[0_12px_32px_-12px_rgb(0_0_0/0.6)]", className)}
+        className={cn("fade-in edge-light z-50 min-w-44 overflow-hidden rounded-lg border border-border-strong bg-popover p-1 text-popover-foreground shadow-[0_12px_32px_-12px_rgb(0_0_0/0.6)]", className)}
         {...props}
       />
     </DropdownPrimitive.Portal>
@@ -109,7 +112,7 @@ export function TabsTrigger({ className, ...props }: React.ComponentPropsWithout
 }
 
 export function TabsContent({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content className={cn("mt-4 focus-visible:outline-none", className)} {...props} />;
+  return <TabsPrimitive.Content className={cn("fade-in mt-4 focus-visible:outline-none", className)} {...props} />;
 }
 
 // --- Switch ------------------------------------------------------------------------------
@@ -123,7 +126,7 @@ export function Switch({ className, ...props }: React.ComponentPropsWithoutRef<t
       )}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px" />
+      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px" />
     </SwitchPrimitive.Root>
   );
 }

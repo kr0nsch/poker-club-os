@@ -38,7 +38,7 @@ function Progress({ d, paused }: { d: Derived; paused: boolean }) {
   const pct = d.levelDurationMs > 0 ? Math.min(100, Math.max(0, (d.elapsedMs / d.levelDurationMs) * 100)) : 0;
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-      <div className={cn("h-full rounded-full transition-[width] duration-500", paused ? "bg-warning" : d.isBreak ? "bg-gold" : "bg-primary")} style={{ width: `${pct}%` }} />
+      <div className={cn("h-full w-full origin-left transition-transform duration-500 ease-linear", paused ? "bg-warning" : d.isBreak ? "bg-gold" : "bg-primary")} style={{ transform: `scaleX(${pct / 100})` }} />
     </div>
   );
 }
@@ -81,7 +81,7 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
     const first = snap.levels.find((l) => l.type === "PLAY") ?? null;
     return (
       <Card className="felt overflow-hidden border-primary/25 text-center">
-        <div className="px-5 pt-5 text-sm font-semibold uppercase tracking-widest text-primary">
+        <div className="px-5 pt-5 text-sm font-semibold text-gold">
           {snap.tournament.status === "SEATING" ? t("Seating in progress") : t("Starts at {time}", { time: f.time(snap.tournament.startAt) })}
         </div>
         <div className="clock-digits px-4 py-3 font-bold leading-none" style={{ fontSize: "min(20vw, 6.5rem)" }}>
@@ -103,12 +103,12 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
   return (
     <Card className={cn("felt relative overflow-hidden", v.handForHand ? "border-destructive/50" : v.isBreak ? "border-gold/40" : "border-primary/25")}>
       {v.handForHand && (
-        <div className="flex items-center justify-center gap-2 bg-destructive/90 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-destructive-foreground">
+        <div className="flex items-center justify-center gap-2 bg-destructive px-4 py-1.5 text-sm font-semibold text-destructive-foreground">
           <Hand className="size-4" /> {t("Hand-for-hand")}
         </div>
       )}
       <div className="flex items-center justify-between gap-2 px-5 pt-4">
-        <div className={cn("flex items-center gap-2 text-sm font-semibold uppercase tracking-widest", v.isBreak ? "text-gold" : "text-primary")}>
+        <div className={cn("flex items-center gap-2 text-sm font-semibold", v.isBreak ? "text-gold" : "text-foreground")}>
           {v.isBreak ? (
             <>
               <Coffee className="size-4" /> {t("Break")}
@@ -118,7 +118,7 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
           )}
         </div>
         {v.paused && (
-          <Badge variant="warning" className="animate-pulse-soft gap-1.5 text-sm">
+          <Badge variant="warning" className="fade-in gap-1.5 text-sm">
             <Pause className="size-3.5" /> {t("Clock paused")}
           </Badge>
         )}
@@ -134,17 +134,17 @@ export function LiveClockPanel({ snap }: { snap: PublicLiveSnapshot }) {
       </div>
       <div className="grid grid-cols-2 border-t border-border/60">
         <div className="p-4">
-          <div className="text-xs uppercase tracking-wide text-muted-foreground">{v.isBreak ? t("Next level") : t("Blinds")}</div>
+          <div className="eyebrow">{v.isBreak ? t("Next level") : t("Blinds")}</div>
           <div className="mt-1 text-2xl font-bold tabular-nums">{v.isBreak ? (next ? tt.blinds(next) : "—") : tt.blinds(level)}</div>
           {(v.isBreak ? nextAnte : ante) && <div className="text-sm text-muted-foreground tabular-nums">{v.isBreak ? nextAnte : ante}</div>}
         </div>
         <div className="border-l border-border/60 p-4">
-          <div className="text-xs uppercase tracking-wide text-muted-foreground">{v.isBreak ? t("Next break") : t("Next level")}</div>
+          <div className="eyebrow">{v.isBreak ? t("Next break") : t("Next level")}</div>
           {v.isBreak ? (
             <div className="mt-1 text-2xl font-bold tabular-nums">{d.msUntilNextBreak != null ? formatClock(d.msUntilNextBreak) : "—"}</div>
           ) : followingLevel?.type === "BREAK" ? (
             <div className="mt-1 text-2xl font-bold text-gold">
-              {t("Break")} <span className="text-base font-medium text-muted-foreground">· {tt.minutes(followingLevel.durationSeconds)}</span>
+              {t("Break")} <span className="whitespace-nowrap text-base font-medium text-muted-foreground">· {tt.minutes(followingLevel.durationSeconds)}</span>
             </div>
           ) : (
             <>
@@ -172,7 +172,7 @@ export function LiveClockLine({ snap, className }: { snap: PublicLiveSnapshot; c
   if (!v.d || v.notStarted || v.finished || v.cancelled) return null;
   return (
     <div className={cn("flex flex-wrap items-baseline gap-x-3 gap-y-1", className)}>
-      <span className={cn("text-xs font-semibold uppercase tracking-widest", v.isBreak ? "text-gold" : "text-primary")}>
+      <span className={cn("text-sm font-semibold", v.isBreak ? "text-gold" : "text-muted-foreground")}>
         {v.isBreak ? t("Break") : t("Level {n}", { n: v.d.playLevelNumber })}
       </span>
       <span className={cn("clock-digits text-3xl font-bold", v.paused && "opacity-50")}>{v.d.formatted}</span>

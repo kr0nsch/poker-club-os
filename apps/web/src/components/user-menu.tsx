@@ -4,6 +4,7 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMe
 import { useQueryClient } from "@tanstack/react-query";
 import { Languages, LogOut, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { lbl, useSysLabels } from "@/components/admin-system/labels";
 import { post } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { useMe } from "@/lib/queries";
@@ -11,6 +12,7 @@ import { useMe } from "@/lib/queries";
 export function UserMenu() {
   const { t, locale, setLocale } = useI18n();
   const me = useMe();
+  const L = useSysLabels();
   const qc = useQueryClient();
   const router = useRouter();
   async function signOut() {
@@ -29,7 +31,7 @@ export function UserMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>
           {me.data?.user?.email}
-          <div className="mt-0.5 font-normal">{me.data?.roles.join(", ")}</div>
+          <div className="mt-0.5 font-normal">{me.data?.roles.map((r) => lbl(L.role, r)).join(", ")}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => setLocale(locale === "ru" ? "en" : "ru")}>

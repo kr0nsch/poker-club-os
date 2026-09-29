@@ -81,7 +81,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         if (items.length === 0) return null;
         return (
           <div key={g.title} className="grid gap-0.5">
-            <div className="px-3 pb-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{g.title}</div>
+            <div className="px-3 pb-1 text-xs font-medium text-muted-foreground/80">{g.title}</div>
             {items.map((i) => {
               const active = i.href === "/admin" ? path === "/admin" : path.startsWith(i.href);
               const Icon = i.icon;
@@ -90,9 +90,13 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
                   key={i.href}
                   href={i.href}
                   onClick={onNavigate}
-                  className={cn("flex items-center gap-2.5 rounded-md px-3 py-2 transition-colors", active ? "bg-primary/15 text-primary" : "text-foreground/80 hover:bg-accent hover:text-foreground")}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-md px-3 py-2 transition-colors",
+                    active ? "edge-light bg-accent font-medium text-foreground [&_svg]:text-gold" : "text-foreground/75 hover:bg-accent/60 hover:text-foreground [&_svg]:text-muted-foreground",
+                  )}
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-4 transition-colors" />
                   {i.label}
                 </Link>
               );
@@ -118,7 +122,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       {open && (
-        <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setOpen(false)}>
+        <div className="fade-in fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setOpen(false)}>
           <aside className="h-full w-72 overflow-y-auto border-r border-border bg-card p-4" onClick={(e) => e.stopPropagation()}>
             <div className="mb-6 flex items-center justify-between">
               <Brand />
@@ -131,7 +135,7 @@ function Shell({ children }: { children: ReactNode }) {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
+        <header className="sticky top-0 z-30 border-b border-border bg-background">
           <ConnectivityBanner />
           <div className="flex h-14 items-center gap-3 px-4">
             <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>

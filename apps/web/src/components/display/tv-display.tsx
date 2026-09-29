@@ -26,11 +26,11 @@ type Widgets = ReadonlySet<DisplayWidget>;
 
 function Tile({ label, value, sub, accent }: { label: string; value: ReactNode; sub?: ReactNode; accent?: boolean }) {
   return (
-    <div className="rounded-[1vh] border border-white/[0.09] px-[1.6vw] py-[1.6vh]">
-      <div className="font-mono font-medium uppercase tracking-[0.14em] text-white/50" style={{ fontSize: fs(1.15, 2.1) }}>
+    <div className="rounded-[1vh] border border-white/[0.09] bg-white/[0.02] px-[1.6vw] py-[1.6vh] shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]">
+      <div className="font-medium text-white/55" style={{ fontSize: fs(1.35, 2.4) }}>
         {label}
       </div>
-      <div className={cn("mt-[0.6vh] font-mono font-medium leading-tight tracking-tight tabular-nums", accent && "text-[var(--tv-accent)]")} style={{ fontSize: fs(3, 5.4) }}>
+      <div className={cn("mt-[0.6vh] font-semibold leading-tight tracking-tight tabular-nums", accent && "text-[var(--tv-accent)]")} style={{ fontSize: fs(3, 5.4) }}>
         {value}
       </div>
       {sub && (
@@ -45,7 +45,7 @@ function Tile({ label, value, sub, accent }: { label: string; value: ReactNode; 
 function OfflineDot({ offline }: { offline: boolean }) {
   const t = useT();
   if (!offline) return null;
-  return <span className="inline-block size-[1.4vh] animate-pulse rounded-full bg-red-500 shadow-[0_0_1vh_rgba(239,68,68,0.9)]" title={t("Local server unreachable")} aria-label={t("Local server unreachable")} />;
+  return <span className="inline-block size-[1.4vh] rounded-full bg-red-500" title={t("Local server unreachable")} aria-label={t("Local server unreachable")} />;
 }
 
 function Header({ state, snap, now, offline, widgets }: { state: DeviceState; snap: PublicLiveSnapshot | null; now: number; offline: boolean; widgets: Widgets }) {
@@ -100,8 +100,8 @@ function LeaderboardPanel({ league, rows = 8 }: { league: PublicLeague; rows?: n
   const t = useT();
   const f = useFormat();
   return (
-    <div className="rounded-[1vh] border border-white/[0.09] px-[1.4vw] py-[1.4vh]">
-      <div className="truncate font-mono font-medium uppercase tracking-[0.14em] text-white/50" style={{ fontSize: fs(1.15, 2.1) }}>
+    <div className="rounded-[1vh] border border-white/[0.09] bg-white/[0.02] px-[1.4vw] py-[1.4vh] shadow-[inset_0_1px_0_rgb(255_255_255/0.04)]">
+      <div className="truncate font-medium text-white/55" style={{ fontSize: fs(1.35, 2.4) }}>
         {league.league.name}
       </div>
       <ol className="mt-[0.8vh] grid gap-[0.5vh]" style={{ fontSize: fs(1.6, 2.9) }}>
@@ -164,7 +164,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
           {v.paused ? (
             // Paused: the status replaces the level line instead of covering the digits.
             <>
-              <Pause className="animate-pulse-soft" style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} fill="currentColor" strokeWidth={0} />
+              <Pause style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} fill="currentColor" strokeWidth={0} />
               {t("Paused")}
               <span className="text-white/40">· {v.isBreak ? t("Break") : t("Level {n}", { n: d.playLevelNumber })}</span>
             </>
@@ -182,7 +182,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
               {d.formatted}
             </div>
             <div className="mx-auto mt-[1.4vh] h-[0.5vh] w-4/5 overflow-hidden rounded-full bg-white/[0.08]">
-              <div className={cn("h-full rounded-full transition-[width] duration-1000", v.paused ? "bg-warning" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ width: `${pct}%` }} />
+              <div className={cn("h-full w-full origin-left transition-transform duration-1000 ease-linear", v.paused ? "bg-warning" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ transform: `scaleX(${pct / 100})` }} />
             </div>
           </div>
         )}
@@ -194,7 +194,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
         {widgets.has("BLINDS") && (
           <div className="mt-[2vh]">
             {v.isBreak && (
-              <div className="font-semibold uppercase tracking-[0.18em] text-white/55" style={{ fontSize: fs(1.5, 2.7) }}>
+              <div className="font-medium text-white/55" style={{ fontSize: fs(1.7, 3) }}>
                 {t("Next level")}
               </div>
             )}
@@ -306,7 +306,7 @@ function FinishedScreen({ snap }: { snap: PublicLiveSnapshot }) {
       </div>
       {winner && (
         <div className="text-center">
-          <div className="uppercase tracking-[0.2em] text-white/60" style={{ fontSize: fs(1.6, 2.9) }}>
+          <div className="font-medium text-white/60" style={{ fontSize: fs(1.8, 3.2) }}>
             {t("Winner")}
           </div>
           <div className="font-black text-gold" style={{ fontSize: fs(6, 11) }}>
@@ -437,7 +437,7 @@ export function TvDisplay({ token }: { token: string }) {
     >
       <Header state={s} snap={snap} now={now} offline={offline} widgets={widgets} />
       {v.handForHand && !v.finished && (
-        <div className="relative mx-[3vw] mt-[1.5vh] flex items-center justify-center gap-[1vw] rounded-[1.2vh] bg-red-600 py-[0.8vh] font-black uppercase tracking-[0.3em] animate-pulse-soft" style={{ fontSize: fs(2.6, 4.6) }}>
+        <div className="relative mx-[3vw] mt-[1.5vh] flex items-center justify-center gap-[1vw] rounded-[1.2vh] bg-red-600 py-[0.8vh] font-bold uppercase tracking-[0.16em]" style={{ fontSize: fs(2.6, 4.6) }}>
           <Hand style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} /> {t("Hand-for-hand")}
         </div>
       )}

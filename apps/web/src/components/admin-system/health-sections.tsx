@@ -247,7 +247,7 @@ export function SyncCard() {
 function MiniStat({ label, value, tone }: { label: string; value: number | string; tone?: "warning" | "destructive" }) {
   return (
     <div className="rounded-lg border border-border px-3 py-2">
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="eyebrow">{label}</div>
       <div className={cn("text-lg font-semibold tabular-nums", tone === "warning" && "text-warning", tone === "destructive" && "text-destructive")}>{value}</div>
     </div>
   );
