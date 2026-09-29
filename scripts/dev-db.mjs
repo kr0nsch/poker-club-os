@@ -27,7 +27,16 @@ export async function startDevDb({ log = true } = {}) {
   mkdirSync(path.dirname(dataDir), { recursive: true });
   const fresh = !existsSync(path.join(dataDir, "PG_VERSION"));
   if (!fresh) clearStaleLock();
-  const pgInstance = new EmbeddedPostgres({ databaseDir: dataDir, user: "postgres", password: "postgres", port, persistent: true, onLog: () => {} });
+  const pgInstance = new EmbeddedPostgres({
+    databaseDir: dataDir,
+    user: "postgres",
+    password: "postgres",
+    port,
+    persistent: true,
+    // Always UTF-8: initdb would otherwise inherit the OS code page (e.g. WIN1251 on Russian Windows).
+    initdbFlags: ["--encoding=UTF8", "--locale=C"],
+    onLog: () => {},
+  });
   if (fresh) {
     if (log) console.log("[db] initialising a new PostgreSQL cluster in .data/postgres …");
     await pgInstance.initialise();
@@ -35,8 +44,11 @@ export async function startDevDb({ log = true } = {}) {
   await pgInstance.start();
   const client = new pg.Client({ connectionString: `postgres://postgres:postgres@127.0.0.1:${port}/postgres` });
   await client.connect();
-  const exists = await client.query("select 1 from pg_database where datname = $1", [dbName]);
-  if (exists.rowCount === 0) await client.query(`create database ${dbName}`);
+  const exists = await client.query("select pg_encoding_to_char(encoding) as enc from pg_database where datname = $1", [dbName]);
+  if (exists.rowCount === 0) await client.query(`create database ${dbName} encoding 'UTF8' lc_collate 'C' lc_ctype 'C' template template0`);
+  else if (exists.rows[0].enc !== "UTF8") {
+    throw new Error(`database ${dbName} uses ${exists.rows[0].enc}; delete .data/postgres to recreate it as UTF-8`);
+  }
   await client.end();
   const url = `postgres://postgres:postgres@127.0.0.1:${port}/${dbName}`;
   if (log) console.log(`[db] PostgreSQL ready: ${url}`);

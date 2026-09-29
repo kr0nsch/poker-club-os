@@ -140,6 +140,11 @@ export class TournamentsController {
     return this.core.tournaments.movements(ctx.staff, id);
   }
 
+  @Get(":id/results")
+  standings(@Ctx() ctx: RequestState, @Param("id") id: string) {
+    return this.core.tournaments.results(ctx.staff, id);
+  }
+
   @Get(":id/seating/preview")
   seatingPreview(@Ctx() ctx: RequestState, @Param("id") id: string) {
     return this.core.tournaments.seatingPreview(ctx.staff, id);

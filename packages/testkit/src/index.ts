@@ -62,6 +62,8 @@ export async function startEmbeddedCluster(opts: { dataDir: string; port?: numbe
     password: PASSWORD,
     port,
     persistent: true,
+    // UTF-8 regardless of the host OS locale (Windows would default to its ANSI code page).
+    initdbFlags: ["--encoding=UTF8", "--locale=C"],
     onLog: opts.log ? (m: unknown) => console.log("[pg]", m) : () => undefined,
     onError: (m: unknown) => {
       if (opts.log) console.error("[pg]", m);
@@ -93,7 +95,7 @@ export async function prepareTemplate(baseUrl: string): Promise<void> {
     await adminQuery(baseUrl, `drop database if exists "${row.datname}" with (force)`);
   }
   await adminQuery(baseUrl, `drop database if exists ${TEMPLATE_DB} with (force)`);
-  await adminQuery(baseUrl, `create database ${TEMPLATE_DB}`);
+  await adminQuery(baseUrl, `create database ${TEMPLATE_DB} encoding 'UTF8' lc_collate 'C' lc_ctype 'C' template template0`);
   const handle = createDb(`${baseUrl}/${TEMPLATE_DB}`, { max: 2, applicationName: "pcos-test-template" });
   try {
     await runMigrations(handle);

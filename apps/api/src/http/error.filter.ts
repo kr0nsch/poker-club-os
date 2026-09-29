@@ -50,7 +50,9 @@ export class ErrorFilter implements ExceptionFilter {
       status = err.status;
       body = { error: { code: err.code, message: err.message, ...(err.details !== undefined ? { details: err.details } : {}), ...(err.currentVersion !== undefined ? { currentVersion: err.currentVersion } : {}) } };
       if (err.code === "INTERNAL_ERROR") {
-        console.error("[api] unhandled error:", exception instanceof Error ? (exception.stack ?? exception.message) : exception);
+        let root: unknown = exception;
+        while (root instanceof Error && root.cause !== undefined && root.cause !== root) root = root.cause;
+        console.error("[api] unhandled error:", root instanceof Error ? (root.stack ?? root.message) : root);
       }
     }
     if (status === 429 && !reply.getHeader("retry-after")) reply.header("retry-after", "30");

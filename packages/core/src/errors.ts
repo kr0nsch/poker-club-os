@@ -28,8 +28,8 @@ export class AppError extends Error {
   readonly details?: unknown;
   readonly currentVersion?: number;
 
-  constructor(code: ErrorCode, message: string, opts: { details?: unknown; currentVersion?: number } = {}) {
-    super(message);
+  constructor(code: ErrorCode, message: string, opts: { details?: unknown; currentVersion?: number; cause?: unknown } = {}) {
+    super(message, opts.cause !== undefined ? { cause: opts.cause } : undefined);
     this.name = "AppError";
     this.code = code;
     this.status = STATUS[code];
@@ -45,7 +45,8 @@ export class AppError extends Error {
     if (pg.code === "40001" || pg.code === "40P01") return new AppError("VERSION_CONFLICT", "concurrent update, please retry");
     const cause = (e as { cause?: unknown } | null)?.cause;
     if (cause instanceof AppError || cause instanceof DomainError) return AppError.from(cause);
-    return new AppError("INTERNAL_ERROR", "internal error");
+    // Keep the original error for server-side logs (never sent to clients).
+    return new AppError("INTERNAL_ERROR", "internal error", { cause: e });
   }
 }
 

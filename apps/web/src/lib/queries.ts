@@ -134,6 +134,13 @@ export interface CommandInput {
   payload?: Record<string, unknown>;
   /** override (plan-based commands pass the version their preview was based on) */
   expectedVersion?: number;
+  /**
+   * Idempotency key. Pass the same id when retrying the same logical action
+   * after a network error so the server never applies it twice (spec §65).
+   */
+  clientOperationId?: string;
+  /** suppress the default error toast (caller shows its own feedback) */
+  silent?: boolean;
 }
 
 /**
@@ -153,7 +160,7 @@ export function useCommand(tournamentId: string) {
         type: input.type,
         payload: input.payload ?? {},
         expectedVersion,
-        clientOperationId: crypto.randomUUID(),
+        clientOperationId: input.clientOperationId ?? crypto.randomUUID(),
       });
     },
     onSuccess: (res) => {
@@ -164,11 +171,11 @@ export function useCommand(tournamentId: string) {
       void qc.invalidateQueries({ queryKey: key });
       void qc.invalidateQueries({ queryKey: keys.actions(tournamentId) });
     },
-    onError: (e) => {
+    onError: (e, input) => {
       if (e instanceof ApiError && e.isConflict) {
         toast.warning(t("Changed on another device — reloaded the current state"), { description: e.message });
         void qc.invalidateQueries({ queryKey: key });
-      } else {
+      } else if (!input.silent) {
         toast.error(e instanceof ApiError ? e.message : t("Something went wrong"));
       }
     },

@@ -7,7 +7,9 @@ import {
   houseRulesProfiles,
   operationalActions,
   organizations,
+  players,
   seatMovements,
+  tournamentResults,
   tournamentClockStates,
   tournamentStructures,
   tournamentTemplates,
@@ -36,6 +38,7 @@ import {
   topic,
   type HouseRulesConfig,
   type OperationalActionView,
+  type ResultView,
   type TournamentStatus,
 } from "@pcos/types";
 import { and, asc, desc, eq, gte, inArray, lte, or, sql } from "drizzle-orm";
@@ -390,6 +393,28 @@ export class TournamentService {
       undoable: undoability({ type: a.type as never, compensatedByActionId: a.compensatedByActionId, compensatesActionId: a.compensatesActionId }).undoable,
       compensatedByActionId: a.compensatedByActionId,
       compensatesActionId: a.compensatesActionId,
+    }));
+  }
+
+  /** Standings for staff: provisional after FINISH, final after FINALIZE (spec §66). */
+  async results(actor: Actor, id: string): Promise<ResultView[]> {
+    requirePermission(actor, "results.read");
+    await this.row(actor, id);
+    const rows = await this.deps.db
+      .select({ r: tournamentResults, name: players.displayName })
+      .from(tournamentResults)
+      .innerJoin(players, eq(players.id, tournamentResults.playerId))
+      .where(eq(tournamentResults.tournamentId, id))
+      .orderBy(asc(tournamentResults.position));
+    return rows.map(({ r, name }) => ({
+      playerId: r.playerId,
+      playerName: name,
+      position: r.position,
+      entries: r.entries,
+      points: typeof r.points === "number" ? r.points : null,
+      prizeAmount: r.prizeAmount,
+      status: r.status as ResultView["status"],
+      revision: r.revision,
     }));
   }
 
