@@ -248,8 +248,8 @@ export function TemplateDialog({ template, onClose }: { template: DisplayTemplat
   const theme = template?.theme ?? {};
   const [name, setName] = useState(template?.name ?? "");
   const [widgets, setWidgets] = useState<DisplayWidget[]>(template?.widgets ?? DEFAULT_WIDGETS);
-  const [accent, setAccent] = useState(theme.accent ?? "#22c55e");
-  const [background, setBackground] = useState(theme.background ?? "#050b09");
+  const [accent, setAccent] = useState(theme.accent ?? "#d4ae5c");
+  const [background, setBackground] = useState(theme.background ?? "#0b0c0e");
   const [sponsorText, setSponsorText] = useState(theme.sponsorText ?? "");
   const valid = name.trim().length > 0 && widgets.length > 0 && HEX.test(accent) && HEX.test(background) && sponsorText.length <= 120;
 
@@ -318,7 +318,7 @@ export function TemplateDialog({ template, onClose }: { template: DisplayTemplat
           </div>
           <div className="grid content-start gap-2">
             <Label>{t("Preview")}</Label>
-            <TemplatePreview widgets={widgets} accent={HEX.test(accent) ? accent : "#22c55e"} background={HEX.test(background) ? background : "#050b09"} sponsorText={sponsorText} />
+            <TemplatePreview widgets={widgets} accent={HEX.test(accent) ? accent : "#d4ae5c"} background={HEX.test(background) ? background : "#0b0c0e"} sponsorText={sponsorText} />
           </div>
         </form>
         <DialogFooter>

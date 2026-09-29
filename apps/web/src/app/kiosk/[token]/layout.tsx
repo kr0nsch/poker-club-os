@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 // Touch kiosk: no pinch-zoom, no accidental scaling.
 export const viewport: Viewport = {
-  themeColor: "#07100d",
+  themeColor: "#0d0e10",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

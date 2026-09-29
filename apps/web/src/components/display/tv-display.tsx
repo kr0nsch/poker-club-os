@@ -3,7 +3,8 @@
 import { formatClock } from "@pcos/domain";
 import type { AnnouncementView, DisplayWidget, PublicLiveSnapshot } from "@pcos/types";
 import { cn } from "@pcos/ui";
-import { Coffee, Hand, Pause, Spade, Trophy } from "lucide-react";
+import { Coffee, Hand, Pause, Trophy } from "lucide-react";
+import { SpadeMark } from "@/components/brand";
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useLeaderboards, type PublicLeague } from "@/components/player/api";
 import { useTournamentText } from "@/components/player/labels";
@@ -25,11 +26,11 @@ type Widgets = ReadonlySet<DisplayWidget>;
 
 function Tile({ label, value, sub, accent }: { label: string; value: ReactNode; sub?: ReactNode; accent?: boolean }) {
   return (
-    <div className="rounded-[1.2vh] border border-white/10 bg-white/[0.04] px-[1.6vw] py-[1.6vh]">
-      <div className="font-semibold uppercase tracking-[0.18em] text-white/55" style={{ fontSize: fs(1.25, 2.3) }}>
+    <div className="rounded-[1vh] border border-white/[0.09] px-[1.6vw] py-[1.6vh]">
+      <div className="font-mono font-medium uppercase tracking-[0.14em] text-white/50" style={{ fontSize: fs(1.15, 2.1) }}>
         {label}
       </div>
-      <div className={cn("mt-[0.4vh] font-bold leading-tight tabular-nums", accent && "text-[var(--tv-accent)]")} style={{ fontSize: fs(3.1, 5.6) }}>
+      <div className={cn("mt-[0.6vh] font-mono font-medium leading-tight tracking-tight tabular-nums", accent && "text-[var(--tv-accent)]")} style={{ fontSize: fs(3, 5.4) }}>
         {value}
       </div>
       {sub && (
@@ -51,11 +52,11 @@ function Header({ state, snap, now, offline, widgets }: { state: DeviceState; sn
   const f = useFormat();
   const org = state.organization?.name ?? snap?.tournament.organizationName ?? "";
   return (
-    <header className="relative flex items-center gap-[1.5vw] px-[3vw] pt-[2.4vh]">
+    <header className="relative mx-[3vw] flex items-center gap-[1.5vw] border-b border-white/[0.08] pb-[1.8vh] pt-[2.4vh]">
       {widgets.has("LOGO") && (
         <div className="flex min-w-0 items-center gap-[0.8vw]">
-          <span className="grid shrink-0 place-items-center rounded-[1vh] bg-[var(--tv-accent)] text-black" style={{ width: fs(3.6, 6.4), height: fs(3.6, 6.4) }}>
-            <Spade style={{ width: fs(2.2, 3.9), height: fs(2.2, 3.9) }} fill="currentColor" />
+          <span className="grid shrink-0 place-items-center rounded-[0.8vh] border-2 border-[color-mix(in_srgb,var(--tv-accent)_55%,transparent)] text-[var(--tv-accent)]" style={{ width: fs(3.4, 6), height: fs(3.4, 6) }}>
+            <SpadeMark style={{ width: fs(1.9, 3.4), height: fs(1.9, 3.4) }} />
           </span>
           <span className="truncate font-semibold text-white/85" style={{ fontSize: fs(1.8, 3.2) }}>
             {org}
@@ -99,8 +100,8 @@ function LeaderboardPanel({ league, rows = 8 }: { league: PublicLeague; rows?: n
   const t = useT();
   const f = useFormat();
   return (
-    <div className="rounded-[1.2vh] border border-white/10 bg-white/[0.04] px-[1.4vw] py-[1.4vh]">
-      <div className="truncate font-semibold uppercase tracking-[0.18em] text-white/55" style={{ fontSize: fs(1.25, 2.3) }}>
+    <div className="rounded-[1vh] border border-white/[0.09] px-[1.4vw] py-[1.4vh]">
+      <div className="truncate font-mono font-medium uppercase tracking-[0.14em] text-white/50" style={{ fontSize: fs(1.15, 2.1) }}>
         {league.league.name}
       </div>
       <ol className="mt-[0.8vh] grid gap-[0.5vh]" style={{ fontSize: fs(1.6, 2.9) }}>
@@ -156,7 +157,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
     <div className={cn("grid h-full items-center gap-[2vw] px-[3vw]", sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1")}>
       {sides && <div className="grid content-center gap-[1.6vh]">{left}</div>}
       <div className="relative flex min-w-0 flex-col items-center justify-center text-center">
-        <div className={cn("flex items-center gap-[1vw] font-bold uppercase tracking-[0.22em]", v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")} style={{ fontSize: fs(3, 5.2) }}>
+        <div className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")} style={{ fontSize: fs(2.6, 4.6) }}>
           {v.isBreak ? (
             <>
               <Coffee style={{ width: fs(3, 5.2), height: fs(3, 5.2) }} /> {t("Break")}
@@ -167,7 +168,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
         </div>
         {widgets.has("CLOCK") && (
           <div className="relative w-full">
-            <div className={cn("clock-digits font-bold leading-[1.02] transition-opacity", v.paused && "opacity-40")} style={{ fontSize: clockSize }}>
+            <div className={cn("clock-digits font-semibold leading-[1.02] transition-opacity", v.paused && "opacity-40")} style={{ fontSize: clockSize }}>
               {d.formatted}
             </div>
             {v.paused && (
@@ -177,7 +178,7 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
                 </span>
               </div>
             )}
-            <div className="mx-auto mt-[1vh] h-[0.9vh] w-4/5 overflow-hidden rounded-full bg-white/10">
+            <div className="mx-auto mt-[1.4vh] h-[0.5vh] w-4/5 overflow-hidden rounded-full bg-white/[0.08]">
               <div className={cn("h-full rounded-full transition-[width] duration-1000", v.paused ? "bg-amber-400" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ width: `${pct}%` }} />
             </div>
           </div>
@@ -333,8 +334,8 @@ function IdleScreen({ state, now, league }: { state: DeviceState; now: number; l
   return (
     <div className="flex h-full items-center justify-center gap-[5vw] px-[3vw]">
       <div className="flex flex-col items-center text-center">
-        <span className="grid place-items-center rounded-[2vh] bg-[var(--tv-accent)] text-black" style={{ width: fs(8, 14), height: fs(8, 14) }}>
-          <Spade style={{ width: fs(5, 9), height: fs(5, 9) }} fill="currentColor" />
+        <span className="grid place-items-center rounded-[1.6vh] border-[0.4vh] border-[color-mix(in_srgb,var(--tv-accent)_55%,transparent)] text-[var(--tv-accent)]" style={{ width: fs(8, 14), height: fs(8, 14) }}>
+          <SpadeMark style={{ width: fs(4.2, 7.5), height: fs(4.2, 7.5) }} />
         </span>
         <div className="mt-[3vh] font-bold tracking-tight" style={{ fontSize: fs(4.5, 8) }}>
           {state.organization?.name ?? t("Poker Club")}
@@ -363,8 +364,8 @@ function IdleScreen({ state, now, league }: { state: DeviceState; now: number; l
 function MessageScreen({ title, detail, now }: { title: string; detail?: string; now: number }) {
   const f = useFormat();
   return (
-    <div className="flex h-dvh w-screen flex-col items-center justify-center gap-[2vh] bg-[#050b09] text-center text-white">
-      <Spade className="text-primary" style={{ width: fs(6, 10), height: fs(6, 10) }} fill="currentColor" />
+    <div className="flex h-dvh w-screen flex-col items-center justify-center gap-[2vh] bg-[#0b0c0e] text-center text-white">
+      <SpadeMark className="text-gold" style={{ width: fs(6, 10), height: fs(6, 10) }} />
       <div className="clock-digits font-bold" style={{ fontSize: fs(10, 18) }}>
         {f.time(new Date(now))}
       </div>
@@ -404,7 +405,7 @@ export function TvDisplay({ token }: { token: string }) {
   }
 
   const offline = rt.socket !== "open" || (state.isError && !isRevoked(state.error));
-  const style = { "--tv-accent": safeColor(s.template.theme.accent, "#22c55e"), backgroundColor: safeColor(s.template.theme.background, "#050b09") } as CSSProperties;
+  const style = { "--tv-accent": safeColor(s.template.theme.accent, "#d4ae5c"), backgroundColor: safeColor(s.template.theme.background, "#0b0c0e") } as CSSProperties;
   const announcement = widgets.has("ANNOUNCEMENTS") ? (snap?.announcements.find((a) => !a.displayUntil || Date.parse(a.displayUntil) > now) ?? null) : null;
   const sponsor = widgets.has("SPONSOR") ? (s.template.theme.sponsorText?.trim() || null) : null;
   const status = snap?.tournament.status;
@@ -424,14 +425,13 @@ export function TvDisplay({ token }: { token: string }) {
 
   return (
     <div
-      className={cn("relative flex h-dvh w-screen select-none flex-col overflow-hidden text-white", idle && "cursor-none")}
+      className={cn("relative flex h-dvh w-screen select-none flex-col overflow-hidden text-[#ebe7df]", idle && "cursor-none")}
       style={style}
       onDoubleClick={() => {
         if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
         else void document.documentElement.requestFullscreen().catch(() => undefined);
       }}
     >
-      <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 38%, color-mix(in srgb, var(--tv-accent) 16%, transparent), transparent 62%)" }} />
       <Header state={s} snap={snap} now={now} offline={offline} widgets={widgets} />
       {v.handForHand && !v.finished && (
         <div className="relative mx-[3vw] mt-[1.5vh] flex items-center justify-center gap-[1vw] rounded-[1.2vh] bg-red-600 py-[0.8vh] font-black uppercase tracking-[0.3em] animate-pulse-soft" style={{ fontSize: fs(2.6, 4.6) }}>

@@ -5,7 +5,7 @@ import { Radio, Spade, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { LanguageSwitch } from "@/components/brand";
+import { LanguageSwitch, SpadeMark } from "@/components/brand";
 import { ConnectivityBadge } from "@/components/connectivity";
 import { useT } from "@/lib/i18n";
 import { RealtimeProvider } from "@/lib/realtime-context";
@@ -49,8 +49,8 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-border bg-background/90 pt-[env(safe-area-inset-top)] backdrop-blur">
         <div className="mx-auto flex h-14 w-full max-w-3xl items-center gap-2 px-4">
           <Link href={base} className="flex min-w-0 items-center gap-2 font-semibold tracking-tight">
-            <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Spade className="size-4.5" fill="currentColor" />
+            <span className="grid size-7 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
+              <SpadeMark className="size-3.5" />
             </span>
             <span className="truncate">{clubName ?? t("Poker Club")}</span>
           </Link>
@@ -59,10 +59,10 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
               <Link
                 key={i.label}
                 href={i.href}
-                className={cn("relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors", i.active ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("relative rounded-md px-3 py-1.5 text-sm font-medium transition-colors", i.active ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground")}
               >
                 {i.label}
-                {!!i.badge && <span className="ml-1.5 rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">{i.badge}</span>}
+                {!!i.badge && <span className="ml-1.5 rounded-sm bg-gold px-1.5 text-[10px] font-bold text-gold-foreground">{i.badge}</span>}
               </Link>
             ))}
           </nav>
@@ -103,13 +103,13 @@ function PlayerShell({ org, children }: { org: string; children: ReactNode }) {
                 key={i.label}
                 href={i.href}
                 aria-current={i.active ? "page" : undefined}
-                className={cn("relative flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors", i.active ? "text-primary" : "text-muted-foreground active:text-foreground")}
+                className={cn("relative flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors", i.active ? "text-gold" : "text-muted-foreground active:text-foreground")}
               >
                 <span className="relative">
-                  <Icon className="size-6" />
+                  <Icon className="size-[22px]" strokeWidth={i.active ? 2 : 1.6} />
                   {i.dot && <span className="absolute -right-1 -top-0.5 size-2.5 animate-pulse rounded-full bg-destructive ring-2 ring-background" />}
                   {!!i.badge && (
-                    <span className="absolute -right-2.5 -top-1.5 min-w-4.5 rounded-full bg-primary px-1 text-center text-[10px] font-bold leading-4.5 text-primary-foreground ring-2 ring-background">
+                    <span className="absolute -right-2.5 -top-1.5 min-w-4.5 rounded-sm bg-gold px-1 text-center text-[10px] font-bold leading-4.5 text-gold-foreground ring-2 ring-background">
                       {i.badge > 9 ? "9+" : i.badge}
                     </span>
                   )}

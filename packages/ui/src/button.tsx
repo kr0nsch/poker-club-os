@@ -7,18 +7,19 @@ import * as React from "react";
 import { cn } from "./cn.js";
 
 export const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-[background-color,border-color,color,opacity] duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-45 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        success: "bg-success text-success-foreground hover:bg-success/90",
-        warning: "bg-warning text-warning-foreground hover:bg-warning/90",
-        link: "text-primary underline-offset-4 hover:underline",
+        default: "bg-primary text-primary-foreground hover:bg-primary/88 active:bg-primary/78",
+        secondary: "border border-border-strong bg-secondary text-secondary-foreground hover:bg-accent",
+        outline: "border border-border-strong bg-transparent hover:bg-accent hover:text-accent-foreground",
+        ghost: "text-foreground/85 hover:bg-accent hover:text-accent-foreground",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/88",
+        success: "bg-success text-success-foreground hover:bg-success/88",
+        warning: "bg-warning text-warning-foreground hover:bg-warning/88",
+        gold: "bg-gold text-gold-foreground hover:bg-gold/88",
+        link: "text-gold underline-offset-4 hover:underline",
       },
       size: {
         sm: "h-8 px-3 text-sm [&_svg]:size-4",

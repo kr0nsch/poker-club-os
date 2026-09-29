@@ -7,6 +7,7 @@ import { Ban, Check, ListPlus, MoreVertical, Repeat, Search, Undo2, UserPlus, Us
 import { useDeferredValue, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ApiError, get, post } from "@/lib/api";
+import { lateRegistrationOpen, useDerivedClock } from "@/lib/clock";
 import { useFormat, useT } from "@/lib/i18n";
 import { StatusBadge } from "@/components/status";
 import { useFloor } from "./floor-context";
@@ -36,7 +37,8 @@ export function RegistrationDesk() {
   const [adding, setAdding] = useState(false);
   const status = snapshot.tournament.status;
   const canCheckIn = ["REGISTRATION_OPEN", "SEATING", "RUNNING", "BREAK", "PAUSED", "HAND_FOR_HAND"].includes(status);
-  const closedForNew = snapshot.tournament.lateRegistrationClosed && ["RUNNING", "BREAK", "PAUSED", "HAND_FOR_HAND"].includes(status);
+  const clock = useDerivedClock(snapshot.clock, snapshot.levels, 5_000);
+  const closedForNew = ["RUNNING", "BREAK", "PAUSED", "HAND_FOR_HAND"].includes(status) && !lateRegistrationOpen(snapshot.tournament, clock);
 
   const hits = useQuery({
     queryKey: ["players", "search", dq],

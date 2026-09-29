@@ -2,8 +2,9 @@
 
 import type { KioskCheckInInput } from "@pcos/types";
 import { Button, cn, Spinner } from "@pcos/ui";
-import { Armchair, Camera, CircleCheck, Delete, Hash, KeyRound, Keyboard, QrCode, Spade, TriangleAlert, Wallet } from "lucide-react";
+import { Armchair, Camera, CircleCheck, Delete, Hash, KeyRound, Keyboard, QrCode, TriangleAlert, Wallet } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { SpadeMark } from "@/components/brand";
 import { useTournamentText } from "@/components/player/labels";
 import { useLiveClock } from "@/components/player/live-clock";
 import { ApiError, post } from "@/lib/api";
@@ -253,7 +254,7 @@ export function Kiosk({ token }: { token: string }) {
     return (
       <div className="grid h-dvh place-items-center bg-background p-8 text-center">
         <div className="grid justify-items-center gap-4">
-          <Spade className="size-16 text-primary" fill="currentColor" />
+          <SpadeMark className="size-14 text-gold" />
           <div className="text-3xl font-semibold">{revoked ? t("This kiosk link is not valid") : t("Connecting to the local server…")}</div>
           {revoked && <div className="text-xl text-muted-foreground">{t("Please ask the staff to set it up again.")}</div>}
         </div>
@@ -270,8 +271,8 @@ export function Kiosk({ token }: { token: string }) {
       onContextMenu={(e) => e.preventDefault()}
     >
       <header className="flex items-center gap-4 border-b border-border bg-background/70 px-6 py-3 backdrop-blur">
-        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
-          <Spade className="size-6" fill="currentColor" />
+        <span className="grid size-11 shrink-0 place-items-center rounded-md border border-gold/45 text-gold">
+          <SpadeMark className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="truncate text-2xl font-semibold leading-tight">{snap?.tournament.name ?? s.organization?.name ?? ""}</div>

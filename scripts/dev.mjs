@@ -9,6 +9,7 @@ import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseEnv } from "node:util";
 import { startDevDb } from "./dev-db.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -51,9 +52,15 @@ if (build.status !== 0) {
   process.exit(build.status ?? 1);
 }
 
+// Passed as environment instead of `node --env-file`: with --watch, Node on Windows then watches the
+// whole folder of the env file (the repository root, including the database's WAL) and restarts endlessly.
+const appEnv = parseEnv(readFileSync(envFile, "utf8"));
+
 const children = [];
-function run(name, cmd, args, cwd) {
-  const child = spawn(cmd, args, { cwd, stdio: ["ignore", "pipe", "pipe"], shell: isWin, env: { ...process.env, FORCE_COLOR: "1" } });
+function run(name, cmd, args, cwd, extraEnv = {}) {
+  // FORCE_COLOR keeps colours through the pipe; an inherited NO_COLOR would only produce warnings.
+  const { NO_COLOR: _noColor, ...inherited } = process.env;
+  const child = spawn(cmd, args, { cwd, stdio: ["ignore", "pipe", "pipe"], shell: isWin, env: { ...inherited, ...extraEnv, FORCE_COLOR: "1" } });
   const prefix = `[${name}]`.padEnd(9);
   for (const stream of [child.stdout, child.stderr]) {
     stream.on("data", (d) => {
@@ -65,10 +72,9 @@ function run(name, cmd, args, cwd) {
 }
 
 const node = process.execPath;
-const envArg = `--env-file=${envFile}`;
 run("tsc", isWin ? "pnpm.exe" : "pnpm", ["turbo", "run", "dev", "--filter=./packages/*", "--output-logs=errors-only"], root);
-run("api", node, [envArg, "--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/api"));
-run("worker", node, [envArg, "--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/worker"));
+run("api", node, ["--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/api"), appEnv);
+run("worker", node, ["--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/worker"), appEnv);
 if (existsSync(path.join(root, "apps/web/package.json"))) run("web", isWin ? "pnpm.exe" : "pnpm", ["--filter", "@pcos/web", "dev"], root);
 
 async function shutdown() {

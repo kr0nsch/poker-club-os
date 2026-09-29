@@ -1,7 +1,7 @@
 "use client";
 
-import { deriveClock, formatClock, type DerivedClock } from "@pcos/domain";
-import type { ClockView, LevelView } from "@pcos/types";
+import { deriveClock, formatClock, isLateRegistrationOpen, type DerivedClock } from "@pcos/domain";
+import { LIVE_TOURNAMENT_STATUSES, type ClockView, type LevelView, type TournamentDetailView } from "@pcos/types";
 import { useMemo } from "react";
 import { useServerNow } from "./realtime-context";
 
@@ -26,6 +26,13 @@ export function useDerivedClock(clock: ClockView | null | undefined, levels: rea
     now,
   );
   return { ...d, formatted: formatClock(d.remainingMs) };
+}
+
+/** Late registration as the server evaluates it: level/time rules plus the manual close switch. */
+export function lateRegistrationOpen(t: Pick<TournamentDetailView, "status" | "lateRegistrationPolicy" | "lateRegistrationClosed">, clock: DerivedClock | null): boolean {
+  if (t.status === "REGISTRATION_OPEN") return true;
+  if (!["SEATING", ...LIVE_TOURNAMENT_STATUSES].includes(t.status)) return false;
+  return isLateRegistrationOpen({ status: t.status, policy: t.lateRegistrationPolicy, manuallyClosed: t.lateRegistrationClosed, clock, now: Date.now() });
 }
 
 export function blindsLabel(level: LevelView | null | undefined, fmt: (n: number) => string): string {

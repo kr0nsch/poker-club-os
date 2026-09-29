@@ -75,9 +75,9 @@ async function networkFirst(request) {
     if (hit) return hit;
     return new Response(
       '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Poker Club</title>' +
-        '<body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#07100d;color:#e8f1ec;font-family:system-ui,sans-serif;text-align:center">' +
+        '<body style="margin:0;display:grid;place-items:center;min-height:100vh;background:#0d0e10;color:#ebe7df;font-family:system-ui,sans-serif;text-align:center">' +
         "<div><div style=\"font-size:48px\">&#9824;</div><p>The local server is unreachable.<br>Check the venue Wi-Fi and try again.</p>" +
-        '<button onclick="location.reload()" style="font:inherit;padding:10px 18px;border-radius:8px;border:0;background:#22c55e;color:#04130a">Retry</button></div></body>',
+        '<button onclick="location.reload()" style="font:inherit;padding:10px 18px;border-radius:8px;border:0;background:#d4ae5c;color:#16110a">Retry</button></div></body>',
       { status: 503, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } },
     );
   }

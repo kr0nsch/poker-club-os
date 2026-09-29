@@ -3,7 +3,7 @@
 import { Badge, Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, cn } from "@pcos/ui";
 import { ChevronLeft, ChevronRight, Hand, Lock, LockOpen, Minus, Pause, Play, Plus, Rocket, Shuffle, Timer } from "lucide-react";
 import { useState } from "react";
-import { anteLabel, blindsLabel, useDerivedClock } from "@/lib/clock";
+import { anteLabel, blindsLabel, lateRegistrationOpen, useDerivedClock } from "@/lib/clock";
 import { useFormat, useT } from "@/lib/i18n";
 import { formatClock } from "@pcos/domain";
 import { useFloor } from "./floor-context";
@@ -25,6 +25,7 @@ export function ClockPanel() {
   const lowTime = d && d.status === "RUNNING" && d.remainingMs < 60_000;
   const fromLevelIndex = d?.levelIndex;
   const n = (v: number) => fmt.number(v);
+  const lateRegOpen = lateRegistrationOpen(tournament, d);
 
   return (
     <Card className={cn("overflow-hidden", status === "PAUSED" && "border-warning/60", status === "HAND_FOR_HAND" && "border-destructive/60")}>
@@ -34,15 +35,15 @@ export function ClockPanel() {
             {d?.isBreak ? (
               <Badge variant="warning">{t("Break")}</Badge>
             ) : (
-              <span className="font-medium text-foreground">
+              <span className="eyebrow text-gold">
                 {t("Level")} {d?.playLevelNumber ?? 1}
               </span>
             )}
             {status === "PAUSED" && <Badge variant="warning">{t("Clock paused")}</Badge>}
             {status === "HAND_FOR_HAND" && <Badge variant="destructive">{t("Hand-for-hand")}</Badge>}
-            {tournament.lateRegistrationClosed ? <Badge variant="muted">{t("Late registration closed")}</Badge> : live ? <Badge variant="default">{t("Late registration open")}</Badge> : null}
+            {live && (lateRegOpen ? <Badge variant="outline">{t("Late registration open")}</Badge> : <Badge variant="muted">{t("Late registration closed")}</Badge>)}
           </div>
-          <div className={cn("clock-digits mt-1 text-7xl font-bold leading-none md:text-8xl", lowTime && "text-warning", status === "PAUSED" && "animate-pulse-soft text-warning")}>
+          <div className={cn("clock-digits mt-2 text-7xl font-semibold leading-none md:text-8xl", lowTime && "text-warning", status === "PAUSED" && "animate-pulse-soft text-warning")}>
             {d?.formatted ?? "--:--"}
           </div>
           <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
@@ -96,7 +97,7 @@ export function ClockPanel() {
                   <Play /> {t("Resume clock")}
                 </Button>
               ) : (
-                <Button size="xl" variant="warning" loading={pending} onClick={() => run("PAUSE_CLOCK")}>
+                <Button size="xl" loading={pending} onClick={() => run("PAUSE_CLOCK")}>
                   <Pause /> {t("Pause clock")}
                 </Button>
               )}
@@ -141,7 +142,7 @@ export function ClockPanel() {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-3 border-t border-border bg-muted/30 text-center sm:grid-cols-6">
+      <div className="grid grid-cols-3 border-t border-border text-center sm:grid-cols-6">
         {[
           [t("Registered"), fmt.number(stats.registrations)],
           [t("Entries"), fmt.number(stats.entries)],
@@ -150,9 +151,9 @@ export function ClockPanel() {
           [t("Re-entries"), `${stats.reentries}${stats.rebuys ? ` · R ${stats.rebuys}` : ""}${stats.addons ? ` · A ${stats.addons}` : ""}`],
           [t("Prize pool"), stats.prizePool != null ? fmt.money(stats.prizePool, tournament.buyIn?.currency) : fmt.number(stats.totalChips)],
         ].map(([label, value], i) => (
-          <div key={i} className="border-border px-2 py-2 [&:not(:last-child)]:border-r">
-            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{i === 5 && stats.prizePool == null ? t("Total chips") : label}</div>
-            <div className="text-lg font-semibold tabular-nums">{value}</div>
+          <div key={i} className="border-border px-2 py-2.5 [&:not(:last-child)]:border-r">
+            <div className="eyebrow">{i === 5 && stats.prizePool == null ? t("Total chips") : label}</div>
+            <div className="mt-0.5 font-mono text-lg font-medium tabular-nums">{value}</div>
           </div>
         ))}
       </div>

@@ -8,7 +8,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     type={type}
     ref={ref}
     className={cn(
-      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-destructive",
+      "flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground/80 hover:border-border-strong focus-visible:border-gold/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-destructive",
       className,
     )}
     {...props}
@@ -20,7 +20,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
   <textarea
     ref={ref}
     className={cn(
-      "flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+      "flex min-h-20 w-full rounded-md border border-input bg-card px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground/80 hover:border-border-strong focus-visible:border-gold/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 disabled:opacity-50",
       className,
     )}
     {...props}
@@ -33,7 +33,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
   <select
     ref={ref}
     className={cn(
-      "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+      "flex h-10 w-full rounded-md border border-input bg-card px-3 py-2 text-sm transition-colors hover:border-border-strong focus-visible:border-gold/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 disabled:opacity-50",
       className,
     )}
     {...props}
@@ -44,7 +44,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
 Select.displayName = "Select";
 
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("text-sm font-medium leading-none text-foreground/90", className)} {...props} />;
+  return <label className={cn("text-[13px] font-medium leading-none text-foreground/80", className)} {...props} />;
 }
 
 export function Field({ label, hint, error, children, className, htmlFor }: { label?: React.ReactNode; hint?: React.ReactNode; error?: string | null; children: React.ReactNode; className?: string; htmlFor?: string }) {
@@ -60,7 +60,7 @@ export function Field({ label, hint, error, children, className, htmlFor }: { la
 export function Checkbox({ label, className, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: React.ReactNode }) {
   return (
     <label className={cn("inline-flex cursor-pointer items-center gap-2 text-sm", className)}>
-      <input type="checkbox" className="size-4 accent-[var(--primary)]" {...props} />
+      <input type="checkbox" className="size-4 accent-[var(--gold)]" {...props} />
       {label}
     </label>
   );

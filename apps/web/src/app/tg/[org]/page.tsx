@@ -3,7 +3,8 @@
 import type { MeView } from "@pcos/types";
 import { Alert, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Spinner } from "@pcos/ui";
 import { useQueryClient } from "@tanstack/react-query";
-import { Send, Spade } from "lucide-react";
+import { Send } from "lucide-react";
+import { SpadeMark } from "@/components/brand";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Script from "next/script";
@@ -50,8 +51,8 @@ export default function TelegramMiniAppPage() {
     try {
       app.ready();
       app.expand();
-      app.setHeaderColor?.("#07100d");
-      app.setBackgroundColor?.("#07100d");
+      app.setHeaderColor?.("#0d0e10");
+      app.setBackgroundColor?.("#0d0e10");
     } catch {
       /* older Telegram clients */
     }
@@ -139,8 +140,8 @@ export default function TelegramMiniAppPage() {
   return (
     <main className="felt flex min-h-dvh flex-col items-center justify-center gap-6 p-4">
       <Script src="https://telegram.org/js/telegram-web-app.js" strategy="afterInteractive" onReady={() => void start()} onError={() => setPhase((p) => (p === "loading" ? "not-telegram" : p))} />
-      <span className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground">
-        <Spade className="size-8" fill="currentColor" />
+      <span className="grid size-14 place-items-center rounded-lg border border-gold/45 text-gold">
+        <SpadeMark className="size-7" />
       </span>
       <Card className="w-full max-w-sm">
         <CardHeader>

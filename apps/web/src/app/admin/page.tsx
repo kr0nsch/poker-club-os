@@ -1,6 +1,8 @@
 "use client";
 
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, PageHeader, Skeleton, Stat } from "@pcos/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, PageHeader, Skeleton, Stat } from "@pcos/ui";
+import { useSysLabels } from "@/components/admin-system/labels";
+import { StateBadge } from "@/components/admin-system/ui";
 import type { TournamentSummaryView } from "@pcos/types";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Tablet } from "lucide-react";
@@ -36,6 +38,7 @@ export default function AdminDashboard() {
   const fmt = useFormat();
   const me = useStaff();
   const can = useCan();
+  const L = useSysLabels();
   const dashboard = useQuery({ queryKey: ["dashboard"], queryFn: () => get<Dashboard>("/api/v1/reports/dashboard"), enabled: can("analytics.read"), refetchInterval: 30_000 });
   const active = useQuery({
     queryKey: ["tournaments", "active"],
@@ -103,15 +106,13 @@ export default function AdminDashboard() {
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>{t("Edge server")}</CardTitle>
-              {health.data && <Badge variant={health.data.overall === "OK" ? "success" : health.data.overall === "DEGRADED" ? "warning" : "destructive"}>{health.data.overall}</Badge>}
+              {health.data && <StateBadge state={health.data.overall} />}
             </CardHeader>
-            <CardContent className="grid gap-1.5 text-sm">
+            <CardContent className="grid gap-0 text-sm">
               {health.data?.components.map((c) => (
-                <div key={c.name} className="flex items-center justify-between gap-2">
-                  <span className="capitalize">{c.name.replace("_", " ")}</span>
-                  <span className={c.state === "OK" ? "text-success" : c.state === "DISABLED" ? "text-muted-foreground" : c.state === "DEGRADED" ? "text-warning" : "text-destructive"}>
-                    {c.state}
-                  </span>
+                <div key={c.name} className="flex items-center justify-between gap-2 border-b border-border/60 py-1.5 last:border-0">
+                  <span className="text-foreground/85">{L.component[c.name] ?? c.name}</span>
+                  <StateBadge state={c.state} />
                 </div>
               ))}
               <Button asChild variant="outline" size="sm" className="mt-2">

@@ -1,17 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <!-- Full-bleed square so the same file works as a maskable icon: the spade stays inside the 80% safe zone. -->
-  <defs>
-    <radialGradient id="felt" cx="50%" cy="42%" r="70%">
-      <stop offset="0" stop-color="#14532d"/>
-      <stop offset="0.65" stop-color="#0b1d15"/>
-      <stop offset="1" stop-color="#07100d"/>
-    </radialGradient>
-    <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#4ade80"/>
-      <stop offset="1" stop-color="#16a34a"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" fill="url(#felt)"/>
-  <circle cx="256" cy="256" r="178" fill="none" stroke="#e7b75f" stroke-opacity="0.35" stroke-width="6"/>
-  <path fill="url(#suit)" d="M256 104 C 290 158 380 196 380 276 C 380 326 344 356 304 356 C 284 356 268 348 261 338 C 264 372 280 398 310 414 L 202 414 C 232 398 248 372 251 338 C 244 348 228 356 208 356 C 168 356 132 326 132 276 C 132 196 222 158 256 104 Z"/>
+  <rect width="512" height="512" fill="#0d0e10"/>
+  <rect x="104" y="104" width="304" height="304" rx="28" fill="none" stroke="#d4ae5c" stroke-opacity="0.55" stroke-width="10"/>
+  <path fill="#d4ae5c" d="M256 150 C 282 190 346 222 346 280 C 346 318 318 340 288 340 C 272 340 262 334 258 327 C 261 352 273 370 294 382 L 218 382 C 239 370 251 352 254 327 C 250 334 240 340 224 340 C 194 340 166 318 166 280 C 166 222 230 190 256 150 Z"/>
 </svg>

@@ -17,10 +17,10 @@ export const DialogClose = DialogPrimitive.Close;
 export function DialogContent({ className, children, wide, ...props }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { wide?: boolean }) {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/75 data-[state=open]:animate-in data-[state=open]:fade-in" />
       <DialogPrimitive.Content
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid max-h-[90dvh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-xl border border-border bg-card p-6 shadow-2xl",
+          "fixed left-1/2 top-1/2 z-50 grid max-h-[90dvh] w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto rounded-lg border border-border-strong bg-popover p-6",
           wide ? "max-w-3xl" : "max-w-lg",
           className,
         )}
@@ -59,7 +59,7 @@ export function DropdownMenuContent({ className, sideOffset = 4, ...props }: Rea
     <DropdownPrimitive.Portal>
       <DropdownPrimitive.Content
         sideOffset={sideOffset}
-        className={cn("z-50 min-w-44 overflow-hidden rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-xl", className)}
+        className={cn("z-50 min-w-44 overflow-hidden rounded-md border border-border-strong bg-popover p-1 text-popover-foreground shadow-[0_12px_32px_-12px_rgb(0_0_0/0.6)]", className)}
         {...props}
       />
     </DropdownPrimitive.Portal>
@@ -92,14 +92,15 @@ export function DropdownMenuLabel({ className, ...props }: React.ComponentPropsW
 export const Tabs = TabsPrimitive.Root;
 
 export function TabsList({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  return <TabsPrimitive.List className={cn("inline-flex h-10 items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground", className)} {...props} />;
+  // Underlined tabs on a hairline, not a pill-shaped segmented control.
+  return <TabsPrimitive.List className={cn("inline-flex h-10 items-end gap-5 border-b border-border text-muted-foreground", className)} {...props} />;
 }
 
 export function TabsTrigger({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
+        "-mb-px inline-flex h-10 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 border-transparent px-0.5 text-sm font-medium transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:opacity-50 data-[state=active]:border-gold data-[state=active]:text-foreground [&_svg]:size-4",
         className,
       )}
       {...props}
@@ -117,12 +118,12 @@ export function Switch({ className, ...props }: React.ComponentPropsWithoutRef<t
   return (
     <SwitchPrimitive.Root
       className={cn(
-        "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
+        "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-border-strong transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-gold data-[state=checked]:bg-gold data-[state=unchecked]:bg-input",
         className,
       )}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="pointer-events-none block size-5 rounded-full bg-white shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0" />
+      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-foreground ring-0 transition-transform data-[state=checked]:translate-x-[17px] data-[state=checked]:bg-gold-foreground data-[state=unchecked]:translate-x-px" />
     </SwitchPrimitive.Root>
   );
 }
