@@ -42,7 +42,7 @@ if (!existsSync(envFile)) {
 const db = await startDevDb();
 
 console.log("[dev] building shared packages …");
-const build = spawnSync(isWin ? "pnpm.exe" : "pnpm", ["turbo", "run", "build", "--filter=./packages/*", "--filter=@pcos/api", "--filter=@pcos/worker", "--output-logs=errors-only"], {
+const build = spawnSync("pnpm", ["turbo", "run", "build", "--filter=./packages/*", "--filter=@pcos/api", "--filter=@pcos/worker", "--output-logs=errors-only"], {
   cwd: root,
   stdio: "inherit",
   shell: isWin,
@@ -72,10 +72,10 @@ function run(name, cmd, args, cwd, extraEnv = {}) {
 }
 
 const node = process.execPath;
-run("tsc", isWin ? "pnpm.exe" : "pnpm", ["turbo", "run", "dev", "--filter=./packages/*", "--output-logs=errors-only"], root);
+run("tsc", "pnpm", ["turbo", "run", "dev", "--filter=./packages/*", "--output-logs=errors-only"], root);
 run("api", node, ["--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/api"), appEnv);
 run("worker", node, ["--watch-path=dist", "--watch-path=../../packages/core/dist", "dist/main.js"], path.join(root, "apps/worker"), appEnv);
-if (existsSync(path.join(root, "apps/web/package.json"))) run("web", isWin ? "pnpm.exe" : "pnpm", ["--filter", "@pcos/web", "dev"], root);
+if (existsSync(path.join(root, "apps/web/package.json"))) run("web", "pnpm", ["--filter", "@pcos/web", "dev"], root);
 
 async function shutdown() {
   for (const c of children) c.kill("SIGTERM");
