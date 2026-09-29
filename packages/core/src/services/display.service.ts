@@ -2,12 +2,23 @@
 // the URL (/display/{token}); only its hash is stored. Tokens grant read-only
 // public data (displays) or the restricted self check-in flow (kiosks).
 
-import { displayTemplates, displayTokens, oneTimeCodes, organizations, players, tournamentRegistrations, tournaments, venues } from "@pcos/db";
+import {
+  displayTemplates,
+  displayTokens,
+  oneTimeCodes,
+  organizations,
+  players,
+  tournamentRegistrations,
+  tournamentSeatAssignments,
+  tournamentTables,
+  tournaments,
+  venues,
+} from "@pcos/db";
 import type { Principal } from "@pcos/domain";
 import { DisplayTemplateInput, DisplayTokenInput, KioskCheckInInput, type PublicLiveSnapshot } from "@pcos/types";
 import { and, asc, desc, eq, gt, inArray, isNull } from "drizzle-orm";
 import { randomUUID } from "node:crypto";
-import { requireOrganization, requirePermission, systemActor, type Actor } from "../actor.js";
+import { assertResourceAccess, requireOrganization, requirePermission, systemActor, venueScope, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import { randomToken, sha256, verifyPassword } from "../crypto.js";
 import type { CoreDeps } from "../deps.js";
@@ -51,10 +62,29 @@ export class DisplayService {
     return row;
   }
 
+  /** Screens that used the template fall back to the default layout. */
+  async deleteTemplate(actor: Actor, id: string) {
+    requirePermission(actor, "display.manage");
+    const orgId = requireOrganization(actor);
+    await this.deps.db.transaction(async (tx) => {
+      await tx.update(displayTokens).set({ displayTemplateId: null }).where(and(eq(displayTokens.displayTemplateId, id), eq(displayTokens.organizationId, orgId)));
+      const [row] = await tx.delete(displayTemplates).where(and(eq(displayTemplates.id, id), eq(displayTemplates.organizationId, orgId))).returning({ id: displayTemplates.id });
+      if (!row) throw notFound("display template");
+      await writeAudit(tx, actor, this.deps.edgeNodeId, { organizationId: orgId, entityType: "display_template", entityId: id, action: "DISPLAY_TEMPLATE_DELETED" });
+    });
+    return { ok: true };
+  }
+
   async listTokens(actor: Actor) {
     requirePermission(actor, "display.manage");
     const orgId = requireOrganization(actor);
-    const rows = await this.deps.db.select().from(displayTokens).where(eq(displayTokens.organizationId, orgId)).orderBy(desc(displayTokens.createdAt));
+    const scope = venueScope(actor);
+    if (scope?.length === 0) return [];
+    const rows = await this.deps.db
+      .select()
+      .from(displayTokens)
+      .where(and(eq(displayTokens.organizationId, orgId), scope ? inArray(displayTokens.venueId, [...scope]) : undefined))
+      .orderBy(desc(displayTokens.createdAt));
     return rows.map(({ tokenHash: _h, ...r }) => ({ ...r, revoked: !!r.revokedAt }));
   }
 
@@ -65,6 +95,7 @@ export class DisplayService {
     const input = DisplayTokenInput.parse(raw);
     const [venue] = await this.deps.db.select().from(venues).where(and(eq(venues.id, input.venueId), eq(venues.organizationId, orgId)));
     if (!venue) throw notFound("venue");
+    assertResourceAccess(actor, orgId, venue.id);
     if (input.tournamentId) {
       const [t] = await this.deps.db.select({ id: tournaments.id }).from(tournaments).where(and(eq(tournaments.id, input.tournamentId), eq(tournaments.venueId, venue.id)));
       if (!t) throw notFound("tournament");
@@ -92,11 +123,10 @@ export class DisplayService {
   async revokeToken(actor: Actor, id: string) {
     requirePermission(actor, "display.manage");
     const orgId = requireOrganization(actor);
-    const [row] = await this.deps.db
-      .update(displayTokens)
-      .set({ revokedAt: this.deps.now() })
-      .where(and(eq(displayTokens.id, id), eq(displayTokens.organizationId, orgId)))
-      .returning();
+    const [existing] = await this.deps.db.select().from(displayTokens).where(and(eq(displayTokens.id, id), eq(displayTokens.organizationId, orgId)));
+    if (!existing) throw notFound("display token");
+    assertResourceAccess(actor, orgId, existing.venueId);
+    const [row] = await this.deps.db.update(displayTokens).set({ revokedAt: this.deps.now() }).where(eq(displayTokens.id, id)).returning();
     if (!row) throw notFound("display token");
     await writeAudit(this.deps.db, actor, this.deps.edgeNodeId, { organizationId: orgId, entityType: "display_token", entityId: id, action: "DISPLAY_TOKEN_REVOKED" });
     return { ok: true };
@@ -221,7 +251,13 @@ export class DisplayService {
     if (!registration) throw notFound("registration for this tournament");
     const [player] = await this.deps.db.select({ displayName: players.displayName }).from(players).where(eq(players.id, registration.playerId));
     if (registration.status === "CHECKED_IN" || registration.status === "PLAYING") {
-      return { playerName: player?.displayName ?? "", alreadyCheckedIn: true, seat: null, tournamentName: t.name };
+      // Checking in twice is harmless: show the seat again.
+      const [seat] = await this.deps.db
+        .select({ tableId: tournamentTables.id, tableNumber: tournamentTables.tableNumber, seatNumber: tournamentSeatAssignments.seatNumber })
+        .from(tournamentSeatAssignments)
+        .innerJoin(tournamentTables, eq(tournamentTables.id, tournamentSeatAssignments.tableId))
+        .where(and(eq(tournamentSeatAssignments.tournamentId, t.id), eq(tournamentSeatAssignments.playerId, registration.playerId), eq(tournamentSeatAssignments.status, "ACTIVE")));
+      return { playerName: player?.displayName ?? "", alreadyCheckedIn: true, seat: seat ?? null, tournamentName: t.name };
     }
     // A kiosk never takes money: the buy-in (entry) is created automatically only for
     // free tournaments or when registration was prepaid; otherwise the cashier creates it.

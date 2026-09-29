@@ -16,11 +16,13 @@ import {
   StaffCreateInput,
   StaffUpdateInput,
   VenueInput,
+  patchShape,
   topic,
   type FeatureFlags,
 } from "@pcos/types";
-import { and, asc, eq, isNull, or, sql } from "drizzle-orm";
-import { requireOrganization, requirePermission, type Actor } from "../actor.js";
+import { and, asc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { z } from "zod";
+import { assertResourceAccess, requireOrganization, requirePermission, venueScope, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import { hashPassword } from "../crypto.js";
 import type { CoreDeps } from "../deps.js";
@@ -111,7 +113,13 @@ export class OrgService {
 
   async listVenues(actor: Actor) {
     const orgId = requireOrganization(actor);
-    return this.deps.db.select().from(venues).where(eq(venues.organizationId, orgId)).orderBy(asc(venues.name));
+    const scope = venueScope(actor);
+    if (scope?.length === 0) return [];
+    return this.deps.db
+      .select()
+      .from(venues)
+      .where(and(eq(venues.organizationId, orgId), scope ? inArray(venues.id, [...scope]) : undefined))
+      .orderBy(asc(venues.name));
   }
 
   async getVenue(organizationId: string, venueId: string) {
@@ -136,7 +144,8 @@ export class OrgService {
     requirePermission(actor, "venue.manage");
     const orgId = requireOrganization(actor);
     const before = await this.getVenue(orgId, venueId);
-    const input = VenueInput.partial().parse(raw);
+    assertResourceAccess(actor, orgId, venueId);
+    const input = z.object(patchShape(VenueInput.shape)).parse(raw);
     const [v] = await this.deps.db
       .update(venues)
       .set({ ...input, version: before.version + 1, updatedAt: this.deps.now() })

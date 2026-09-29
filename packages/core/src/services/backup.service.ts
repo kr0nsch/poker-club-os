@@ -7,7 +7,7 @@ import { mkdir, readdir, rm, stat } from "node:fs/promises";
 import path from "node:path";
 import { backupRuns } from "@pcos/db";
 import { and, desc, eq, inArray } from "drizzle-orm";
-import { requirePermission, type Actor } from "../actor.js";
+import { organizationOf, requirePermission, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import type { CoreDeps } from "../deps.js";
 import { AppError } from "../errors.js";
@@ -47,7 +47,7 @@ export class BackupService {
     const [running] = await this.deps.db.select().from(backupRuns).where(inArray(backupRuns.status, ["REQUESTED", "RUNNING"])).limit(1);
     if (running) throw new AppError("INVALID_STATE", "a backup is already queued or running");
     const [row] = await this.deps.db.insert(backupRuns).values({ status: "REQUESTED", trigger: "MANUAL", requestedBy: actor.userId }).returning();
-    await writeAudit(this.deps.db, actor, this.deps.edgeNodeId, { organizationId: null, entityType: "backup", entityId: row!.id, action: "BACKUP_REQUESTED" });
+    await writeAudit(this.deps.db, actor, this.deps.edgeNodeId, { organizationId: organizationOf(actor), entityType: "backup", entityId: row!.id, action: "BACKUP_REQUESTED" });
     return row!;
   }
 

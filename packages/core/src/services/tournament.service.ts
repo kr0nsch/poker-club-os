@@ -41,14 +41,14 @@ import {
   type ResultView,
   type TournamentStatus,
 } from "@pcos/types";
-import { and, asc, desc, eq, gte, inArray, lte, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, inArray, lte, or, sql } from "drizzle-orm";
 import { assertResourceAccess, can, requireOrganization, requirePermission, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import type { CoreDeps } from "../deps.js";
 import { AppError, conflict, notFound, validation } from "../errors.js";
 import { publishEvents } from "../events.js";
-import { registrationCounts, loadSeatingState, toDetailView, toSummaryView, type TournamentRow } from "../tournaments/repo.js";
-import { buildPublicSnapshot, buildSnapshot } from "../tournaments/snapshot.js";
+import { loadClockRow, loadLevels, loadSeatingState, registrationCounts, toDetailView, toSummaryView, type TournamentRow } from "../tournaments/repo.js";
+import { buildPublicSnapshot, buildSnapshot, lateRegistrationOpenNow } from "../tournaments/snapshot.js";
 import type { StructureService } from "./structure.service.js";
 
 const LIVE_EDITABLE = new Set(["name", "description", "maxPlayers", "expectedPlayers", "lateRegistrationPolicy", "reentryPolicy", "rebuyPolicy", "addonPolicy", "publicVisibility", "seasonId", "seriesId"]);
@@ -226,6 +226,18 @@ export class TournamentService {
         const [clash] = await tx.select({ id: tournaments.id }).from(tournaments).where(and(eq(tournaments.organizationId, orgId), eq(tournaments.slug, changes.slug)));
         if (clash) throw new AppError("DUPLICATE", "slug already in use");
       }
+      if (changes.houseRulesProfileId !== undefined && changes.houseRulesProfileId !== t.houseRulesProfileId) {
+        // The tournament keeps its own copy of the rules: switching profile replaces that copy.
+        if (changes.houseRulesProfileId === null) patch.houseRules = { ...TDA_2026_STYLE };
+        else {
+          const [p] = await tx
+            .select()
+            .from(houseRulesProfiles)
+            .where(and(eq(houseRulesProfiles.id, changes.houseRulesProfileId), eq(houseRulesProfiles.organizationId, orgId)));
+          if (!p) throw notFound("house rules profile");
+          patch.houseRules = p.config as HouseRulesConfig;
+        }
+      }
       if (changes.structureId) {
         const [current] = await tx.select().from(tournamentStructures).where(eq(tournamentStructures.id, t.structureId));
         if (changes.structureId !== t.structureId && current?.ownerTournamentId === t.id) {
@@ -287,6 +299,7 @@ export class TournamentService {
     if (q.status) conds.push(inArray(tournaments.status, q.status.split(",")));
     if (q.from) conds.push(gte(tournaments.startAt, new Date(q.from)));
     if (q.to) conds.push(lte(tournaments.startAt, new Date(q.to)));
+    if (q.q) conds.push(ilike(tournaments.name, `%${q.q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`));
     const p = actor.principal;
     if (p.kind === "staff" && p.venueIds) conds.push(inArray(tournaments.venueId, [...p.venueIds]));
     const rows = await this.deps.db.select().from(tournaments).where(and(...conds)).orderBy(desc(tournaments.startAt)).limit(q.limit).offset(q.offset);
@@ -357,16 +370,24 @@ export class TournamentService {
       .orderBy(asc(tournaments.startAt))
       .limit(100);
     const counts = await registrationCounts(this.deps.db, rows.map((r) => r.t.id));
-    return {
-      organization: { id: org.id, name: org.name, slug: org.slug },
-      tournaments: rows.map((r) => ({
+    const nowMs = this.deps.now().getTime();
+    const items = [];
+    for (const r of rows) {
+      // Only running tournaments need the clock to know whether late registration is still open.
+      const registrationOpen = isLive(r.t.status as TournamentStatus)
+        ? lateRegistrationOpenNow(r.t, await loadLevels(this.deps.db, r.t.structureId), await loadClockRow(this.deps.db, r.t.id), nowMs)
+        : r.t.status === "REGISTRATION_OPEN";
+      items.push({
         ...toSummaryView(r.t, counts.get(r.t.id) ?? 0),
         venueName: r.venueName,
         description: r.t.description,
         startingStack: r.t.startingStack,
         lateRegistrationClosed: r.t.lateRegistrationClosed,
-      })),
-    };
+        lateRegistrationPolicy: r.t.lateRegistrationPolicy,
+        registrationOpen,
+      });
+    }
+    return { organization: { id: org.id, name: org.name, slug: org.slug }, tournaments: items };
   }
 
   // --- history ----------------------------------------------------------------------------------

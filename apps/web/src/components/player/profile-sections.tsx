@@ -109,7 +109,7 @@ export function ProfileForm({ profile }: { profile: PlayerProfile }) {
   const { locale, setLocale } = useI18n();
   const qc = useQueryClient();
   const friendly = useFriendlyError();
-  // GET /me/profile does not return the stored language yet: assume the UI language.
+  // No stored language yet: suggest the current UI language.
   const initial = {
     nickname: profile.nickname ?? "",
     phone: profile.phone ?? "",

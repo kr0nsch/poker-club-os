@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { CONSENT_TYPES, PLAYER_SOURCES, PLAYER_STATUSES } from "../enums.js";
-import { NonEmptyTrimmed, OptionalTrimmed } from "./common.js";
+import { NonEmptyTrimmed, OptionalTrimmed, patchShape } from "./common.js";
 
 const Phone = z
   .string()
@@ -31,8 +31,8 @@ export const PlayerCreateInput = z.object({
 });
 export type PlayerCreateInput = z.infer<typeof PlayerCreateInput>;
 
-export const PlayerUpdateInput = PlayerCreateInput.omit({ source: true, tags: true })
-  .partial()
+export const PlayerUpdateInput = z
+  .object(patchShape(PlayerCreateInput.omit({ source: true, tags: true }).shape))
   .extend({
     status: z.enum(PLAYER_STATUSES).optional(),
     expectedVersion: z.number().int().min(0),

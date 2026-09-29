@@ -7,6 +7,7 @@ import Papa from "papaparse";
 import { requireOrganization, requirePermission, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import type { CoreDeps } from "../deps.js";
+import { validation } from "../errors.js";
 
 type Row = Record<string, unknown>;
 
@@ -87,7 +88,9 @@ export class ReportsService {
     requirePermission(actor, "analytics.read");
     const orgId = requireOrganization(actor);
     const from = range.from ? new Date(range.from) : new Date(this.deps.now().getTime() - 180 * 86_400_000);
-    const to = range.to ? new Date(range.to) : this.deps.now();
+    // Default window ends a day ahead so tonight's tournaments are included.
+    const to = range.to ? new Date(range.to) : new Date(this.deps.now().getTime() + 86_400_000);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) throw validation("from/to must be ISO dates");
 
     const [checkin] = await this.rows(sql`
       select percentile_cont(0.5) within group (order by m) as median_minutes_before_start,

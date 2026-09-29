@@ -56,6 +56,12 @@ export function requireStaff(actor: Actor): Extract<CorePrincipal, { kind: "staf
   return p;
 }
 
+/** Venues a staff member is restricted to, or null for every venue of the organization. */
+export function venueScope(actor: Actor): readonly string[] | null {
+  const p = actor.principal;
+  return p.kind === "staff" && !p.isSuperAdmin ? p.venueIds : null;
+}
+
 /** Tenant + venue isolation check for a concrete resource (spec §36). */
 export function assertResourceAccess(actor: Actor, organizationId: string, venueId: string | null): void {
   const p = actor.principal;

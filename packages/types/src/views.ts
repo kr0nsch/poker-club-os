@@ -248,7 +248,12 @@ export interface PublicLiveSnapshot {
   tournament: Pick<
     TournamentDetailView,
     "id" | "name" | "status" | "format" | "gameType" | "startAt" | "startingStack" | "buyIn" | "lateRegistrationClosed" | "version"
-  > & { venueName: string; organizationName: string };
+  > & {
+    venueName: string;
+    organizationName: string;
+    /** registration (or late registration) accepts players right now, per the tournament rules */
+    registrationOpen: boolean;
+  };
   clock: ClockView;
   levels: LevelView[];
   stats: TournamentStats;

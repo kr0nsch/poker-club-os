@@ -125,13 +125,13 @@ export default function TournamentPage() {
   }
 
   const { name, status, startAt, buyIn, format, gameType, startingStack, venueName } = info;
-  const lateClosed = info.lateRegistrationClosed;
   const registered = snap?.stats.registrations ?? summary?.registrationCount ?? 0;
   const maxPlayers = summary?.maxPlayers ?? null;
   const full = maxPlayers != null && registered >= maxPlayers;
   const playing = isLiveStatus(status);
   const closed = isClosedStatus(status);
-  const canRegisterNow = status === "REGISTRATION_OPEN" || (playing && !lateClosed);
+  // Computed by the server from the late-registration rules (level/time), not just the manual switch.
+  const canRegisterNow = info.registrationOpen;
   const levelSeconds = snap ? typicalLevelSeconds(snap.levels) : null;
 
   const myReg = snap?.myRegistration && snap.myRegistration.status !== "CANCELLED" && snap.myRegistration.status !== "NO_SHOW" ? snap.myRegistration : null;
@@ -250,7 +250,7 @@ export default function TournamentPage() {
           {snap && snap.stats.waitlisted > 0 && <span className="ml-1 text-xs font-normal text-warning">(+{f.number(snap.stats.waitlisted)})</span>}
         </Fact>
         {levelSeconds != null && <Fact label={t("Levels")}>{tt.minutes(levelSeconds)}</Fact>}
-        {playing && <Fact label={t("Late registration")}>{lateClosed ? <span className="text-muted-foreground">{t("Closed")}</span> : <span className="text-primary">{t("Still open")}</span>}</Fact>}
+        {playing && <Fact label={t("Late registration")}>{canRegisterNow ? <span className="text-primary">{t("Still open")}</span> : <span className="text-muted-foreground">{t("Closed")}</span>}</Fact>}
       </dl>
 
       {snap && snap.levels.length > 0 && (

@@ -248,6 +248,7 @@ export class EdgeController {
   @Get("network")
   async network(@Ctx() ctx: RequestState) {
     const actor = ctx.staff;
+    requirePermission(actor, "edge.read");
     const org = await this.core.org.getOrganization(actor);
     const venues = await this.core.org.listVenues(actor);
     const node = await this.core.edge.node();

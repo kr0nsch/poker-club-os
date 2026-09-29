@@ -108,7 +108,7 @@ export class MeController {
     const p = ctx.player.principal as { playerId: string };
     const [row] = await this.core.db.select().from(players).where(eq(players.id, p.playerId));
     if (!row) throw notFound("player");
-    return { ...this.core.players.summary(row), history: await this.core.players.history(row.id) };
+    return { ...this.core.players.summary(row), language: row.language, history: await this.core.players.history(row.id) };
   }
 
   @Auth("player")

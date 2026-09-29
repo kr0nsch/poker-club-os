@@ -305,7 +305,7 @@ export function Kiosk({ token }: { token: string }) {
           </div>
         </main>
       ) : phase.kind === "done" ? (
-        <ResultScreen result={phase.result} seating={snap?.seating ?? null} onDone={reset} />
+        <ResultScreen result={phase.result} onDone={reset} />
       ) : phase.kind === "error" ? (
         <main className="grid flex-1 place-items-center p-8 text-center" onClick={reset}>
           <div className="grid max-w-3xl justify-items-center gap-5">
@@ -470,11 +470,9 @@ function Countdown({ ms }: { ms: number }) {
   );
 }
 
-function ResultScreen({ result, seating, onDone }: { result: CheckInResult; seating: { playerName: string; tableNumber: number; seatNumber: number }[] | null; onDone: () => void }) {
+function ResultScreen({ result, onDone }: { result: CheckInResult; onDone: () => void }) {
   const t = useT();
-  // "Already checked in" responses carry no seat: look it up on the public seat list when the name is unique.
-  const sameName = seating?.filter((r) => r.playerName === result.playerName) ?? [];
-  const seat = result.seat ?? (result.alreadyCheckedIn && sameName.length === 1 && sameName[0] ? sameName[0] : null);
+  const seat = result.seat;
   return (
     <main className="grid flex-1 place-items-center p-8 text-center" onClick={onDone}>
       <div className="grid max-w-4xl justify-items-center gap-5">

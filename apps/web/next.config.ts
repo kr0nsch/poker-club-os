@@ -49,7 +49,8 @@ const config: NextConfig = {
   },
   async headers() {
     return [
-      { source: "/:path*", headers: [...security("'none'"), { key: "X-Frame-Options", value: "DENY" }] },
+      // Everything except the Mini App refuses to be framed (X-Frame-Options for old webviews).
+      { source: "/:path((?!tg(?:/|$)).*)", headers: [...security("'none'"), { key: "X-Frame-Options", value: "DENY" }] },
       // Telegram Mini App runs inside Telegram Web's iframe.
       { source: "/tg/:path*", headers: security("'self' https://web.telegram.org https://*.telegram.org") },
       { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Service-Worker-Allowed", value: "/" }] },

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ANTE_TYPES, GAME_TYPES, LEVEL_TYPES, PUBLIC_VISIBILITIES, TOURNAMENT_FORMATS } from "../enums.js";
-import { IsoDateTime, Money, NonEmptyTrimmed, OptionalTrimmed, Slug } from "./common.js";
+import { IsoDateTime, Money, NonEmptyTrimmed, OptionalTrimmed, Slug, patchShape } from "./common.js";
 
 // ---------------------------------------------------------------------------
 // Blind structure
@@ -171,19 +171,20 @@ export const TournamentCreateInput = z.object({
 export type TournamentCreateInput = z.infer<typeof TournamentCreateInput>;
 
 export const TournamentUpdateInput = z
-  .object({
-    ...TournamentConfigShape,
-    slug: Slug,
-    structureId: z.uuid(),
-    seriesId: z.uuid().nullable(),
-    seasonId: z.uuid().nullable(),
-    houseRulesProfileId: z.uuid().nullable(),
-    startAt: IsoDateTime,
-    registrationOpenAt: IsoDateTime.nullable(),
-    registrationCloseAt: IsoDateTime.nullable(),
-    publicVisibility: z.enum(PUBLIC_VISIBILITIES),
-  })
-  .partial()
+  .object(
+    patchShape({
+      ...TournamentConfigShape,
+      slug: Slug,
+      structureId: z.uuid(),
+      seriesId: z.uuid().nullable(),
+      seasonId: z.uuid().nullable(),
+      houseRulesProfileId: z.uuid().nullable(),
+      startAt: IsoDateTime,
+      registrationOpenAt: IsoDateTime.nullable(),
+      registrationCloseAt: IsoDateTime.nullable(),
+      publicVisibility: z.enum(PUBLIC_VISIBILITIES),
+    }),
+  )
   .extend({ expectedVersion: z.number().int().min(0) });
 export type TournamentUpdateInput = z.infer<typeof TournamentUpdateInput>;
 
@@ -204,6 +205,8 @@ export const CreateFromTemplateInput = z.object({
 });
 
 export const TournamentListQuery = z.object({
+  /** case-insensitive name search */
+  q: z.string().trim().max(100).optional(),
   status: z.string().max(200).optional(),
   venueId: z.uuid().optional(),
   from: IsoDateTime.optional(),

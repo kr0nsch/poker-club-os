@@ -33,3 +33,20 @@ export const PageQuery = z.object({
 });
 
 export const ReasonInput = z.object({ reason: z.string().trim().min(3).max(500) });
+
+type WithoutDefault<S> = S extends z.ZodDefault<infer I> ? I : S;
+export type PatchShape<T extends z.ZodRawShape> = { [K in keyof T]: z.ZodOptional<WithoutDefault<T[K]> & z.ZodType> };
+
+/**
+ * Shape for PATCH bodies: every field optional and top-level defaults removed.
+ * (`.partial()` alone is not enough — Zod 4 applies defaults inside optional,
+ * so an omitted field would be silently reset to its default.)
+ */
+export function patchShape<T extends z.ZodRawShape>(shape: T): PatchShape<T> {
+  const out: Record<string, z.ZodType> = {};
+  for (const [key, schema] of Object.entries(shape)) {
+    const inner = schema instanceof z.ZodDefault ? (schema.unwrap() as z.ZodType) : (schema as z.ZodType);
+    out[key] = inner.optional();
+  }
+  return out as PatchShape<T>;
+}

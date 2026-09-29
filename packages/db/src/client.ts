@@ -16,6 +16,8 @@ export interface DbHandle {
 
 // BIGINT (int8) values used here (chips, epoch ms) fit in JS numbers.
 pg.types.setTypeParser(20, (v) => Number(v));
+// NUMERIC appears only in report aggregates (averages, percentages); money is stored as integer cents.
+pg.types.setTypeParser(1700, (v) => Number(v));
 
 export function createDb(connectionString: string, opts: { max?: number; applicationName?: string } = {}): DbHandle {
   const pool = new pg.Pool({

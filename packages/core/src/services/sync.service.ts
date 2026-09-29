@@ -235,11 +235,11 @@ export class SyncService {
     const orgId = requireOrganization(actor);
     const cursors = await this.deps.db.select().from(syncCursors);
     const [counts] = (
-      await this.deps.db.execute<{ pending: number; failed: number; synced: number; oldest_pending: Date | null }>(sql`
+      await this.deps.db.execute<{ pending: number; failed: number; synced: number; oldest_pending: string | null }>(sql`
         select count(*) filter (where sync_status = 'PENDING')::int as pending,
                count(*) filter (where sync_status = 'FAILED')::int as failed,
                count(*) filter (where sync_status = 'SYNCED')::int as synced,
-               min(occurred_at) filter (where sync_status in ('PENDING','FAILED')) as oldest_pending
+               to_char(min(occurred_at) filter (where sync_status in ('PENDING','FAILED')) at time zone 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as oldest_pending
         from outbox_events where syncable and (organization_id = ${orgId} or organization_id is null)`)
     ).rows;
     const [openConflicts] = await this.deps.db

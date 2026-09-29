@@ -181,6 +181,11 @@ export class CommunicationController {
     return this.core.displays.saveTemplate(ctx.staff, body, id);
   }
 
+  @Delete("display-templates/:id")
+  deleteTemplate(@Ctx() ctx: RequestState, @Param("id") id: string) {
+    return this.core.displays.deleteTemplate(ctx.staff, id);
+  }
+
   @Get("display-tokens")
   tokens(@Ctx() ctx: RequestState) {
     return this.core.displays.listTokens(ctx.staff);

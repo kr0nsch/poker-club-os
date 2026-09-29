@@ -25,7 +25,7 @@ import {
 } from "@pcos/ui";
 import type { DisplayTokenKind } from "@pcos/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LayoutTemplate, MonitorPlay, Pencil, Plus, TabletSmartphone } from "lucide-react";
+import { LayoutTemplate, MonitorPlay, Pencil, Plus, TabletSmartphone, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CreateTokenDialog, TemplateDialog, TemplatePreview } from "@/components/admin-system/display-dialogs";
@@ -34,7 +34,7 @@ import { sysKeys, useTournamentOptions, useVenues } from "@/components/admin-sys
 import type { DisplayTemplateRow, DisplayTokenRow } from "@/components/admin-system/types";
 import { ErrorState, LiveDot, NoAccess, RowsSkeleton, useConfirm } from "@/components/admin-system/ui";
 import { useCan, useStaff } from "@/components/staff-guard";
-import { get, post } from "@/lib/api";
+import { del, get, post } from "@/lib/api";
 import { useFormat, useT } from "@/lib/i18n";
 import { useServerNow } from "@/lib/realtime-context";
 
@@ -49,12 +49,26 @@ export default function DisplaysPage() {
   const [tab, setTab] = useState<Tab>("displays");
   const [creating, setCreating] = useState<DisplayTokenKind | null>(null);
   const [editing, setEditing] = useState<DisplayTemplateRow | "new" | null>(null);
+  const qc = useQueryClient();
+  const { confirm, dialog } = useConfirm();
 
   const tokens = useQuery({ queryKey: sysKeys.displayTokens, queryFn: () => get<DisplayTokenRow[]>("/api/v1/display-tokens"), enabled: manage, refetchInterval: 30_000 });
   const templates = useQuery({ queryKey: sysKeys.displayTemplates, queryFn: () => get<DisplayTemplateRow[]>("/api/v1/display-templates") });
   const venues = useVenues();
   const tournaments = useTournamentOptions();
   const allowedVenues = (venues.data ?? []).filter((v) => !me.venueIds || me.venueIds.includes(v.id));
+
+  const removeTemplate = (tpl: DisplayTemplateRow, usedBy: number) =>
+    confirm({
+      title: t("Delete template “{name}”?", { name: tpl.name }),
+      description: usedBy > 0 ? t("{n} displays use this template. They switch to the organization default layout.", { n: usedBy }) : t("No display uses this template."),
+      confirmLabel: t("Delete"),
+      action: async () => {
+        await del(`/api/v1/display-templates/${tpl.id}`);
+        toast.success(t("Template deleted"));
+        await Promise.all([qc.invalidateQueries({ queryKey: sysKeys.displayTemplates }), qc.invalidateQueries({ queryKey: sysKeys.displayTokens })]);
+      },
+    });
 
   const counts = useMemo(() => {
     const active = (tokens.data ?? []).filter((x) => !x.revoked);
@@ -135,15 +149,19 @@ export default function DisplaysPage() {
             />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {(templates.data ?? []).map((tpl, i) => (
-                <TemplateCard
-                  key={tpl.id}
-                  template={tpl}
-                  isDefault={i === defaultTemplateIndex(templates.data ?? [])}
-                  usedBy={(tokens.data ?? []).filter((x) => !x.revoked && x.displayTemplateId === tpl.id).length}
-                  onEdit={manage ? () => setEditing(tpl) : undefined}
-                />
-              ))}
+              {(templates.data ?? []).map((tpl, i) => {
+                const usedBy = (tokens.data ?? []).filter((x) => !x.revoked && x.displayTemplateId === tpl.id).length;
+                return (
+                  <TemplateCard
+                    key={tpl.id}
+                    template={tpl}
+                    isDefault={i === defaultTemplateIndex(templates.data ?? [])}
+                    usedBy={usedBy}
+                    onEdit={manage ? () => setEditing(tpl) : undefined}
+                    onDelete={manage ? () => removeTemplate(tpl, usedBy) : undefined}
+                  />
+                );
+              })}
             </div>
           )}
         </TabsContent>
@@ -153,6 +171,7 @@ export default function DisplaysPage() {
         <CreateTokenDialog kind={creating} venues={allowedVenues} tournaments={tournaments.data ?? []} templates={templates.data ?? []} onClose={() => setCreating(null)} />
       )}
       {editing && <TemplateDialog template={editing === "new" ? null : editing} onClose={() => setEditing(null)} />}
+      {dialog}
     </div>
   );
 }
@@ -287,7 +306,19 @@ function TokenTable({
   );
 }
 
-function TemplateCard({ template, isDefault, usedBy, onEdit }: { template: DisplayTemplateRow; isDefault: boolean; usedBy: number; onEdit?: () => void }) {
+function TemplateCard({
+  template,
+  isDefault,
+  usedBy,
+  onEdit,
+  onDelete,
+}: {
+  template: DisplayTemplateRow;
+  isDefault: boolean;
+  usedBy: number;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}) {
   const t = useT();
   const L = useSysLabels();
   const theme = template.theme ?? {};
@@ -301,11 +332,18 @@ function TemplateCard({ template, isDefault, usedBy, onEdit }: { template: Displ
             <span>{t("Used by {n} displays", { n: usedBy })}</span>
           </div>
         </div>
-        {onEdit && (
-          <Button size="sm" variant="outline" onClick={onEdit}>
-            <Pencil /> {t("Edit")}
-          </Button>
-        )}
+        <div className="flex shrink-0 gap-1">
+          {onEdit && (
+            <Button size="sm" variant="outline" onClick={onEdit}>
+              <Pencil /> {t("Edit")}
+            </Button>
+          )}
+          {onDelete && (
+            <Button size="icon" variant="ghost" className="size-8 text-destructive hover:text-destructive" onClick={onDelete} aria-label={t("Delete")}>
+              <Trash2 />
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="grid gap-3">
         <TemplatePreview compact widgets={template.widgets} accent={theme.accent ?? "#22c55e"} background={theme.background ?? "#050b09"} sponsorText={theme.sponsorText} />

@@ -4,6 +4,7 @@
 
 import {
   leagues,
+  organizations,
   outboxEvents,
   seasons,
   syncCursors,
@@ -60,11 +61,13 @@ export class NotificationFanout {
 
   private async tournamentInfo(db: Executor, id: string) {
     const [row] = await db
-      .select({ t: tournaments, timezone: venues.timezone, localUrl: venues.localUrl, publicUrl: venues.publicUrl })
+      .select({ t: tournaments, timezone: venues.timezone, publicUrl: venues.publicUrl, orgSlug: organizations.slug })
       .from(tournaments)
       .innerJoin(venues, eq(venues.id, tournaments.venueId))
+      .innerJoin(organizations, eq(organizations.id, tournaments.organizationId))
       .where(eq(tournaments.id, id));
     if (!row) return null;
+    // Links leave the venue (Telegram, e-mail): only a public address makes sense here.
     const base = this.deps.config.APP_URL ?? row.publicUrl ?? null;
     return {
       row: row.t,
@@ -73,7 +76,7 @@ export class NotificationFanout {
         tournamentName: row.t.name,
         startAt: row.t.startAt.toISOString(),
         timezone: row.timezone,
-        url: base ? `${base.replace(/\/$/, "")}/p/t/${row.t.slug}` : undefined,
+        url: base ? `${base.replace(/\/$/, "")}/p/${row.orgSlug}/t/${row.t.slug}` : undefined,
       },
     };
   }

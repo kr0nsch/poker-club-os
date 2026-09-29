@@ -667,4 +667,6 @@ export const ruAdminSystem: Record<string, string> = {
   "Registrations via Telegram": "Регистрации через Telegram",
   "Within 24 h after a notification": "В течение 24 ч после уведомления",
   "No data in this period": "Нет данных за этот период",
+  "{n} displays use this template. They switch to the organization default layout.": "Шаблон используют экраны: {n}. Они перейдут на макет клуба по умолчанию.",
+  "No display uses this template.": "Этот шаблон не используется ни одним экраном.",
 };

@@ -38,7 +38,8 @@ export class LeagueService {
 
   /** Points for positions 1..N given a field size — lets managers see a rule before saving it. */
   previewScoreRule(actor: Actor, raw: unknown, sample: { entrants?: number; players?: number; buyIn?: number } = {}) {
-    requirePermission(actor, "league.manage");
+    // Pure calculation, nothing is stored: anyone who can see tournaments may try a rule.
+    requirePermission(actor, "tournament.read");
     const input = ScoreRuleInput.parse(raw);
     const rule = { kind: input.kind, config: input.config } as ScoreRule;
     const problem = validateScoreRule(rule);

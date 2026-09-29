@@ -19,6 +19,8 @@ export interface PublicTournament extends TournamentSummaryView {
   description: string | null;
   startingStack: number;
   lateRegistrationClosed: boolean;
+  /** registration (or late registration) accepts players right now */
+  registrationOpen: boolean;
 }
 
 export interface PublicTournamentList {
@@ -83,8 +85,7 @@ export interface PlayerProfile {
   marketingConsent: boolean;
   publicProfileEnabled: boolean;
   hasKioskPin: boolean;
-  /** Not returned by GET /me/profile yet; kept optional for forward compatibility. */
-  language?: string | null;
+  language: string | null;
   history: HistoryItem[];
 }
 

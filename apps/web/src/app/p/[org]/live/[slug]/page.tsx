@@ -130,9 +130,9 @@ export default function LivePage() {
       )}
 
       {playing && (
-        <div className={cn("flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm", snap.tournament.lateRegistrationClosed ? "border-border text-muted-foreground" : "border-primary/40 text-primary")}>
+        <div className={cn("flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm", snap.tournament.registrationOpen ? "border-primary/40 text-primary" : "border-border text-muted-foreground")}>
           <Info className="size-4 shrink-0" />
-          {snap.tournament.lateRegistrationClosed ? t("Late registration closed") : t("Late registration open")}
+          {snap.tournament.registrationOpen ? t("Late registration open") : t("Late registration closed")}
         </div>
       )}
 

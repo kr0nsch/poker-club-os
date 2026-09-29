@@ -19,11 +19,18 @@ import {
   type FloorRequestView,
   type PublicLiveSnapshot,
   type TournamentSnapshot,
+  type TournamentStatus,
 } from "@pcos/types";
+import { deriveClock, isLateRegistrationOpen } from "@pcos/domain";
 import { and, asc, desc, eq, gt, isNull, ne, or } from "drizzle-orm";
 import { computeTournamentStats } from "./stats.js";
 import {
+  anchorFromRow,
   iso,
+  levelLikes,
+  policies,
+  type ClockRow,
+  type LevelRow,
   loadClockRow,
   loadEntries,
   loadLevels,
@@ -38,6 +45,18 @@ import {
   toTableViews,
   type TournamentRow,
 } from "./repo.js";
+
+/** Late registration as the rules evaluate it right now (level/time based closing included). */
+export function lateRegistrationOpenNow(t: TournamentRow, levels: readonly LevelRow[], clock: ClockRow, nowMs: number): boolean {
+  if (t.status === "REGISTRATION_OPEN") return true;
+  return isLateRegistrationOpen({
+    status: t.status as TournamentStatus,
+    policy: policies(t).lateReg,
+    manuallyClosed: t.lateRegistrationClosed,
+    clock: deriveClock(anchorFromRow(clock), levelLikes(levels), nowMs),
+    now: nowMs,
+  });
+}
 
 export async function orgFlags(db: Executor, organizationId: string): Promise<FeatureFlags> {
   const [s] = await db.select().from(organizationSettings).where(eq(organizationSettings.organizationId, organizationId));
@@ -167,6 +186,7 @@ export async function buildPublicSnapshot(
       startingStack: t.startingStack,
       buyIn: t.buyIn ?? null,
       lateRegistrationClosed: t.lateRegistrationClosed,
+      registrationOpen: lateRegistrationOpenNow(t, levels, clock, now.getTime()),
       version: t.version,
       venueName: venue?.name ?? "",
       organizationName: org?.name ?? "",

@@ -23,7 +23,7 @@ import { and, asc, eq, gte, isNull, sql } from "drizzle-orm";
 import { requireOrganization, requirePermission, type Actor } from "../actor.js";
 import { writeAudit } from "../audit.js";
 import type { CoreDeps } from "../deps.js";
-import { AppError, conflict, notFound } from "../errors.js";
+import { AppError, conflict, notFound, validation } from "../errors.js";
 import { publishEvents } from "../events.js";
 import { anchorFromRow, levelLikes, loadClockRow, loadLevels, rowFromAnchor, toLevelView } from "../tournaments/repo.js";
 
@@ -248,7 +248,9 @@ export class StructureService {
     requirePermission(actor, "tournament.create");
     const orgId = requireOrganization(actor);
     const input = TournamentTemplateInput.parse(raw);
-    await this.row(orgId, input.structureId);
+    const structure = await this.row(orgId, input.structureId);
+    // A tournament's private copy changes with that tournament; templates must use a library structure.
+    if (structure.ownerTournamentId) throw validation("choose a library structure, not a tournament's own copy");
     const { structureId, houseRulesProfileId, displayTemplateId, name, ...config } = input;
     const values = { organizationId: orgId, name, structureId, houseRulesProfileId: houseRulesProfileId ?? null, displayTemplateId: displayTemplateId ?? null, config };
     const [t] = id

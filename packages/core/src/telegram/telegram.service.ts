@@ -19,6 +19,7 @@ import { randomCode, randomToken, sha256 } from "../crypto.js";
 import type { CoreDeps } from "../deps.js";
 import { AppError, forbidden, notFound, unauthenticated } from "../errors.js";
 import type { AuthService } from "../services/auth.service.js";
+import { orgFlags } from "../tournaments/snapshot.js";
 import type { TelegramBotProvider } from "./bot-provider.js";
 
 const LINK_TTL_MS = 15 * 60_000;
@@ -38,6 +39,7 @@ export class TelegramService {
     const orgId = requireOrganization(actor);
     const [row] = await this.deps.db.select().from(telegramIntegrations).where(eq(telegramIntegrations.organizationId, orgId));
     const cfg = await this.bots.config(orgId);
+    const flags = await orgFlags(this.deps.db, orgId);
     return {
       enabled: row?.enabled ?? cfg.enabled,
       mode: row?.mode ?? cfg.mode,
@@ -48,15 +50,18 @@ export class TelegramService {
       staffAlertsChatId: row?.staffAlertsChatId ?? null,
       tokenConfigured: !!cfg.token,
       tokenSource: cfg.source,
-      staffMutationCommandsEnabled: false,
+      staffMutationCommandsEnabled: flags.telegramStaffCommands,
     };
   }
 
+  /** Omitted fields keep their stored value; `staffAlertsChatId: null` clears it. */
   async saveIntegration(actor: Actor, raw: unknown) {
     requirePermission(actor, "telegram.manage");
     const orgId = requireOrganization(actor);
     const input = TelegramIntegrationInput.parse(raw);
-    let botUsername = input.botUsername ?? null;
+    const [current] = await this.deps.db.select().from(telegramIntegrations).where(eq(telegramIntegrations.organizationId, orgId));
+    let botUsername = input.botUsername ?? current?.botUsername ?? null;
+    const staffAlertsChatId = input.staffAlertsChatId !== undefined ? input.staffAlertsChatId : (current?.staffAlertsChatId ?? null);
     let status = input.enabled ? "CONNECTING" : "DISABLED";
     let lastError: string | null = null;
     if (input.botToken) {
@@ -80,7 +85,7 @@ export class TelegramService {
         botUsername,
         status,
         lastError,
-        staffAlertsChatId: input.staffAlertsChatId ?? null,
+        staffAlertsChatId,
         updatedAt: now,
         ...(input.botToken ? { encryptedBotToken: this.deps.secrets.seal(input.botToken) } : {}),
       };
@@ -88,10 +93,14 @@ export class TelegramService {
         .insert(telegramIntegrations)
         .values({ organizationId: orgId, ...values })
         .onConflictDoUpdate({ target: telegramIntegrations.organizationId, set: values });
+      const flag = JSON.stringify({ telegram: input.enabled });
       await tx
-        .update(organizationSettings)
-        .set({ featureFlags: sql`${organizationSettings.featureFlags} || ${JSON.stringify({ telegram: input.enabled })}::jsonb`, updatedAt: now })
-        .where(eq(organizationSettings.organizationId, orgId));
+        .insert(organizationSettings)
+        .values({ organizationId: orgId, featureFlags: { telegram: input.enabled } })
+        .onConflictDoUpdate({
+          target: organizationSettings.organizationId,
+          set: { featureFlags: sql`${organizationSettings.featureFlags} || ${flag}::jsonb`, updatedAt: now },
+        });
       await writeAudit(
         tx,
         actor,
@@ -102,7 +111,7 @@ export class TelegramService {
           entityId: orgId,
           action: "TELEGRAM_INTEGRATION_UPDATED",
           // never the token itself
-          after: { enabled: input.enabled, mode: input.mode, botUsername, tokenChanged: !!input.botToken, staffAlertsChatId: input.staffAlertsChatId ?? null },
+          after: { enabled: input.enabled, mode: input.mode, botUsername, tokenChanged: !!input.botToken, staffAlertsChatId },
         },
         now,
       );
