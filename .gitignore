@@ -12,6 +12,7 @@ next-env.d.ts
 # Local runtime data (embedded dev database, uploads, backups)
 .data/
 data/
+backups/
 
 # Secrets — never commit real values
 .env
