@@ -11,7 +11,7 @@ import { ApiError, post } from "@/lib/api";
 import { useFormat, useT } from "@/lib/i18n";
 import { useRealtimeState, useServerNow } from "@/lib/realtime-context";
 import { CameraScanner, cameraScanSupported } from "./camera-scanner";
-import { useIdleCursor, useVenueDevice, useWakeLock } from "./device-hooks";
+import { useIdleCursor, useScreenScale, useVenueDevice, useWakeLock } from "./device-hooks";
 import { isRevoked, useDeviceSnapshot, useDeviceState } from "./device-state";
 
 type Mode = "qr" | "member" | "code";
@@ -122,6 +122,7 @@ export function Kiosk({ token }: { token: string }) {
   const tt = useTournamentText();
   useVenueDevice("KIOSK");
   useWakeLock();
+  useScreenScale();
   const idleCursor = useIdleCursor(3_000);
   const state = useDeviceState(token);
   const s = state.data;

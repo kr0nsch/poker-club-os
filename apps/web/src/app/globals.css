@@ -132,6 +132,13 @@
     }
   }
   /*
+   * Full-screen venue surfaces (useScreenScale): 16 px at 1080 px on the short side, growing with
+   * the screen up to 250% (a 4K touch monitor gets 32 px), never below the browser default.
+   */
+  html.screen-scale {
+    font-size: clamp(100%, calc(100vmin / 67.5), 250%);
+  }
+  /*
    * A plain `grid` with no base columns is the app's vertical stack. Its implicit `auto` column
    * grows to the widest unbreakable child (a table, a nowrap row), which widened whole pages on
    * phones; one shrinkable column keeps every stack inside its parent. Responsive `md:grid-cols-*`

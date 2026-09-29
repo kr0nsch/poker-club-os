@@ -76,6 +76,7 @@ export default function DealerTable() {
     <div className="min-h-dvh">
       <FloorHeader
         back="/dealer"
+        width="max-w-4xl"
         title={
           <span className="truncate text-lg font-semibold">
             {t("Table")} {table?.tableNumber ?? "?"} · <span className="text-muted-foreground">{s.tournament.name}</span>
@@ -91,7 +92,7 @@ export default function DealerTable() {
               {anteLabel(level, n) && <span className="ml-2 text-lg font-normal text-muted-foreground">{t("Ante")} {anteLabel(level, n)}</span>}
             </div>
           </div>
-          <div className={cn("clock-digits text-5xl font-bold", s.tournament.status === "PAUSED" && "animate-pulse-soft text-warning")}>{clock?.formatted ?? "--:--"}</div>
+          <div className={cn("clock-digits text-5xl font-bold", s.tournament.status === "PAUSED" && "text-warning/70")}>{clock?.formatted ?? "--:--"}</div>
           {s.tournament.status === "HAND_FOR_HAND" && <Badge variant="destructive">{t("Hand-for-hand")}</Badge>}
         </Card>
 
@@ -99,20 +100,20 @@ export default function DealerTable() {
         {table?.status === "CLOSED" && <Alert variant="warning">{t("This table has been broken. Players were moved to other tables.")}</Alert>}
 
         {arrivals.length > 0 && (
-          <Card className="border-primary/50 p-4">
-            <div className="mb-2 flex items-center gap-2 font-medium text-primary">
+          <Card className="border-gold/35 bg-gold/[0.05] p-4">
+            <div className="mb-2 flex items-center gap-2 font-semibold text-gold">
               <LogIn className="size-4" /> {t("Players moving to this table")}
             </div>
             <div className="grid gap-2">
               {arrivals.map((m) => (
-                <div key={m.id} className="flex items-center justify-between gap-2 rounded-md border border-border px-3 py-2">
-                  <span className="text-lg">
+                <div key={m.id} className="fade-in flex flex-wrap items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2">
+                  <span className="min-w-0 flex-[1_1_12rem] text-lg">
                     <b>{names.get(m.entryId) ?? "?"}</b> → {t("Seat")} {m.toSeat}
                     <span className="ml-2 text-sm text-muted-foreground">
                       ({t("from table {n}", { n: m.fromTableNumber ?? "?" })})
                     </span>
                   </span>
-                  <Button size="lg" onClick={() => run("DEALER_CONFIRM_MOVEMENT", { movementId: m.id }, t("Arrival confirmed"))}>
+                  <Button size="lg" className="ml-auto" onClick={() => run("DEALER_CONFIRM_MOVEMENT", { movementId: m.id }, t("Arrival confirmed"))}>
                     <Check /> {t("Arrived")}
                   </Button>
                 </div>

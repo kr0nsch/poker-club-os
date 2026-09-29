@@ -25,7 +25,7 @@ export default function DealerPicker() {
   const snap = useTournamentSnapshot(selected);
   return (
     <div className="min-h-dvh">
-      <FloorHeader back="/" title={<span className="font-semibold">{t("Dealer")}</span>} />
+      <FloorHeader back="/" width="max-w-3xl" title={<span className="font-semibold">{t("Dealer")}</span>} />
       <main className="mx-auto grid max-w-3xl gap-4 p-4">
         {list.isLoading && <Skeleton className="h-20" />}
         {list.data?.length === 0 && <EmptyState icon={<LayoutGrid />} title={t("No running tournament")} description={t("Tables appear here once seating has started.")} />}

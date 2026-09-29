@@ -33,6 +33,17 @@ export function useWakeLock(enabled = true) {
   }, [enabled]);
 }
 
+/**
+ * Full-screen venue surfaces (the kiosk) scale their rem-based UI with the screen, so a 4K touch
+ * monitor shows the same composition as a Full HD one. See `html.screen-scale` in globals.css.
+ */
+export function useScreenScale() {
+  useEffect(() => {
+    document.documentElement.classList.add("screen-scale");
+    return () => document.documentElement.classList.remove("screen-scale");
+  }, []);
+}
+
 /** true after `ms` without mouse movement: used to hide the cursor on TVs. */
 export function useIdleCursor(ms = 3_000) {
   const [idle, setIdle] = useState(false);
