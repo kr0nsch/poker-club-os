@@ -140,7 +140,7 @@ export function SeatDialog({ target, onClose }: { target: SeatRef | null; onClos
                   .sort((a, b) => (a.tableId === table.id ? -1 : 0) - (b.tableId === table.id ? -1 : 0) || a.playerName.localeCompare(b.playerName))
                   .map((o) => (
                     <option key={o.id} value={o.id}>
-                      {o.playerName} {o.tableNumber ? `(T${o.tableNumber}/S${o.seatNumber})` : ""}
+                      {o.playerName} {o.tableNumber ? `(${t("T")}${o.tableNumber}/${t("S")}${o.seatNumber})` : ""}
                     </option>
                   ))}
               </Select>

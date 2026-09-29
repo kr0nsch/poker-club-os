@@ -53,6 +53,7 @@ import { BackLink, ConfirmDialog, QueryError, SaveBar, TableSkeleton, scrollToFi
 import { formatDuration, pick, stableStringify, threeWay } from "@/components/admin-config/utils";
 import { useCan, useStaff } from "@/components/staff-guard";
 import { StatusBadge } from "@/components/status";
+import { actionSummary } from "@/lib/action-summary";
 import { ApiError, get, patch } from "@/lib/api";
 import { blindsLabel, useDerivedClock } from "@/lib/clock";
 import { useFormat, useT } from "@/lib/i18n";
@@ -583,7 +584,7 @@ function HistoryTab({ id }: { id: string }) {
               <div className="text-xs text-muted-foreground">{fmt.date(a.createdAt)}</div>
             </Td>
             <Td>
-              <div className={a.compensatedByActionId ? "line-through" : undefined}>{a.summary}</div>
+              <div className={a.compensatedByActionId ? "line-through" : undefined}>{actionSummary(a.summary, t)}</div>
               <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                 <span className="font-mono">{a.type}</span>
                 {a.compensatedByActionId && <Badge variant="muted">{t("Undone")}</Badge>}
@@ -591,7 +592,7 @@ function HistoryTab({ id }: { id: string }) {
               </div>
             </Td>
             <Td className="hidden md:table-cell">
-              <div>{a.actorName ?? "—"}</div>
+              <div>{a.actorName === "system" ? t("system") : (a.actorName ?? "—")}</div>
               {a.deviceName && <div className="text-xs text-muted-foreground">{a.deviceName}</div>}
             </Td>
             <Td className="text-right tabular-nums text-muted-foreground">#{a.resultVersion}</Td>

@@ -54,6 +54,7 @@ export const ruFloor: Record<string, string> = {
   "Recorded in the audit log": "Будет записано в журнал аудита",
   // tables
   T: "С",
+  S: "М",
   "Table added": "Стол добавлен",
   "Seat {n} unseated": "Посадить без места: {n}",
   "Imbalance of {n} players between tables.": "Разница между столами — {n} игр.",
@@ -139,7 +140,7 @@ export const ruFloor: Record<string, string> = {
   "Entry voided": "Вход аннулирован",
   // actions log
   "No actions yet": "Действий пока нет",
-  "Undo: {summary}": "Отменить: {summary}",
+  "Undo: {summary}": "Отменить «{summary}»",
   "A compensating action is recorded; history is never deleted.": "Будет записано компенсирующее действие; история никогда не удаляется.",
   "Action undone": "Действие отменено",
   // announcements

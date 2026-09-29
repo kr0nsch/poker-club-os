@@ -23,6 +23,7 @@ import type { PlannedMove, TableView } from "@pcos/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, LayoutGrid, MoreVertical, Plus, Scale, Scissors, Shuffle, UserPlus, XCircle } from "lucide-react";
 import { useState } from "react";
+import { breakReason, moveExplanation } from "@/lib/action-summary";
 import { get } from "@/lib/api";
 import { errorMessage } from "@/lib/queries";
 import { useT } from "@/lib/i18n";
@@ -153,7 +154,7 @@ export function TablesView() {
       {hint.data?.tableBreak.shouldBreak && (
         <Alert variant="warning" title={t("A table should break")}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span>{hint.data.tableBreak.reason}</span>
+            <span>{breakReason(hint.data.tableBreak.reason, t)}</span>
             <Button size="sm" variant="warning" onClick={() => setBreakTable(hint.data!.tableBreak.tableId)}>
               {t("Break table {n}", { n: hint.data.tableBreak.tableNumber ?? "" })}
             </Button>
@@ -234,7 +235,7 @@ export function TablesView() {
           {balance.isLoading && <Spinner />}
           {balance.error && <Alert variant="destructive">{errorMessage(balance.error)}</Alert>}
           {balance.data && (balance.data.moves.length === 0 ? <Alert variant="success">{t("Tables are balanced.")}</Alert> : <MovesList moves={balance.data.moves} />)}
-          {balance.data && balance.data.moves.length > 0 && <p className="text-xs text-muted-foreground">{balance.data.moves[0]!.explanation}</p>}
+          {balance.data && balance.data.moves.length > 0 && <p className="text-xs text-muted-foreground">{moveExplanation(balance.data.moves[0]!.explanation, t)}</p>}
           <DialogFooter>
             <Button variant="ghost" size="lg" onClick={() => setBalanceOpen(false)}>
               {t("Cancel")}
@@ -263,7 +264,7 @@ export function TablesView() {
           </DialogHeader>
           {brk.isLoading && <Spinner />}
           {brk.error && <Alert variant="destructive">{errorMessage(brk.error)}</Alert>}
-          {brk.data && !brk.data.tableId && <Alert>{brk.data.recommendation.reason}</Alert>}
+          {brk.data && !brk.data.tableId && <Alert>{breakReason(brk.data.recommendation.reason, t)}</Alert>}
           {brk.data?.tableId && <MovesList moves={brk.data.moves} />}
           <DialogFooter>
             <Button variant="ghost" size="lg" onClick={() => setBreakTable(undefined)}>

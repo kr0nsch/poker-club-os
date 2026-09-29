@@ -143,7 +143,14 @@ export default function DealerTable() {
                     >
                       <UserCheck />
                     </Button>
-                    <Button size="lg" variant="destructive" onClick={() => setBust(seat.seatNumber)} aria-label={t("Report bust")}>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border-destructive/45 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => setBust(seat.seatNumber)}
+                      aria-label={t("Report bust")}
+                      title={t("Report bust")}
+                    >
                       <Skull />
                     </Button>
                   </>

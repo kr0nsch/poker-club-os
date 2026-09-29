@@ -157,8 +157,18 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
     <div className={cn("grid h-full items-center gap-[2vw] px-[3vw]", sides ? "grid-cols-[1fr_2.3fr_1fr]" : "grid-cols-1")}>
       {sides && <div className="grid content-center gap-[1.6vh]">{left}</div>}
       <div className="relative flex min-w-0 flex-col items-center justify-center text-center">
-        <div className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")} style={{ fontSize: fs(2.6, 4.6) }}>
-          {v.isBreak ? (
+        <div
+          className={cn("flex items-center gap-[1vw] font-mono font-medium uppercase tracking-[0.2em]", v.paused ? "text-warning" : v.isBreak ? "text-gold" : "text-[var(--tv-accent)]")}
+          style={{ fontSize: fs(2.6, 4.6) }}
+        >
+          {v.paused ? (
+            // Paused: the status replaces the level line instead of covering the digits.
+            <>
+              <Pause className="animate-pulse-soft" style={{ width: fs(2.6, 4.6), height: fs(2.6, 4.6) }} fill="currentColor" strokeWidth={0} />
+              {t("Paused")}
+              <span className="text-white/40">· {v.isBreak ? t("Break") : t("Level {n}", { n: d.playLevelNumber })}</span>
+            </>
+          ) : v.isBreak ? (
             <>
               <Coffee style={{ width: fs(3, 5.2), height: fs(3, 5.2) }} /> {t("Break")}
             </>
@@ -168,18 +178,11 @@ function ClockScreen({ snap, widgets, league, now }: { snap: PublicLiveSnapshot;
         </div>
         {widgets.has("CLOCK") && (
           <div className="relative w-full">
-            <div className={cn("clock-digits font-semibold leading-[1.02] transition-opacity", v.paused && "opacity-40")} style={{ fontSize: clockSize }}>
+            <div className={cn("clock-digits font-semibold leading-[1.02] transition-opacity duration-300", v.paused && "opacity-45")} style={{ fontSize: clockSize }}>
               {d.formatted}
             </div>
-            {v.paused && (
-              <div className="absolute inset-0 grid place-items-center">
-                <span className="flex items-center gap-[1vw] rounded-[1.5vh] bg-black/70 px-[2vw] py-[1vh] font-black uppercase tracking-[0.2em] text-amber-400 animate-pulse-soft" style={{ fontSize: fs(6, 11) }}>
-                  <Pause style={{ width: fs(5, 9), height: fs(5, 9) }} fill="currentColor" /> {t("Paused")}
-                </span>
-              </div>
-            )}
             <div className="mx-auto mt-[1.4vh] h-[0.5vh] w-4/5 overflow-hidden rounded-full bg-white/[0.08]">
-              <div className={cn("h-full rounded-full transition-[width] duration-1000", v.paused ? "bg-amber-400" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ width: `${pct}%` }} />
+              <div className={cn("h-full rounded-full transition-[width] duration-1000", v.paused ? "bg-warning" : v.isBreak ? "bg-gold" : "bg-[var(--tv-accent)]")} style={{ width: `${pct}%` }} />
             </div>
           </div>
         )}
