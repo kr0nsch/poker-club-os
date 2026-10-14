@@ -303,8 +303,8 @@ described in [TELEGRAM.md](TELEGRAM.md).
 
 ## 15. Dependencies and updates
 
-- Node.js ≥ 24, pnpm 12.4.1 (Corepack). Docker builds use `pnpm fetch --frozen-lockfile` and an
-  offline install from `pnpm-lock.yaml`.
+- Node.js ≥ 24, pnpm 12.4.1 (Corepack). Docker builds use `pnpm fetch` (which installs exactly what
+  `pnpm-lock.yaml` lists) and an offline `--frozen-lockfile` install.
 - `pnpm-workspace.yaml` limits which packages may run install scripts (`allowBuilds`) and lists the
   only exceptions to pnpm's minimum-release-age policy (`minimumReleaseAgeExclude`).
 - Runtime images: `node:24-bookworm-slim` (API, worker, web run as the `node` user),

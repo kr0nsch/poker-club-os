@@ -17,7 +17,8 @@ WORKDIR /repo
 # --- build everything once -------------------------------------------------------------
 FROM base AS build
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-RUN --mount=type=cache,id=pcos-pnpm-store,target=/pnpm/store pnpm fetch --frozen-lockfile
+# pnpm 12 always fetches exactly what the lockfile lists (the old --frozen-lockfile flag is rejected).
+RUN --mount=type=cache,id=pcos-pnpm-store,target=/pnpm/store pnpm fetch
 COPY . .
 RUN --mount=type=cache,id=pcos-pnpm-store,target=/pnpm/store pnpm install --offline --frozen-lockfile
 # Server-side fallback route for /api (the reverse proxy normally routes /api to the API directly).
