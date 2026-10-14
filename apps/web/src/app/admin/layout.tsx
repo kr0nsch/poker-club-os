@@ -111,6 +111,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function Shell({ children }: { children: ReactNode }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-h-dvh">
@@ -120,7 +121,7 @@ function Shell({ children }: { children: ReactNode }) {
         </Link>
         <Nav />
         <div className="mt-auto flex items-center gap-2 px-2.5 text-xs text-muted-foreground/70">
-          <ShieldCheck className="size-3.5" /> Venue Edge Server
+          <ShieldCheck className="size-3.5" /> {t("Venue Edge Server")}
         </div>
       </aside>
       {open && (

@@ -106,6 +106,7 @@ export const ruCommon: Record<string, string> = {
   "No active or upcoming tournaments.": "Нет активных или ближайших турниров.",
   registered: "зарегистрировано",
   "Edge server": "Edge-сервер",
+  "Venue Edge Server": "Edge-сервер площадки",
   "Tournaments, tables and the clock of your club in one local system.": "Турниры, столы и часы клуба — в одной локальной системе.",
   "Runs in the venue without the Internet: floor console, screens, kiosks and the player app.": "Работает прямо в зале, даже без интернета: пульт флора, экраны, киоски и приложение игроков.",
   "Staff sign-in": "Вход для персонала",
