@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="docs/screenshots/hero.png" alt="Poker Club OS: admin dashboard, floor tablet and the player app" width="100%">
+  <img src="docs/screenshots/ru/hero.png" alt="Poker Club OS: админ-панель, планшет флора и приложение игрока" width="100%">
 </p>
 
 <p align="center">
-  <b>Local-first operating system for live poker clubs.</b><br>
-  Registration, seating, the tournament clock, results and leagues — on the venue network, with or without the Internet.
+  <b>Локальная операционная система для живых покерных клубов.</b><br>
+  Регистрация, рассадка, часы турнира, результаты и лиги — в сети клуба, с интернетом или без него.
 </p>
 
 <p align="center">
@@ -15,153 +15,154 @@
   <img alt="NestJS 12" src="https://img.shields.io/badge/NestJS-12-111214?style=flat-square&logo=nestjs&logoColor=white">
   <img alt="PostgreSQL 18" src="https://img.shields.io/badge/PostgreSQL-18-111214?style=flat-square&logo=postgresql&logoColor=white">
   <img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-111214?style=flat-square&logo=docker&logoColor=white">
-  <img alt="EN / RU" src="https://img.shields.io/badge/UI-EN%20%2F%20RU-111214?style=flat-square">
-  <a href="LICENSE"><img alt="License: proprietary" src="https://img.shields.io/badge/license-proprietary-111214?style=flat-square"></a>
+  <img alt="Интерфейс: RU / EN" src="https://img.shields.io/badge/%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81-RU%20%2F%20EN-111214?style=flat-square">
+  <a href="LICENSE"><img alt="Лицензия: проприетарная" src="https://img.shields.io/badge/%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F-%D0%BF%D1%80%D0%BE%D0%BF%D1%80%D0%B8%D0%B5%D1%82%D0%B0%D1%80%D0%BD%D0%B0%D1%8F-111214?style=flat-square"></a>
 </p>
 
 <p align="center">
-  <a href="#why-poker-club-os">Why</a> ·
-  <a href="#features">Features</a> ·
-  <a href="#screenshots">Screenshots</a> ·
-  <a href="#architecture">Architecture</a> ·
-  <a href="#quick-start">Quick start</a> ·
-  <a href="#deploying-to-a-venue">Deploying</a> ·
-  <a href="#documentation">Docs</a> ·
-  <a href="README.ru.md"><b>Русская версия</b></a>
+  <a href="#зачем-poker-club-os">Зачем</a> ·
+  <a href="#возможности">Возможности</a> ·
+  <a href="#скриншоты">Скриншоты</a> ·
+  <a href="#архитектура">Архитектура</a> ·
+  <a href="#быстрый-старт">Быстрый старт</a> ·
+  <a href="#установка-в-клубе">Установка</a> ·
+  <a href="#документация">Документация</a> ·
+  <a href="README.en.md"><b>English</b></a>
 </p>
 
 ---
 
-## Why Poker Club OS
+## Зачем Poker Club OS
 
-Live tournaments are run on paper sheets, spreadsheets and a clock app on a laptop — or on a cloud
-service that stops the moment the venue Wi-Fi or the Internet drops. Poker Club OS takes a different
-route: every club runs its own **Venue Edge Server**, a small PC on the club's LAN with PostgreSQL,
-the API, a background worker and the web app. Tablets, TVs, the entrance kiosk and players' phones
-all talk to that box over the local network.
+Живые турниры обычно ведут на бумаге, в таблицах и в приложении-часах на ноутбуке — или в облачном
+сервисе, который встаёт, как только в клубе пропадает Wi-Fi или интернет. Poker Club OS устроена
+иначе: в каждом клубе работает свой **edge-сервер** — небольшой ПК в локальной сети клуба с
+PostgreSQL, API, фоновым воркером и веб-приложением. Планшеты, телевизоры, киоск на входе и телефоны
+игроков работают с ним напрямую по локальной сети.
 
 <table>
   <tr>
-    <td width="33%" valign="top"><b>Offline by design</b><br>The Internet is optional. Losing it only pauses Telegram, e-mail and cloud sync — never a running tournament.</td>
-    <td width="33%" valign="top"><b>Realtime on every screen</b><br>Each committed change reaches every tablet, TV and phone over a local WebSocket within milliseconds.</td>
-    <td width="33%" valign="top"><b>Safe floor operations</b><br>Every action is a validated command in one PostgreSQL transaction: optimistic concurrency, idempotency keys, audit trail, undo.</td>
+    <td width="33%" valign="top"><b>Работает без интернета</b><br>Интернет не обязателен. Без него ждут только Telegram, почта и облачная синхронизация — идущий турнир не останавливается никогда.</td>
+    <td width="33%" valign="top"><b>Мгновенно на всех экранах</b><br>Каждое изменение за миллисекунды доходит до всех планшетов, ТВ и телефонов через локальный WebSocket.</td>
+    <td width="33%" valign="top"><b>Безопасные действия флора</b><br>Каждое действие — проверенная команда в одной транзакции PostgreSQL: оптимистичные блокировки, ключи идемпотентности, журнал аудита, отмена.</td>
   </tr>
   <tr>
-    <td valign="top"><b>One server, every surface</b><br>Back office, floor and dealer tablets, TV displays, a self check-in kiosk, a player PWA, a Telegram bot and Mini App.</td>
-    <td valign="top"><b>Self-hosted</b><br>One <code>docker compose</code> stack on an Ubuntu mini-PC, internal TLS via Caddy, scheduled backups, health dashboard.</td>
-    <td valign="top"><b>Bilingual</b><br>The web UI and notifications in English and Russian, switchable per device.</td>
+    <td valign="top"><b>Один сервер — все экраны</b><br>Админка, планшеты флора и дилеров, ТВ-экраны, киоск самостоятельной отметки, PWA для игроков, Telegram-бот и Mini App.</td>
+    <td valign="top"><b>Свой сервер</b><br>Один стек <code>docker compose</code> на мини-ПК с Ubuntu, внутренний TLS через Caddy, резервные копии по расписанию, панель здоровья.</td>
+    <td valign="top"><b>Два языка</b><br>Веб-интерфейс и уведомления на русском и английском, язык выбирается на каждом устройстве.</td>
   </tr>
 </table>
 
-## Features
+## Возможности
 
-**Tournament director and floor**
-- Blind structures and templates; freezeout, re-entry, rebuy and bounty formats; late registration, add-on and re-entry rules.
-- Tournament clock with pause, level jumps, time adjustments, breaks and hand-for-hand.
-- Random seat draw, table balancing and table breaks with moves confirmed by dealers.
-- Eliminations (several players in one hand), re-entries, rebuys, add-ons, corrections with a reason and undo.
-- Results, league points, seasons and public standings.
+**Турнирный директор и флор**
+- Структуры блайндов и шаблоны; форматы фризаут, ре-энтри, ребай и баунти; правила поздней регистрации, аддонов и ре-энтри.
+- Часы турнира: пауза, переход между уровнями, корректировка времени, перерывы, hand-for-hand.
+- Случайная рассадка, балансировка и закрытие столов с подтверждением пересадок дилерами.
+- Вылеты (в том числе нескольких игроков в одной раздаче), ре-энтри, ребаи, аддоны, исправления с причиной и отменой.
+- Результаты, очки лиги, сезоны и публичный рейтинг.
 
-**Registration desk and cashier**
-- Player search and quick creation, registration, waitlist, check-in with buy-in, re-entries and voids.
-- Self check-in kiosk: registration QR code, member number + PIN, or a one-time code.
+**Регистрация и касса**
+- Поиск и быстрое создание игрока, регистрация, лист ожидания, отметка с бай-ином, ре-энтри и аннулирование.
+- Киоск самостоятельной отметки: QR-код регистрации, номер участника + PIN или одноразовый код.
 
-**Dealers**
-- A tablet per table: seat presence, bust reports, "call floor", incoming player moves.
+**Дилеры**
+- Планшет на каждый стол: присутствие за местами, сообщения о вылетах, «вызов флора», входящие пересадки.
 
-**Players**
-- Mobile web app (PWA): schedule, self-registration, live clock, own seat, results, league standings, notifications.
-- Telegram bot and Mini App: browse the schedule, register or cancel, see your seat, get alerts.
-- TV displays with the clock, blinds, field statistics, seating during the draw and announcements.
+**Игроки**
+- Мобильное веб-приложение (PWA): расписание, самостоятельная регистрация, живые часы, своё место, результаты, рейтинг лиги, уведомления.
+- Telegram-бот и Mini App: расписание, регистрация и отмена, своё место, оповещения.
+- ТВ-экраны с часами, блайндами, статистикой поля, рассадкой во время жеребьёвки и объявлениями.
 
-**Club owner and operations**
-- Player CRM: tags, staff notes, consents, CSV import and export, anonymization.
-- Staff accounts with role-based access, device registry, append-only audit log.
-- Analytics: check-in timing, registration funnel and channels, re-entry rate, retention.
-- Health page, scheduled `pg_dump` backups with an optional off-site copy, optional cloud sync.
+**Владелец клуба и эксплуатация**
+- CRM игроков: теги, заметки персонала, согласия, импорт и экспорт CSV, анонимизация.
+- Учётные записи персонала с ролевым доступом, реестр устройств, неизменяемый журнал аудита.
+- Аналитика: время отметки, воронка и каналы регистрации, доля ре-энтри, удержание.
+- Страница здоровья, резервные копии `pg_dump` по расписанию с необязательной внешней копией, необязательная облачная синхронизация.
 
-## Screenshots
+## Скриншоты
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/floor-console.png" alt="Floor console"><br><sub><b>Floor console</b> — clock, tables, floor calls, registration desk and results on one tablet.</sub></td>
-    <td width="50%"><img src="docs/screenshots/dealer-table.png" alt="Dealer tablet"><br><sub><b>Dealer tablet</b> — seats, bust reports, incoming moves and a big "Call floor" button.</sub></td>
+    <td width="50%"><img src="docs/screenshots/ru/floor-console.png" alt="Консоль флора"><br><sub><b>Консоль флора</b> — часы, столы, вызовы флора, регистрация и результаты на одном планшете.</sub></td>
+    <td width="50%"><img src="docs/screenshots/ru/dealer-table.png" alt="Планшет дилера"><br><sub><b>Планшет дилера</b> — места, вылеты, входящие пересадки и большая кнопка «Вызвать флора».</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/tv-display.png" alt="TV display"><br><sub><b>TV display</b> — clock, blinds and field statistics, readable across the room.</sub></td>
-    <td><img src="docs/screenshots/kiosk.png" alt="Check-in kiosk"><br><sub><b>Check-in kiosk</b> — QR code, member number + PIN or a one-time code.</sub></td>
+    <td><img src="docs/screenshots/ru/tv-display.png" alt="ТВ-экран"><br><sub><b>ТВ-экран</b> — часы, блайнды и статистика поля, читаются через весь зал.</sub></td>
+    <td><img src="docs/screenshots/ru/kiosk.png" alt="Киоск отметки"><br><sub><b>Киоск отметки</b> — QR-код, номер участника + PIN или одноразовый код.</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/admin-dashboard.png" alt="Admin dashboard"><br><sub><b>Dashboard</b> — what is in play, what needs attention, today's schedule.</sub></td>
-    <td><img src="docs/screenshots/admin-tournament.png" alt="Tournament configuration"><br><sub><b>Tournament</b> — configuration with locked fields after the start and a live summary.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-dashboard.png" alt="Панель управления"><br><sub><b>Панель управления</b> — что идёт сейчас, что требует внимания, расписание на сегодня.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-tournament.png" alt="Настройки турнира"><br><sub><b>Турнир</b> — настройки с блокировкой полей после старта и живой сводкой.</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/admin-players.png" alt="Players"><br><sub><b>Players</b> — CRM with tags, member numbers, CSV import and export.</sub></td>
-    <td><img src="docs/screenshots/admin-analytics.png" alt="Analytics"><br><sub><b>Analytics</b> — check-in timing, registration funnel, late registration, re-entries.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-players.png" alt="Игроки"><br><sub><b>Игроки</b> — CRM с тегами, номерами участников, импортом и экспортом CSV.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-analytics.png" alt="Аналитика"><br><sub><b>Аналитика</b> — время отметки, воронка регистрации, поздняя регистрация, ре-энтри.</sub></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/admin-network.png" alt="Local network"><br><sub><b>Local network</b> — QR codes so staff and players never type an IP address.</sub></td>
-    <td><img src="docs/screenshots/admin-health.png" alt="Health and backups"><br><sub><b>Health &amp; backups</b> — every component, Internet status and local backups.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-network.png" alt="Локальная сеть"><br><sub><b>Локальная сеть</b> — QR-коды, чтобы персонал и игроки не вводили IP-адреса.</sub></td>
+    <td><img src="docs/screenshots/ru/admin-health.png" alt="Здоровье и резервные копии"><br><sub><b>Здоровье и бэкапы</b> — состояние компонентов, доступ в интернет, локальные копии.</sub></td>
   </tr>
 </table>
 
 <p align="center">
-  <img src="docs/screenshots/player-app.png" alt="Player app: schedule, live tournament, league standings" width="90%"><br>
-  <sub><b>Player app</b> — schedule, live tournament and league standings on the venue Wi-Fi.</sub>
+  <img src="docs/screenshots/ru/player-app.png" alt="Приложение игрока: расписание, живой турнир, рейтинг лиги" width="90%"><br>
+  <sub><b>Приложение игрока</b> — расписание, живой турнир и рейтинг лиги через Wi-Fi клуба.</sub>
 </p>
 
-## Architecture
+## Архитектура
 
 ```mermaid
 flowchart LR
-  subgraph LAN["Venue LAN"]
-    D["Tablets · phones · TVs · kiosk"] -- "HTTPS + WebSocket" --> C["Caddy :443"]
+  subgraph LAN["Локальная сеть клуба"]
+    D["Планшеты · телефоны · ТВ · киоск"] -- "HTTPS + WebSocket" --> C["Caddy :443"]
     C --> W["Next.js web :3000"]
     C --> A["API :4000<br/>NestJS + Fastify"]
     A <--> P[("PostgreSQL 18")]
-    K["Worker<br/>clock · notifications<br/>sync · backups"] <--> P
-    P -- "NOTIFY on commit" --> A
+    K["Воркер<br/>часы · уведомления<br/>синхронизация · бэкапы"] <--> P
+    P -- "NOTIFY после коммита" --> A
   end
-  K -. "optional, outbound only" .-> TG["Telegram"]
-  K -. optional .-> CL["Cloud control plane"]
+  K -. "необязательно, только исходящие" .-> TG["Telegram"]
+  K -. необязательно .-> CL["Облачная панель"]
 ```
 
-Every state change is an explicit, validated command executed in one PostgreSQL transaction with
-optimistic concurrency, idempotency keys, an append-only audit trail and an outbox. Committed events
-reach every screen through the local WebSocket hub. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md),
-[docs/REALTIME.md](docs/REALTIME.md), [docs/OFFLINE_OPERATION.md](docs/OFFLINE_OPERATION.md).
+Каждое изменение состояния — явная проверенная команда, которая выполняется в одной транзакции
+PostgreSQL с оптимистичной блокировкой, ключом идемпотентности, записью в журнал аудита и outbox.
+Закоммиченные события доходят до всех экранов через локальный WebSocket-хаб. Подробнее:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/REALTIME.md](docs/REALTIME.md),
+[docs/OFFLINE_OPERATION.md](docs/OFFLINE_OPERATION.md).
 
-| Layer | Technology |
+| Слой | Технологии |
 | --- | --- |
-| Web | Next.js 16, React 19, Tailwind CSS 4, Radix UI, TanStack Query, React Hook Form |
-| API and realtime | NestJS 12 on Fastify 5, WebSocket hub fed by PostgreSQL `LISTEN/NOTIFY` |
-| Domain | Pure TypeScript rules (clock, late registration, seating and balancing, results, points, access control), Zod schemas shared by API and UI |
-| Data | PostgreSQL 18, Drizzle ORM and SQL migrations, optional Redis |
-| Edge | Docker Compose, Caddy (internal TLS), scheduled `pg_dump` backups |
-| Tests | Vitest against embedded PostgreSQL, end-to-end suite with real API and worker processes |
+| Веб | Next.js 16, React 19, Tailwind CSS 4, Radix UI, TanStack Query, React Hook Form |
+| API и realtime | NestJS 12 на Fastify 5, WebSocket-хаб на PostgreSQL `LISTEN/NOTIFY` |
+| Домен | Чистые правила на TypeScript (часы, поздняя регистрация, рассадка и балансировка, результаты, очки, доступ), общие Zod-схемы для API и UI |
+| Данные | PostgreSQL 18, Drizzle ORM и SQL-миграции, необязательный Redis |
+| Edge | Docker Compose, Caddy (внутренний TLS), резервные копии `pg_dump` по расписанию |
+| Тесты | Vitest на встроенном PostgreSQL, сквозные тесты с настоящими процессами API и воркера |
 
-### Repository layout
+### Структура репозитория
 
-| Path | Contents |
+| Путь | Содержимое |
 | --- | --- |
-| `apps/api` | HTTP API and realtime hub (NestJS on Fastify) |
-| `apps/worker` | Background loops: clock ticker, WAN monitor, Telegram long polling, notifications, cloud sync, reminders, backups |
-| `apps/web` | Next.js app: `/admin`, `/floor`, `/dealer`, `/p/{club}`, `/display/{token}`, `/kiosk/{token}`, `/tg/{club}`, `/setup` |
-| `packages/types` | Shared Zod schemas, commands, permissions, realtime protocol, view types |
-| `packages/domain` | Pure rules: clock, late registration, seating and balancing, results, points, access control |
-| `packages/db` | Drizzle schema, SQL migrations, migration runner |
-| `packages/core` | Services, command executor and handlers, notifications, Telegram bot, runners |
-| `packages/telegram` | Bot API client, long poller, webhook and Mini App verification |
-| `packages/ui` | UI components (Radix + Tailwind CSS 4) |
-| `packages/testkit` | Embedded PostgreSQL for tests |
-| `tests/e2e` | End-to-end suite with switchable Telegram, cloud and WAN mocks |
-| `deploy/` | Caddyfile, install, backup and restore scripts |
-| `docs/` | Product, architecture, operations and security documentation |
+| `apps/api` | HTTP API и realtime-хаб (NestJS на Fastify) |
+| `apps/worker` | Фоновые циклы: часы, мониторинг интернета, Telegram long polling, уведомления, синхронизация, напоминания, бэкапы |
+| `apps/web` | Next.js: `/admin`, `/floor`, `/dealer`, `/p/{club}`, `/display/{token}`, `/kiosk/{token}`, `/tg/{club}`, `/setup` |
+| `packages/types` | Общие Zod-схемы, команды, права, протокол realtime, типы представлений |
+| `packages/domain` | Чистые правила: часы, поздняя регистрация, рассадка и балансировка, результаты, очки, доступ |
+| `packages/db` | Схема Drizzle, SQL-миграции, запуск миграций |
+| `packages/core` | Сервисы, исполнитель и обработчики команд, уведомления, Telegram-бот |
+| `packages/telegram` | Клиент Bot API, long poller, проверка webhook и Mini App |
+| `packages/ui` | UI-компоненты (Radix + Tailwind CSS 4) |
+| `packages/testkit` | Встроенный PostgreSQL для тестов |
+| `tests/e2e` | Сквозные тесты с переключаемыми заглушками Telegram, облака и интернета |
+| `deploy/` | Caddyfile, скрипты установки, резервного копирования и восстановления |
+| `docs/` | Документация по продукту, архитектуре, эксплуатации и безопасности |
 
-## Quick start
+## Быстрый старт
 
-Requirements: **Node.js 24** and **pnpm 12**. No Docker and no system-wide PostgreSQL are needed for
-development — an embedded PostgreSQL 18 is started for you.
+Нужны **Node.js 24** и **pnpm 12**. Docker и установленный в систему PostgreSQL для разработки не
+нужны — встроенный PostgreSQL 18 запускается автоматически.
 
 ```bash
 git clone https://github.com/kr0nsch/poker-club-os.git
@@ -170,80 +171,83 @@ pnpm install
 pnpm dev
 ```
 
-`pnpm dev` creates `.env` with fresh development secrets on the first run, starts the embedded
-PostgreSQL (`.data/postgres`, port 54320), builds the shared packages and runs the API
-(http://localhost:4000, applies migrations on start), the worker and the web app
+При первом запуске `pnpm dev` создаёт `.env` со свежими секретами для разработки, поднимает
+встроенный PostgreSQL (`.data/postgres`, порт 54320), собирает общие пакеты и запускает API
+(http://localhost:4000, применяет миграции при старте), воркер и веб-приложение
 (http://localhost:3000).
 
-In a second terminal, load demo data — a club, staff accounts, 28 players, a running tournament, a
-league, a TV display and a kiosk link:
+Во втором терминале загрузите демо-данные — клуб, сотрудников, 28 игроков, идущий турнир, лигу,
+ТВ-экран и ссылку для киоска:
 
 ```bash
 pnpm seed:demo
 ```
 
-| Demo account (development only) | Password |
+| Демо-аккаунт (только для разработки) | Пароль |
 | --- | --- |
-| `td@royal.example` — tournament director | `correct-horse-battery` |
-| `floor@`, `desk@`, `dealer@royal.example` | same |
+| `td@royal.example` — турнирный директор | `correct-horse-battery` |
+| `floor@`, `desk@`, `dealer@royal.example` | такой же |
 
-Player pages: http://localhost:3000/p/royal. The TV display and kiosk links are printed by the seed script.
+Страница игроков: http://localhost:3000/p/royal. Ссылки на ТВ-экран и киоск печатает скрипт демо-данных.
 
-Checks:
+Проверки:
 
 ```bash
 pnpm typecheck
 pnpm lint
-pnpm test       # unit and integration tests against embedded PostgreSQL
-pnpm test:e2e   # real API and worker: LAN operation, Internet outage, power loss, Telegram bot
+pnpm test       # модульные и интеграционные тесты на встроенном PostgreSQL
+pnpm test:e2e   # настоящие API и воркер: работа в LAN, обрыв интернета, отключение питания, Telegram-бот
 ```
 
-> On a Windows workstation the whole toolchain can live in a portable `.venv/` folder (not committed):
-> `. .\.venv\env.ps1` puts Node, pnpm, Git, Caddy, the Docker CLI and the PostgreSQL client tools on
-> `PATH` for the current PowerShell session only.
+> На Windows весь инструментарий можно держать в переносной папке `.venv/` (не коммитится):
+> `. .\.venv\env.ps1` добавляет Node, pnpm, Git, Caddy, Docker CLI и клиентские утилиты PostgreSQL в
+> `PATH` только для текущей сессии PowerShell.
 
-## Deploying to a venue
+## Установка в клубе
 
-On an Ubuntu LTS mini-PC with Docker, a fixed LAN address and a local DNS name such as
-`poker.myclub.example`:
+Мини-ПК с Ubuntu LTS и Docker, фиксированный IP в локальной сети и локальное DNS-имя вида
+`poker.myclub.example` в роутере:
 
 ```bash
 ./deploy/scripts/install-edge.sh poker.myclub.example
 ```
 
-1. The script creates `.env` with random secrets and starts PostgreSQL, Redis, API, worker, web and
-   Caddy (internal TLS) with `docker compose`.
-2. Open `https://poker.myclub.example/setup`, enter the setup token printed in `docker compose logs api`
-   and create the club and the owner account.
-3. Print the QR codes from **Admin → Local network** for staff and players; create TV and kiosk links in
-   **Admin → Displays & kiosks**.
-4. Optionally connect the Telegram bot in **Admin → Telegram**.
+1. Скрипт создаёт `.env` со случайными секретами и запускает PostgreSQL, Redis, API, воркер, веб и
+   Caddy (внутренний TLS) через `docker compose`.
+2. Откройте `https://poker.myclub.example/setup`, введите токен первичной настройки из
+   `docker compose logs api`, создайте клуб и учётную запись владельца.
+3. **Админка → Локальная сеть**: распечатайте QR-коды для персонала и игроков; в разделе
+   **Экраны и киоски** создайте ссылки для телевизоров и киоска.
+4. По желанию подключите Telegram-бота в **Админка → Telegram**.
 
-Step-by-step guides: [INSTALLATION_GUIDE](docs/INSTALLATION_GUIDE.md) ·
-[EDGE_DEPLOYMENT](docs/EDGE_DEPLOYMENT.md) · [LOCAL_NETWORK](docs/LOCAL_NETWORK.md) ·
-[DEVICE_SETUP](docs/DEVICE_SETUP.md) · [BACKUP_RECOVERY](docs/BACKUP_RECOVERY.md).
+Пошаговые инструкции: [установка в клубе](docs/INSTALLATION_GUIDE.md) (для техника) ·
+[edge-сервер](docs/EDGE_DEPLOYMENT.md) · [локальная сеть](docs/LOCAL_NETWORK.md) ·
+[настройка устройств](docs/DEVICE_SETUP.md) · [работа без интернета](docs/OFFLINE_OPERATION.md) ·
+[резервные копии и восстановление](docs/BACKUP_RECOVERY.md).
 
-## Documentation
+## Документация
 
-| Topic | Documents |
+Сами документы пока на английском.
+
+| Тема | Документы |
 | --- | --- |
-| Product | [PRODUCT](docs/PRODUCT.md) — roles, surfaces, the tournament workflow, feature flags |
-| Design | [ARCHITECTURE](docs/ARCHITECTURE.md) · [DOMAIN_MODEL](docs/DOMAIN_MODEL.md) · [TOURNAMENT_STATE_MACHINE](docs/TOURNAMENT_STATE_MACHINE.md) · [SEATING_ENGINE](docs/SEATING_ENGINE.md) · [REALTIME](docs/REALTIME.md) · [API](docs/API.md) |
-| Venue operations | [INSTALLATION_GUIDE](docs/INSTALLATION_GUIDE.md) · [LOCAL_NETWORK](docs/LOCAL_NETWORK.md) · [DEVICE_SETUP](docs/DEVICE_SETUP.md) · [OFFLINE_OPERATION](docs/OFFLINE_OPERATION.md) · [BACKUP_RECOVERY](docs/BACKUP_RECOVERY.md) |
-| Deployment | [EDGE_DEPLOYMENT](docs/EDGE_DEPLOYMENT.md) · [DEPLOYMENT](docs/DEPLOYMENT.md) · [EDGE_CLOUD_SYNC](docs/EDGE_CLOUD_SYNC.md) |
-| Security and data | [SECURITY](docs/SECURITY.md) · [NETWORK_SECURITY](docs/NETWORK_SECURITY.md) · [PRIVACY](docs/PRIVACY.md) |
-| Integrations | [TELEGRAM](docs/TELEGRAM.md) |
-| Decisions | [ASSUMPTIONS](docs/ASSUMPTIONS.md) — deviations from the original specification and known limitations |
+| Продукт | [Обзор продукта](docs/PRODUCT.md) — роли, экраны, ход турнира, флаги функций |
+| Устройство | [Архитектура](docs/ARCHITECTURE.md) · [Доменная модель](docs/DOMAIN_MODEL.md) · [Состояния турнира](docs/TOURNAMENT_STATE_MACHINE.md) · [Рассадка и балансировка](docs/SEATING_ENGINE.md) · [Realtime](docs/REALTIME.md) · [HTTP API](docs/API.md) |
+| Работа клуба | [Установка в клубе](docs/INSTALLATION_GUIDE.md) · [Локальная сеть](docs/LOCAL_NETWORK.md) · [Настройка устройств](docs/DEVICE_SETUP.md) · [Работа без интернета](docs/OFFLINE_OPERATION.md) · [Резервные копии](docs/BACKUP_RECOVERY.md) |
+| Развёртывание | [Edge-сервер](docs/EDGE_DEPLOYMENT.md) · [Варианты развёртывания](docs/DEPLOYMENT.md) · [Облачная синхронизация](docs/EDGE_CLOUD_SYNC.md) |
+| Безопасность и данные | [Безопасность](docs/SECURITY.md) · [Сетевая безопасность](docs/NETWORK_SECURITY.md) · [Персональные данные](docs/PRIVACY.md) |
+| Интеграции | [Telegram](docs/TELEGRAM.md) |
+| Решения | [Допущения и ограничения](docs/ASSUMPTIONS.md) — отступления от исходной спецификации и известные ограничения |
 
-## Scope
+## Границы продукта
 
-Poker Club OS runs the live tournament operation. It deliberately does **not** handle real money
-(buy-ins are recorded for bookkeeping, the cashier takes payment physically), does not deal online
-poker and has no payouts engine. Cash-game waitlists, time charge and memberships are not implemented
-yet — see [PRODUCT § 7](docs/PRODUCT.md#7-intentionally-out-of-scope).
+Poker Club OS ведёт живые турниры. Система намеренно **не** работает с реальными деньгами (бай-ины
+записываются для учёта, оплату принимает кассир), не является онлайн-покером и не рассчитывает
+выплаты. Листы ожидания кэш-игр, почасовая оплата и членство пока не реализованы — см.
+[обзор продукта, § 7](docs/PRODUCT.md#7-intentionally-out-of-scope).
 
-## License
+## Лицензия
 
-Copyright © 2026 kr0nsch. All rights reserved. The source code is published for viewing and
-evaluation only; using, copying, modifying or running it requires written permission. See
-[LICENSE](LICENSE).
+© 2026 kr0nsch. Все права защищены. Исходный код опубликован только для ознакомления;
+использование, копирование, изменение или запуск возможны только с письменного разрешения. Полный
+текст — в [LICENSE](LICENSE).
