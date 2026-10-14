@@ -40,12 +40,12 @@ look before assuming a behaviour.
 
 ## Verification limits
 
-- **Docker images were not built on the development workstation.** The workstation policy is that
-  every tool lives in the project's `.venv` and nothing is installed system-wide; a Docker daemon
-  (WSL2/Hyper-V) cannot be provided that way. The Docker CLI and Compose plugin in `.venv` validated
-  `docker-compose.yml`, the real Caddy binary validated the `Caddyfile`, and `pnpm deploy` (used by the
-  Dockerfile) was run locally. The first `docker compose up --build` on a Linux host is the remaining
-  check.
+- **Docker images are built in CI, not on the development workstation.** The workstation policy is
+  that every tool lives in the project's `.venv` and nothing is installed system-wide; a Docker daemon
+  (WSL2/Hyper-V) cannot be provided that way. GitHub Actions (`.github/workflows/ci.yml`) builds the
+  `api`, `worker` and `web` images on every push to `main`; locally the Docker CLI and Compose plugin in
+  `.venv` validated `docker-compose.yml` and the real Caddy binary validated the `Caddyfile`. Running the
+  whole stack with `docker compose up` on a Linux host is the remaining check.
 - **The reverse-proxy topology was verified locally** by running the real `deploy/caddy/Caddyfile`
   (Caddy from `.venv`, self-signed certificate, upstreams pointed at the local API and web app through
   `API_UPSTREAM`/`WEB_UPSTREAM`): HTTPS pages and API, HTTP→HTTPS redirect, HSTS, session cookie
