@@ -31,7 +31,8 @@ export function StatusBadge({ status, className }: { status: string; className?:
   return (
     <Badge variant={TONE[status] ?? "outline"} className={className}>
       {status === "RUNNING" && <span aria-hidden className="size-1.5 rounded-full bg-current" />}
-      {t(status)}
+      {/* English has no dictionary entry for the enum keys: show REGISTRATION_OPEN as "REGISTRATION OPEN". */}
+      {t(status).replaceAll("_", " ")}
     </Badge>
   );
 }
