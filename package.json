@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Local-first live poker club operating system (Venue Edge Server architecture)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kr0nsch/poker-club-os.git"
+  },
+  "homepage": "https://github.com/kr0nsch/poker-club-os#readme",
   "type": "module",
   "packageManager": "pnpm@12.4.1",
   "engines": {

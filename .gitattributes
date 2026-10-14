@@ -1,0 +1,19 @@
+# Store text with LF in the repository so the edge server (Linux) and Windows
+# workstations check out identical files; shell scripts must never get CRLF.
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.cmd  text eol=crlf
+*.bat  text eol=crlf
+
+*.png  binary
+*.jpg  binary
+*.webp binary
+*.gif  binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
+
+pnpm-lock.yaml linguist-generated=true
+packages/db/drizzle/meta/*.json linguist-generated=true
