@@ -8,6 +8,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/kr0nsch/poker-club-os/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/kr0nsch/poker-club-os/ci.yml?branch=main&style=flat-square&label=CI&labelColor=111214"></a>
   <img alt="Node.js 24" src="https://img.shields.io/badge/Node.js-24-111214?style=flat-square&logo=nodedotjs&logoColor=white">
   <img alt="TypeScript 6" src="https://img.shields.io/badge/TypeScript-6-111214?style=flat-square&logo=typescript&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-111214?style=flat-square&logo=nextdotjs&logoColor=white">
@@ -15,6 +16,7 @@
   <img alt="PostgreSQL 18" src="https://img.shields.io/badge/PostgreSQL-18-111214?style=flat-square&logo=postgresql&logoColor=white">
   <img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-111214?style=flat-square&logo=docker&logoColor=white">
   <img alt="EN / RU" src="https://img.shields.io/badge/UI-EN%20%2F%20RU-111214?style=flat-square">
+  <a href="LICENSE"><img alt="License: proprietary" src="https://img.shields.io/badge/license-proprietary-111214?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -239,3 +241,9 @@ Poker Club OS runs the live tournament operation. It deliberately does **not** h
 (buy-ins are recorded for bookkeeping, the cashier takes payment physically), does not deal online
 poker and has no payouts engine. Cash-game waitlists, time charge and memberships are not implemented
 yet — see [PRODUCT § 7](docs/PRODUCT.md#7-intentionally-out-of-scope).
+
+## License
+
+Copyright © 2026 kr0nsch. All rights reserved. The source code is published for viewing and
+evaluation only; using, copying, modifying or running it requires written permission. See
+[LICENSE](LICENSE).

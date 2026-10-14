@@ -2,6 +2,7 @@
   "name": "poker-club-os",
   "version": "0.1.0",
   "private": true,
+  "license": "UNLICENSED",
   "description": "Local-first live poker club operating system (Venue Edge Server architecture)",
   "repository": {
     "type": "git",

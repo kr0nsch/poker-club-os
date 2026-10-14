@@ -8,6 +8,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/kr0nsch/poker-club-os/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/kr0nsch/poker-club-os/ci.yml?branch=main&style=flat-square&label=CI&labelColor=111214"></a>
   <img alt="Node.js 24" src="https://img.shields.io/badge/Node.js-24-111214?style=flat-square&logo=nodedotjs&logoColor=white">
   <img alt="TypeScript 6" src="https://img.shields.io/badge/TypeScript-6-111214?style=flat-square&logo=typescript&logoColor=white">
   <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js-16-111214?style=flat-square&logo=nextdotjs&logoColor=white">
@@ -15,6 +16,7 @@
   <img alt="PostgreSQL 18" src="https://img.shields.io/badge/PostgreSQL-18-111214?style=flat-square&logo=postgresql&logoColor=white">
   <img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-111214?style=flat-square&logo=docker&logoColor=white">
   <img alt="EN / RU" src="https://img.shields.io/badge/UI-EN%20%2F%20RU-111214?style=flat-square">
+  <a href="LICENSE"><img alt="Лицензия: проприетарная" src="https://img.shields.io/badge/license-proprietary-111214?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -245,3 +247,9 @@ Poker Club OS ведёт живые турниры. Система намере�
 записываются для учёта, оплату принимает кассир), не является онлайн-покером и не рассчитывает
 выплаты. Листы ожидания кэш-игр, почасовая оплата и членство пока не реализованы — см.
 [PRODUCT § 7](docs/PRODUCT.md#7-intentionally-out-of-scope).
+
+## Лицензия
+
+© 2026 kr0nsch. Все права защищены. Исходный код опубликован только для ознакомления;
+использование, копирование, изменение или запуск возможны только с письменного разрешения. Полный
+текст — в [LICENSE](LICENSE).
